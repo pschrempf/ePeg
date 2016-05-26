@@ -23,7 +23,7 @@
     <string name="add_new">Add new...</string>
     <string name="researcher_settings_popup_prompt">Please set a researcher and clinic!</string>
     <string name="participant_code">Participant code: %s</string>
-    <string name="trial_status">%d/%d trials complete!</string>
+    <string name="trial_status">%1$d/%2$d trials complete!</string>
     <string name="start">Start!</string>
     <string name="wrong_peg">Wrong peg!</string>
     <string name="trial_in_progress">Trial in progres...</string>
