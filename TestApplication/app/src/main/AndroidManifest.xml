@@ -2,17 +2,17 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.epeg">
 
-    <!-- Minimum sdk version is 19 -->
-    <uses-sdk android:minSdkVersion="19"/>
+    <!-- Minimum sdk version is 16 -->
+    <uses-sdk android:minSdkVersion="16"/>
 
-    <!-- needed to change rotation -->
+    <!-- Need to change rotation -->
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
 
-    <!-- Needed to access internet and detect connectivity changes -->
+    <!-- Need to access internet and detect connectivity changes -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-    <!-- Needed to be able to save backup files -->
+    <!-- Need to be able to save backup files -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application

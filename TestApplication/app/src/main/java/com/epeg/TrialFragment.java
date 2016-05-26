@@ -114,7 +114,6 @@ public class TrialFragment extends Fragment {
                     if (!peg.equals(currentPeg)) {
                         status.setText(getResources().getString(R.string.wrong_peg));
                         //activity.endTrial(TrialFragment.this, currentTrial); // call this if trial should end on error
-                        return;
 
                     // First peg lifted
                     } else if (peg.equals(pegs.getHead())) {
@@ -123,7 +122,12 @@ public class TrialFragment extends Fragment {
                         pegLifted = true;
                         status.setText(getString(R.string.trial_in_progress));
 
-                    // Last peg released
+                        // Jump to next peg
+                        currentPeg.showArrow(false);
+                        currentPeg = currentPeg.next;
+                        if (activity.isDemo()) currentPeg.showArrow(true);
+
+                        // Last peg released
                     } else if (peg.equals(pegs.getTail())) {
                         currentTrial.nextPegReleased();
                         pegLifted = false;

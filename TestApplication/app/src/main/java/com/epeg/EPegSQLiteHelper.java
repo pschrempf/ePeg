@@ -15,7 +15,7 @@ public class EPegSQLiteHelper extends SQLiteOpenHelper {
     public static final String TAG = EPegSQLiteHelper.class.getName();
 
     private static final String DB_NAME = "ePeg.db";
-    public static final int DB_VERSION = 1;
+    public static final int DB_VERSION = 2;
 
     // All data concerning the TRIALS table
     public static final String TABLE_NAME = "trials";
