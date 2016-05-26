@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white" >
+
+    <LinearLayout
+        android:id="@+id/researcher_selection"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:orientation="vertical"
+        android:layout_alignParentStart="true" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Select the researcher:"
+            android:textSize="@dimen/info_text_size"
+            android:layout_margin="@dimen/fab_margin" />
+
+        <Spinner
+            android:id="@+id/researcher_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/fab_margin" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/clinic_code_selection"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:orientation="vertical"
+        android:layout_toEndOf="@+id/researcher_selection" >
+
+        <TextView
+            android:id="@+id/clinic_code_spinner_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Select the clinic code:"
+            android:textSize="@dimen/info_text_size"
+            android:layout_margin="@dimen/fab_margin" />
+
+        <Spinner
+            android:id="@+id/clinic_code_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/fab_margin" />
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/research_settings_complete"
+        android:layout_width="@dimen/button_width"
+        android:layout_height="@dimen/button_height"
+        android:layout_centerVertical="true"
+        android:text="Done"
+        android:onClick="researchSettingsComplete"
+        android:layout_alignParentEnd="true" />
+
+</RelativeLayout>

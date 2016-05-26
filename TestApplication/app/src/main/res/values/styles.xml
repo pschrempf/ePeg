@@ -1,0 +1,23 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="Theme.ePeg" parent="@android:style/Theme.NoTitleBar.Fullscreen" >
+        <item name="android:color">#ABCDEF</item>
+        <item name="android:textColor">#123456</item>
+        <item name="android:textColorPrimary">?android:attr/colorPrimaryDark</item>
+        <item name="android:background">@android:color/white</item>
+        <item name="android:buttonStyle">@style/button</item>
+    </style>
+
+    <style name="button" parent="@android:style/Widget.Button">
+        <item name="android:textColor">@color/colorPrimaryDark</item>
+        <item name="android:height">0dp</item>
+        <item name="android:width">0dp</item>
+        <item name="android:minHeight">@dimen/button_height</item>
+        <item name="android:minWidth">@dimen/button_width</item>
+        <item name="android:focusable">true</item>
+        <item name="android:clickable">true</item>
+        <item name="android:textSize">@dimen/button_text_size</item>
+    </style>
+
+</resources>

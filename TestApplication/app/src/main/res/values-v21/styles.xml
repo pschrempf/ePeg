@@ -1,0 +1,30 @@
+<resources>
+
+    <style name="AppTheme.NoActionBar" parent="@android:style/Theme.NoTitleBar.Fullscreen">
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+    </style>
+
+    <style name="Theme.ePeg" parent="@android:style/Theme.NoTitleBar.Fullscreen" >
+        <item name="android:colorPrimary">#ABCDEF</item>
+        <item name="android:colorPrimaryDark">#123456</item>
+        <item name="android:colorAccent">#ABC123</item>
+        <item name="android:textColorPrimary">?android:attr/colorPrimaryDark</item>
+        <item name="android:buttonStyle">@style/button</item>
+        <item name="android:background">@android:color/white</item>
+    </style>
+
+    <style name="button" parent="@android:style/Widget.Button">
+        <item name="android:textColor">@color/colorPrimaryDark</item>
+        <item name="android:height">0dp</item>
+        <item name="android:width">0dp</item>
+        <item name="android:minHeight">@dimen/button_height</item>
+        <item name="android:minWidth">@dimen/button_width</item>
+        <item name="android:focusable">true</item>
+        <item name="android:clickable">true</item>
+        <item name="android:textSize">@dimen/button_text_size</item>
+    </style>
+
+</resources>

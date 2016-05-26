@@ -1,0 +1,11 @@
+{
+  "name": "epeg-server",
+  "author": "Gergely Flamich",
+  "version": "0.0.1",
+  "description": "The server-side module of the EPeg application.",
+  "dependencies": {
+    "mysql": "^2.5.4",
+    "express": "^4.10.6",
+    "body-parser": "~1.15.0"
+  }
+}

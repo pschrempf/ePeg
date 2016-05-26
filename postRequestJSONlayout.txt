@@ -1,0 +1,8 @@
+{
+	"data"		: <encrypted data>,
+	"iv"		: <encrypted iv>,
+	"secretkey"	: <encrypted secretkey>,
+	"timestamp"	: <timestamp>,
+	"device_id"	: <device id>,
+	"researcher"	: <researcher>
+}

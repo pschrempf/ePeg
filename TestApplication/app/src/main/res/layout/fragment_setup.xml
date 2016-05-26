@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:com.epeg="http://schemas.android.com/apk/res-auto"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:background="@android:color/white">
+    <RelativeLayout
+        android:id="@+id/info_center_row"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="1"
+        android:layout_alignParentTop="false"
+        android:layout_centerInParent="true"
+        android:layout_alignParentLeft="false"
+        android:layout_alignParentBottom="false"
+        android:layout_alignParentRight="false">
+
+        <TextView
+            android:id="@+id/setup_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/fab_margin"
+            android:text="@string/setup_info"
+            android:textSize="@dimen/info_text_size"
+            android:textColor="@color/colorPrimary"
+            />
+
+        <Button
+            android:id="@+id/setup_complete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/setup_complete_button"
+            android:height="@dimen/button_height"
+            android:width="@dimen/button_width"
+            android:layout_margin="@dimen/fab_margin"
+            android:layout_alignParentRight="true"
+            android:onClick="setupComplete"
+            />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/top_arrows"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true" >
+
+        <com.epeg.PegRow
+            android:id="@+id/peg_row_top"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="horizontal" />
+
+        <com.epeg.ArrowRow
+            android:id="@+id/top_row_arrows"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            com.epeg:showAll="true"
+            com.epeg:up="true" />
+
+    </LinearLayout>
+
+</RelativeLayout>
