@@ -32,21 +32,14 @@ public class StudyActivity extends Activity {
     private boolean demo;
     private boolean demoAvailable;
 
+    private int systemUiVisibilitySetting;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_study);
 
-        // set to keep screen on
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
-        // set fullscreen immersive mode
-        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_IMMERSIVE);
+        initSettings();
 
         fm = getFragmentManager();
         currentFragment = null;
@@ -69,18 +62,16 @@ public class StudyActivity extends Activity {
         }
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        restoreSettings();
+    }
+
     /**
      * Inflates fragment_participant_code layout to show participant label.
      */
     public void showParticipantLabel(String label) {
-        /* TODO: check if this is needed
-        LayoutInflater inflater = (LayoutInflater) StudyActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View layout = inflater.inflate(R.layout.fragment_participant_code, (ViewGroup) findViewById(R.id.fragment_participant_code));
-
-        TextView tv = (TextView) layout.findViewById(R.id.participant_code);
-        tv.setText("Participant code: " + label);
-         */
-
         setContentView(R.layout.fragment_participant_code);
 
         TextView tv1 = (TextView) findViewById(R.id.participant_code);
@@ -306,5 +297,32 @@ public class StudyActivity extends Activity {
      */
     public boolean isDemo() {
         return demo;
+    }
+
+    /**
+     * Initialises settings.
+     */
+    private void initSettings() {
+        systemUiVisibilitySetting = getWindow().getDecorView().getSystemUiVisibility();
+
+        // set to keep screen on
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        // set full screen immersive mode
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_IMMERSIVE);
+    }
+
+    /**
+     * Restores setting to same as before the activity.
+     */
+    private void restoreSettings() {
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        getWindow().getDecorView().setSystemUiVisibility(systemUiVisibilitySetting);
+
     }
 }

@@ -21,17 +21,12 @@ public class TrialFragment extends Fragment {
 
     // Activity and resources
     private StudyActivity activity;
-    private Resources res;
 
-    // Layout
-    private PegRow pegRowTop, pegRowBottom;
-    private ArrowRow arrowRowTop, arrowRowBottom;
     private PegList pegs;
     private Peg currentPeg;
     private TextView status;
     private Trial currentTrial;
     private boolean pegLifted;
-    private ImageView hand;
 
     // Constants
     private static int numPegs;
@@ -46,7 +41,7 @@ public class TrialFragment extends Fragment {
         activity.setContentView(R.layout.fragment_trial);
 
         // set default variables
-        res = getResources();
+        Resources res = getResources();
         numPegs = res.getInteger(R.integer.num_pegs);
         numTrials = res.getInteger(R.integer.num_trials);
         pegLifted = false;
@@ -62,20 +57,19 @@ public class TrialFragment extends Fragment {
         status = (TextView) activity.findViewById(R.id.trial_status);
         status.setText(getResources().getString(R.string.start));
 
-        pegRowTop = (PegRow) activity.findViewById(R.id.top_row_pegs);
-        pegRowBottom = (PegRow) activity.findViewById(R.id.bottom_row_pegs);
-        arrowRowTop = (ArrowRow) activity.findViewById(R.id.top_row_arrows);
-        arrowRowBottom = (ArrowRow) activity.findViewById(R.id.bottom_row_arrows);
+        PegRow pegRowTop = (PegRow) activity.findViewById(R.id.top_row_pegs);
+        PegRow pegRowBottom = (PegRow) activity.findViewById(R.id.bottom_row_pegs);
+        ArrowRow arrowRowTop = (ArrowRow) activity.findViewById(R.id.top_row_arrows);
+        ArrowRow arrowRowBottom = (ArrowRow) activity.findViewById(R.id.bottom_row_arrows);
 
         // hide hand
+        ImageView hand;
         if (activity.isLeftToRight()) {
             hand = (ImageView) activity.findViewById(R.id.right_hand);
             hand.setVisibility(View.INVISIBLE);
-            hand = (ImageView) activity.findViewById(R.id.left_hand);
         } else {
             hand = (ImageView) activity.findViewById(R.id.left_hand);
             hand.setVisibility(View.INVISIBLE);
-            hand = (ImageView) activity.findViewById(R.id.right_hand);
         }
 
         // initialise pegs
@@ -107,6 +101,11 @@ public class TrialFragment extends Fragment {
                     // Skipped a peg
                     if (peg.equals(currentPeg.next)) {
                         currentPeg = currentPeg.next;
+                        if (pegLifted)
+                            currentTrial.nextPegReleased();
+                        else
+                            currentTrial.nextPegLifted();
+
                         pegLifted = !pegLifted;
                     }
 

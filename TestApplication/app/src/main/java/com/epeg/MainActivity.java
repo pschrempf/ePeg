@@ -29,35 +29,35 @@ public class MainActivity extends Activity {
 
     private SettingsManager sm;
 
+    private int accelerometerSetting;
+    private int userSetting;
+    private int screenBrightnessModeSetting;
+    private int screenBrightnessSetting;
+    private int systemUiVisibilitySetting;
+
     String researcher = "Dr. Silvia Paracchini";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // set fixed rotation of tablet
-        Settings.System.putInt(this.getContentResolver(), Settings.System.ACCELEROMETER_ROTATION, 0);
-        Settings.System.putInt(this.getContentResolver(), Settings.System.USER_ROTATION, Surface.ROTATION_90);
-
-        // set fixed brightness of screen
-        Settings.System.putInt(getApplicationContext().getContentResolver(), Settings.System.SCREEN_BRIGHTNESS_MODE, Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL);
-        Settings.System.putInt(getApplicationContext().getContentResolver(), Settings.System.SCREEN_BRIGHTNESS, 255);
-
-        // set to keep screen on
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
-        // set full screen immersive mode
-        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_IMMERSIVE);
+        initSettings();
 
         sm = new SettingsManager(this.getApplicationContext());
         researcherSettings(getApplicationContext());
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        researcherSettings(getApplicationContext());
+    }
+
+    /**
+     * Shows researcher settings fragment.
+     * @param context
+     */
     private void researcherSettings(Context context) {
         setContentView(R.layout.fragment_researcher);
 
@@ -175,6 +175,10 @@ public class MainActivity extends Activity {
         MainActivity.this.startService(syncServiceIntent);
     }
 
+    /**
+     * Shows settings fragment.
+     * @param view - caller
+     */
     public void showSettings(View view) {
         if (view.getId() == R.id.show_settings) {
             setContentView(R.layout.fragment_settings);
@@ -191,9 +195,75 @@ public class MainActivity extends Activity {
         }
     }
 
+    /**
+     * Hides settings fragment.
+     * @param view - caller
+     */
     public void hideSettings(View view) {
         if (view.getId() == R.id.hide_settings) {
             setContentView(R.layout.activity_main);
         }
     }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        restoreSettings();
+    }
+
+    /**
+     * Initialises settings.
+     */
+    private void initSettings() {
+        try {
+            accelerometerSetting = Settings.System.getInt(this.getContentResolver(), Settings.System.ACCELEROMETER_ROTATION);
+            userSetting = Settings.System.getInt(this.getContentResolver(), Settings.System.USER_ROTATION);
+            screenBrightnessModeSetting = Settings.System.getInt(this.getContentResolver(), Settings.System.SCREEN_BRIGHTNESS_MODE);
+            screenBrightnessSetting = Settings.System.getInt(this.getContentResolver(), Settings.System.SCREEN_BRIGHTNESS);
+            systemUiVisibilitySetting = getWindow().getDecorView().getSystemUiVisibility();
+        } catch (Settings.SettingNotFoundException e) {
+            //ignore
+        }
+
+        // set fixed rotation of tablet
+        Settings.System.putInt(this.getContentResolver(), Settings.System.ACCELEROMETER_ROTATION, 0);
+        Settings.System.putInt(this.getContentResolver(), Settings.System.USER_ROTATION, Surface.ROTATION_90);
+
+        // set fixed brightness of screen
+        Settings.System.putInt(getApplicationContext().getContentResolver(), Settings.System.SCREEN_BRIGHTNESS_MODE, Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL);
+        Settings.System.putInt(getApplicationContext().getContentResolver(), Settings.System.SCREEN_BRIGHTNESS, 255);
+
+        // set to keep screen on
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        // set full screen immersive mode
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_IMMERSIVE);
+    }
+
+    /**
+     * Restores settings to same as before activity.
+     */
+    private void restoreSettings() {
+        // set fixed rotation of tablet
+        Settings.System.putInt(this.getContentResolver(), Settings.System.ACCELEROMETER_ROTATION, accelerometerSetting);
+        Settings.System.putInt(this.getContentResolver(), Settings.System.USER_ROTATION, userSetting);
+
+        // set fixed brightness of screen
+        Settings.System.putInt(getApplicationContext().getContentResolver(), Settings.System.SCREEN_BRIGHTNESS_MODE, screenBrightnessModeSetting);
+        Settings.System.putInt(getApplicationContext().getContentResolver(), Settings.System.SCREEN_BRIGHTNESS, screenBrightnessSetting);
+
+        // set to keep screen on
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        // set full screen immersive mode
+        getWindow().getDecorView().setSystemUiVisibility(systemUiVisibilitySetting);
+
+    }
+
 }

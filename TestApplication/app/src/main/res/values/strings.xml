@@ -26,7 +26,7 @@
     <string name="trial_status">%1$d/%2$d trials complete!</string>
     <string name="start">Start!</string>
     <string name="wrong_peg">Wrong peg!</string>
-    <string name="trial_in_progress">Trial in progres...</string>
+    <string name="trial_in_progress">Trial in progress...</string>
     <string name="place_peg">Place the peg in the hole...</string>
     <string name="lift_peg">Lift the peg from the hole...</string>
 </resources>
