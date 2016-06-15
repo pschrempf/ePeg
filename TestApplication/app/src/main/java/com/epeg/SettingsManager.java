@@ -25,7 +25,7 @@ public class SettingsManager {
 
         database = dbHelper.getWritableDatabase();
 
-        //dbHelper.onUpgrade(database, 1, 1);
+        //dbHelper.onUpgrade(database, 1, 2);
     }
 
     public void close(){

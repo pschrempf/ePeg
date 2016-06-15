@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.text.Editable;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -15,6 +16,7 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.NumberPicker;
 import android.widget.PopupWindow;
 import android.widget.Spinner;
@@ -67,6 +69,7 @@ public class MainActivity extends Activity {
         researchers.add(getResources().getString(R.string.add_new));
 
         Spinner researcherSpinner = (Spinner) findViewById(R.id.researcher_spinner);
+        final EditText researcherNew = (EditText) findViewById(R.id.researcher_new);
 
         ArrayAdapter<String> researcherSpinnerAdapter = new ArrayAdapter<>(context, R.layout.spinner_item, researchers);
         researcherSpinnerAdapter.setDropDownViewResource(R.layout.spinner_item);
@@ -77,19 +80,15 @@ public class MainActivity extends Activity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String researcher = (String) parent.getItemAtPosition(position);
                 if (researcher.equals(getResources().getString(R.string.add_new))) {
-                    // TODO change from temporary "Dr. Silvia Paracchini" to actual textbox entry
-                    researcher = MainActivity.this.researcher;
-                    researchers.add(researcher);
-                    try {
-                        Log.d(TAG, "adding new researcher: " + researcher);
-                        sm.addResearcher(researcher);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    researcherNew.setVisibility(View.VISIBLE);
+                } else {
+                    // hide textbox
+                    researcherNew.setVisibility(View.GONE);
+                    researcherNew.getEditableText().clear();
+                    // set active researcher
+                    Log.d(TAG, "setting active researcher: " + researcher);
+                    sm.setActiveResearcher(researcher);
                 }
-                // set active researcher
-                Log.d(TAG, "setting active researcher: " + researcher);
-                sm.setActiveResearcher(researcher);
             }
 
             @Override
@@ -103,6 +102,7 @@ public class MainActivity extends Activity {
         codes.add(getResources().getString(R.string.add_new));
 
         Spinner codeSpinner = (Spinner) findViewById(R.id.clinic_code_spinner);
+        final EditText codeNew = (EditText) findViewById(R.id.clinic_code_new);
 
         ArrayAdapter<String> codeSpinnerAdapter = new ArrayAdapter<>(context, R.layout.spinner_item, codes);
         codeSpinnerAdapter.setDropDownViewResource(R.layout.spinner_item);
@@ -113,19 +113,14 @@ public class MainActivity extends Activity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String clinicCode = (String) parent.getItemAtPosition(position);
                 if (clinicCode.equals(getResources().getString(R.string.add_new))) {
-                    // TODO change from temporary "STA" to actual textbox entry
-                    clinicCode = "STA";
-                    codes.add(clinicCode);
-                    try {
-                        Log.d(TAG, "adding new clinic code: " + clinicCode);
-                        sm.addClinicID(clinicCode);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    codeNew.setVisibility(View.VISIBLE);
+                } else {
+                    codeNew.setVisibility(View.GONE);
+                    codeNew.getEditableText().clear();
+                    // set active clinic
+                    Log.d(TAG, "setting active clinic: " + clinicCode);
+                    sm.setActiveClinic(clinicCode);
                 }
-                // set active clinic
-                Log.d(TAG, "setting active clinic: " + clinicCode);
-                sm.setActiveClinic(clinicCode);
             }
 
             @Override
@@ -139,6 +134,35 @@ public class MainActivity extends Activity {
      */
     public void researchSettingsComplete(View view) {
        if (view.getId() == R.id.research_settings_complete) {
+           // check researcher textbox entry
+           EditText newResearcher = (EditText) findViewById(R.id.researcher_new);
+           if (!newResearcher.getText().toString().equals("")) {
+               try {
+                   String researcher = newResearcher.getText().toString();
+                   Log.d(TAG, "adding new researcher: " + researcher);
+                   sm.addResearcher(researcher);
+                   sm.setActiveResearcher(researcher);
+                   this.researcher = researcher;
+               } catch (IOException e) {
+                   e.printStackTrace();
+               }
+           }
+
+           // check code textbox entry
+           EditText newCode = (EditText) findViewById(R.id.researcher_new);
+           if (!newCode.getText().toString().equals("")) {
+               try {
+                   String code = newCode.getText().toString();
+                   code = code.toUpperCase();                    // make sure code is upper case
+                   Log.d(TAG, "adding new clinic code: " + code);
+                   sm.addClinicID(code);
+                   sm.setActiveClinic(code);
+               } catch (IOException e) {
+                   e.printStackTrace();
+               }
+           }
+
+           // check that we have active clinic and researcher
            if (sm.getActiveClinic() != null && sm.getActiveResearcher() != null) {
                // commence with main activity
                setContentView(R.layout.activity_main);

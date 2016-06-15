@@ -29,4 +29,9 @@
     <string name="trial_in_progress">Trial in progress...</string>
     <string name="place_peg">Place the peg in the hole...</string>
     <string name="lift_peg">Lift the peg from the hole...</string>
+    <string name="clinic_code">Select the clinic code:</string>
+    <string name="researcher">Select the researcher:</string>
+    <string name="done">Done</string>
+    <string name="researcher_hint">Researcher name</string>
+    <string name="clinic_code_hint">Clinic code</string>
 </resources>
