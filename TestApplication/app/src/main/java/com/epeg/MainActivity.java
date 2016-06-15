@@ -149,7 +149,7 @@ public class MainActivity extends Activity {
            }
 
            // check code textbox entry
-           EditText newCode = (EditText) findViewById(R.id.researcher_new);
+           EditText newCode = (EditText) findViewById(R.id.clinic_code_new);
            if (!newCode.getText().toString().equals("")) {
                try {
                    String code = newCode.getText().toString();
