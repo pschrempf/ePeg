@@ -3,6 +3,7 @@ package com.epeg;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.text.Editable;
@@ -241,6 +242,11 @@ public class MainActivity extends Activity {
      */
     private void initSettings() {
         try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (!Settings.System.canWrite(this)) {
+                    Intent settingsIntent = new Intent("android.settings.action.MANAGE_WRITE_SETTINGS");
+                }
+            }
             accelerometerSetting = Settings.System.getInt(this.getContentResolver(), Settings.System.ACCELEROMETER_ROTATION);
             userSetting = Settings.System.getInt(this.getContentResolver(), Settings.System.USER_ROTATION);
             screenBrightnessModeSetting = Settings.System.getInt(this.getContentResolver(), Settings.System.SCREEN_BRIGHTNESS_MODE);
