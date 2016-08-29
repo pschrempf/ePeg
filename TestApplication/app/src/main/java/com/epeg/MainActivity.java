@@ -58,19 +58,42 @@ public class MainActivity extends Activity {
     }
 
     /**
-     * Shows researcher settings fragment.
+     * Show researcher settings fragment.
+     *
      * @param context
      */
-    private void researcherSettings(Context context) {
+    private void researcherSettings(final Context context) {
         setContentView(R.layout.fragment_researcher);
 
-        // initialising researcher spinner
+        // initialise researcher spinner
+        loadResearchers(context);
 
+        Button newResearcherButton = (Button) findViewById(R.id.add_new_researcher);
+        newResearcherButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addNewResearcher(v);
+                loadResearchers(context);
+            }
+        });
+
+        // initialise clinic code spinner
+        loadClinicCodes(context);
+
+        Button newClinicButton = (Button) findViewById(R.id.add_new_clinic_code);
+        newClinicButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addNewClinicCode(v);
+                loadClinicCodes(context);
+            }
+        });
+
+    }
+
+    private void loadResearchers(Context context) {
         final List<String> researchers = sm.getAllResearchers();
-        researchers.add(getResources().getString(R.string.add_new));
-
         Spinner researcherSpinner = (Spinner) findViewById(R.id.researcher_spinner);
-        final EditText researcherNew = (EditText) findViewById(R.id.researcher_new);
 
         ArrayAdapter<String> researcherSpinnerAdapter = new ArrayAdapter<>(context, R.layout.spinner_item, researchers);
         researcherSpinnerAdapter.setDropDownViewResource(R.layout.spinner_item);
@@ -79,31 +102,20 @@ public class MainActivity extends Activity {
         researcherSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                // set researcher
                 String researcher = (String) parent.getItemAtPosition(position);
-                if (researcher.equals(getResources().getString(R.string.add_new))) {
-                    researcherNew.setVisibility(View.VISIBLE);
-                } else {
-                    // hide textbox
-                    researcherNew.setVisibility(View.GONE);
-                    researcherNew.getEditableText().clear();
-                    // set active researcher
-                    Log.d(TAG, "setting active researcher: " + researcher);
-                    sm.setActiveResearcher(researcher);
-                }
+                Log.d(TAG, "setting active researcher: " + researcher);
+                sm.setActiveResearcher(researcher);
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {}
         });
+    }
 
-
-        // initialising clinic code spinner
-
+    private void loadClinicCodes(Context context) {
         final List<String> codes = sm.getAllClinicIDs();
-        codes.add(getResources().getString(R.string.add_new));
-
         Spinner codeSpinner = (Spinner) findViewById(R.id.clinic_code_spinner);
-        final EditText codeNew = (EditText) findViewById(R.id.clinic_code_new);
 
         ArrayAdapter<String> codeSpinnerAdapter = new ArrayAdapter<>(context, R.layout.spinner_item, codes);
         codeSpinnerAdapter.setDropDownViewResource(R.layout.spinner_item);
@@ -113,15 +125,9 @@ public class MainActivity extends Activity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String clinicCode = (String) parent.getItemAtPosition(position);
-                if (clinicCode.equals(getResources().getString(R.string.add_new))) {
-                    codeNew.setVisibility(View.VISIBLE);
-                } else {
-                    codeNew.setVisibility(View.GONE);
-                    codeNew.getEditableText().clear();
-                    // set active clinic
-                    Log.d(TAG, "setting active clinic: " + clinicCode);
-                    sm.setActiveClinic(clinicCode);
-                }
+                // set active clinic
+                Log.d(TAG, "setting active clinic: " + clinicCode);
+                sm.setActiveClinic(clinicCode);
             }
 
             @Override
@@ -134,60 +140,127 @@ public class MainActivity extends Activity {
      * @param view - caller
      */
     public void researchSettingsComplete(View view) {
-       if (view.getId() == R.id.research_settings_complete) {
-           // check researcher textbox entry
-           EditText newResearcher = (EditText) findViewById(R.id.researcher_new);
-           if (!newResearcher.getText().toString().equals("")) {
-               try {
-                   String researcher = newResearcher.getText().toString();
-                   Log.d(TAG, "adding new researcher: " + researcher);
-                   sm.addResearcher(researcher);
-                   sm.setActiveResearcher(researcher);
-                   this.researcher = researcher;
-               } catch (IOException e) {
-                   e.printStackTrace();
-               }
-           }
+        if (view.getId() == R.id.research_settings_complete) {
 
-           // check code textbox entry
-           EditText newCode = (EditText) findViewById(R.id.clinic_code_new);
-           if (!newCode.getText().toString().equals("")) {
-               try {
-                   String code = newCode.getText().toString();
-                   code = code.toUpperCase();                    // make sure code is upper case
-                   Log.d(TAG, "adding new clinic code: " + code);
-                   sm.addClinicID(code);
-                   sm.setActiveClinic(code);
-               } catch (IOException e) {
-                   e.printStackTrace();
-               }
-           }
+            // check that we have active clinic and researcher, if not show popup
+            if (sm.getActiveClinic() == null) {
+                showPopup(view, getResources().getString(R.string.researcher_settings_popup_prompt));
+            } else if (sm.getActiveResearcher() == null) {
+                showPopup(view, getResources().getString(R.string.researcher_settings_popup_prompt));
+            } else {
+                // commence with main activity
+                setContentView(R.layout.activity_main);
+            }
+        }
+    }
 
-           // check that we have active clinic and researcher
-           if (sm.getActiveClinic() != null && sm.getActiveResearcher() != null) {
-               // commence with main activity
-               setContentView(R.layout.activity_main);
-           } else {
-               // show popup window if researcher of clinic needs to be set
-               LayoutInflater inflater = (LayoutInflater) MainActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-               View layout = inflater.inflate(R.layout.popup, (ViewGroup) findViewById(R.id.popup));
-               TextView popupText = (TextView) layout.findViewById(R.id.popup_text);
-               popupText.setText(getResources().getString(R.string.researcher_settings_popup_prompt));
-               Button popupButton = (Button) layout.findViewById(R.id.popup_close);
-               final PopupWindow popup = new PopupWindow(layout, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
-               popupButton.setOnClickListener(new View.OnClickListener() {
-                   @Override
-                   public void onClick(View v) {
-                       popup.dismiss();
-                   }
-               });
-               popup.showAtLocation(view, Gravity.CENTER, 0, 0);
-           }
-       }
-   }
+    /**
+     * Shows a simple popup window in the centre of the screen, displaying text.
+     *
+     * @param view
+     * @param textToShow
+     */
+    private void showPopup(View view, String textToShow) {
+        LayoutInflater inflater = (LayoutInflater) MainActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View layout = inflater.inflate(R.layout.popup, (ViewGroup) findViewById(R.id.popup));
+        TextView popupText = (TextView) layout.findViewById(R.id.popup_text);
+        popupText.setText(textToShow);
+        Button popupButton = (Button) layout.findViewById(R.id.popup_close);
+        final PopupWindow popup = new PopupWindow(layout, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
+        popupButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                popup.dismiss();
+            }
+        });
+        popup.showAtLocation(view, Gravity.CENTER, 0, 0);
+    }
+
+    /**
+     * Shows popup window to add researcher.
+     *
+     * @param view
+     */
+    public void addNewResearcher(View view) {
+        LayoutInflater inflater = (LayoutInflater) MainActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View layout = inflater.inflate(R.layout.editable_popup, (ViewGroup) findViewById(R.id.editable_popup));
+
+        TextView popupText = (TextView) layout.findViewById(R.id.popup_text);
+        popupText.setText("Add new researcher:");
+
+        final EditText popupEditText = (EditText) layout.findViewById(R.id.popup_edit_text);
+        popupEditText.setHint("e.g. Dr. Abc");
+
+        final PopupWindow popup = new PopupWindow(layout, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
+
+        Button popupCloseButton = (Button) layout.findViewById(R.id.popup_close);
+        popupCloseButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                popup.dismiss();
+            }
+        });
+
+        Button popupSaveButton = (Button) layout.findViewById(R.id.popup_save);
+        popupSaveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    sm.addResearcher(popupEditText.getText().toString());
+                } catch (IOException e) {
+                    Log.e(TAG, e.getMessage());
+                }
+                popup.dismiss();
+            }
+        });
+
+        popup.showAtLocation(view, Gravity.CENTER, 0, 0);
+    }
+
+    /**
+     * Shows popup window to add clinic code.
+     *
+     * @param view
+     */
+    public void addNewClinicCode(View view) {
+        LayoutInflater inflater = (LayoutInflater) MainActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View layout = inflater.inflate(R.layout.editable_popup, (ViewGroup) findViewById(R.id.editable_popup));
+
+        TextView popupText = (TextView) layout.findViewById(R.id.popup_text);
+        popupText.setText("Add new clinic code:");
+
+        final EditText popupEditText = (EditText) layout.findViewById(R.id.popup_edit_text);
+        popupEditText.setHint("e.g. STA");
+
+        final PopupWindow popup = new PopupWindow(layout, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
+
+        Button popupCloseButton = (Button) layout.findViewById(R.id.popup_close);
+        popupCloseButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                popup.dismiss();
+            }
+        });
+
+        Button popupSaveButton = (Button) layout.findViewById(R.id.popup_save);
+        popupSaveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    sm.addClinicID(popupEditText.getText().toString());
+                } catch (IOException e) {
+                    Log.e(TAG, e.getMessage());
+                }
+                popup.dismiss();
+            }
+        });
+
+        popup.showAtLocation(view, Gravity.CENTER, 0, 0);
+    }
 
     /**
      * Starts study and syncs with network.
+     *
      * @param view - caller
      */
     public void startStudy(View view) {
@@ -202,6 +275,7 @@ public class MainActivity extends Activity {
 
     /**
      * Shows settings fragment.
+     *
      * @param view - caller
      */
     public void showSettings(View view) {
@@ -222,6 +296,7 @@ public class MainActivity extends Activity {
 
     /**
      * Hides settings fragment.
+     *
      * @param view - caller
      */
     public void hideSettings(View view) {
@@ -233,7 +308,6 @@ public class MainActivity extends Activity {
     @Override
     public void onStop() {
         super.onStop();
-
         restoreSettings();
     }
 
@@ -253,7 +327,7 @@ public class MainActivity extends Activity {
             screenBrightnessSetting = Settings.System.getInt(this.getContentResolver(), Settings.System.SCREEN_BRIGHTNESS);
             systemUiVisibilitySetting = getWindow().getDecorView().getSystemUiVisibility();
         } catch (Settings.SettingNotFoundException e) {
-            //ignore
+            Log.e(TAG, e.getMessage());
         }
 
         // set fixed rotation of tablet

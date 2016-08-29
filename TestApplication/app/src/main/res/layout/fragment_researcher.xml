@@ -20,11 +20,24 @@
             android:textSize="@dimen/info_text_size"
             android:layout_margin="@dimen/fab_margin" />
 
-        <Spinner
-            android:id="@+id/researcher_spinner"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/fab_margin" />
+            android:orientation="horizontal" >
+
+            <Spinner
+                android:id="@+id/researcher_spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/fab_margin" />
+
+            <Button
+                android:id="@+id/add_new_researcher"
+                android:layout_width="100px"
+                android:layout_height="100px"
+                android:background="@android:drawable/ic_menu_add" />
+
+        </LinearLayout>
 
     </LinearLayout>
 
@@ -44,28 +57,32 @@
             android:textSize="@dimen/info_text_size"
             android:layout_margin="@dimen/fab_margin" />
 
-        <Spinner
-            android:id="@+id/clinic_code_spinner"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/fab_margin" />
+            android:orientation="horizontal" >
+
+            <Spinner
+                android:id="@+id/clinic_code_spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/fab_margin" />
+
+            <Button
+                android:id="@+id/add_new_clinic_code"
+                android:layout_width="100px"
+                android:layout_height="100px"
+                android:background="@android:drawable/ic_menu_add" />
+
+        </LinearLayout>
 
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:layout_below="@id/researcher_selection" >
-
-        <EditText
-            android:id="@+id/researcher_new"
-            android:visibility="gone"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/fab_margin"
-            android:hint="@string/researcher_hint"
-            android:inputType="textCapWords" />
 
         <EditText
             android:id="@+id/clinic_code_new"
