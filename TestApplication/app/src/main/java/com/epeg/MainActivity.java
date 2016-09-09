@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.text.Editable;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -25,6 +24,11 @@ import android.widget.TextView;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Class for the main activity and settings page.
+ *
+ * @author Patrick Schrempf
+ */
 public class MainActivity extends Activity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -36,8 +40,6 @@ public class MainActivity extends Activity {
     private int screenBrightnessModeSetting;
     private int screenBrightnessSetting;
     private int systemUiVisibilitySetting;
-
-    String researcher = "Dr. Silvia Paracchini";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,8 +73,7 @@ public class MainActivity extends Activity {
         newResearcherButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addNewResearcher(v);
-                loadResearchers(context);
+                addNewResearcher(context, v);
             }
         });
 
@@ -83,8 +84,7 @@ public class MainActivity extends Activity {
         newClinicButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addNewClinicCode(v);
-                loadClinicCodes(context);
+                addNewClinicCode(context, v);
             }
         });
 
@@ -180,7 +180,7 @@ public class MainActivity extends Activity {
      *
      * @param view
      */
-    public void addNewResearcher(View view) {
+    public void addNewResearcher(final Context context, View view) {
         LayoutInflater inflater = (LayoutInflater) MainActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View layout = inflater.inflate(R.layout.editable_popup, (ViewGroup) findViewById(R.id.editable_popup));
 
@@ -206,10 +206,11 @@ public class MainActivity extends Activity {
             public void onClick(View v) {
                 try {
                     sm.addResearcher(popupEditText.getText().toString());
+                    loadResearchers(context);
+                    popup.dismiss();
                 } catch (IOException e) {
                     Log.e(TAG, e.getMessage());
                 }
-                popup.dismiss();
             }
         });
 
@@ -221,7 +222,7 @@ public class MainActivity extends Activity {
      *
      * @param view
      */
-    public void addNewClinicCode(View view) {
+    public void addNewClinicCode(final Context context, View view) {
         LayoutInflater inflater = (LayoutInflater) MainActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View layout = inflater.inflate(R.layout.editable_popup, (ViewGroup) findViewById(R.id.editable_popup));
 
@@ -247,10 +248,11 @@ public class MainActivity extends Activity {
             public void onClick(View v) {
                 try {
                     sm.addClinicID(popupEditText.getText().toString());
+                    loadClinicCodes(context);
+                    popup.dismiss();
                 } catch (IOException e) {
                     Log.e(TAG, e.getMessage());
                 }
-                popup.dismiss();
             }
         });
 
@@ -264,7 +266,6 @@ public class MainActivity extends Activity {
      */
     public void startStudy(View view) {
         Intent studyIntent = new Intent(MainActivity.this, StudyActivity.class);
-        // studyIntent.putExtra("STUDY_RESEARCHER", sm.getActiveResearcher());
         sm.close();
         MainActivity.this.startActivity(studyIntent);
 

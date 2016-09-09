@@ -7,13 +7,13 @@
     <string name="experiment_id_extra">EXPERIMENT_ID</string>
     <string name="experiment_is_righthanded_extra">EXPERIMENT_RIGHTHANDED</string>
     <string name="title_activity_study">StudyActivity</string>
-    <string name="study_info">This is the information for a study! Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</string>
+    <string name="study_info">Welcome to the study!</string>
     <string name="hand_prompt">What hand do you use to write?</string>
     <string name="left_hand_button">Left</string>
     <string name="right_hand_button">Right</string>
     <string name="setup_info">Please place the pegs in the top row!</string>
     <string name="setup_complete_button">Setup complete</string>
-    <string name="trial_info">This is the information for a trial! Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</string>
+    <string name="trial_info"></string>
     <string name="cancel_button">Restart this trial</string>
     <string name="end_study_button">Done</string>
     <string name="study_end">Thank you very much for completing the study!</string>
