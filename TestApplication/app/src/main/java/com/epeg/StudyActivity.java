@@ -177,10 +177,9 @@ public class StudyActivity extends Activity {
     /**
      * Callback that ends the current trial, whether it succeeded or failed.
      *
-     * @param caller - fragment that is performing the callback
      * @param trial - trial that has ended
      */
-    public void endTrial(Fragment caller, Trial trial) {
+    public void endTrial(Trial trial) {
         Log.d(TAG, "End of trial.");
 
         flipOrientation();

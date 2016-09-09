@@ -131,7 +131,7 @@ public class TrialFragment extends Fragment {
                         currentTrial.nextPegReleased();
                         pegLifted = false;
                         currentTrial.stop();
-                        activity.endTrial(TrialFragment.this, currentTrial);
+                        activity.endTrial(currentTrial);
 
                     // Correct peg lifted - update trial
                     } else {
@@ -160,7 +160,7 @@ public class TrialFragment extends Fragment {
                 } catch (TrialFailureException e) {
                     e.printStackTrace();
                     status.setText(e.getMessage());
-                    activity.endTrial(TrialFragment.this, currentTrial);
+                    activity.endTrial(currentTrial);
                 }
             }
         };
