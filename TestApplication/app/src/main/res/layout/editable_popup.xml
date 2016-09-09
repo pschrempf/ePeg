@@ -27,17 +27,17 @@
         android:padding="@dimen/info_padding" />
 
     <Button
-        android:id="@+id/popup_close"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="Cancel" />
-
-    <Button
         android:id="@+id/popup_save"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:text="Save" />
+
+    <Button
+        android:id="@+id/popup_close"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Cancel" />
 
 </LinearLayout>
