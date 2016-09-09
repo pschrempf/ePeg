@@ -184,6 +184,8 @@ public class StudyActivity extends Activity {
 
         flipOrientation();
 
+        // set inverted colours back
+
         if (!demo) {
             try {
 
@@ -272,7 +274,7 @@ public class StudyActivity extends Activity {
             if (Settings.System.getInt(getContentResolver(), Settings.System.USER_ROTATION) == Surface.ROTATION_0) {
                 Settings.System.putInt(getContentResolver(), Settings.System.USER_ROTATION, Surface.ROTATION_180);
             } else {
-                Settings.System.putInt(getContentResolver(), Settings.System.USER_ROTATION, Surface.ROTATION_180);
+                Settings.System.putInt(getContentResolver(), Settings.System.USER_ROTATION, Surface.ROTATION_0);
             }
         } catch (Settings.SettingNotFoundException e) {
             Log.e(TAG, e.getMessage());
