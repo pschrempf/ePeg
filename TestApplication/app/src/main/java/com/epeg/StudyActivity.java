@@ -20,7 +20,7 @@ import android.widget.TextView;
 /**
  * Class that controls the main flow of a study.
  *
- * Created by pschrempf.
+ * @author Patrick Schrempf
  */
 public class StudyActivity extends Activity {
 
@@ -273,12 +273,13 @@ public class StudyActivity extends Activity {
      */
     private void flipOrientation() {
         try {
-            if (Settings.System.getInt(getContentResolver(), Settings.System.USER_ROTATION) == Surface.ROTATION_90)
+            if (Settings.System.getInt(getContentResolver(), Settings.System.USER_ROTATION) == Surface.ROTATION_90) {
                 Settings.System.putInt(getContentResolver(), Settings.System.USER_ROTATION, Surface.ROTATION_270);
-            else
+            } else {
                 Settings.System.putInt(getContentResolver(), Settings.System.USER_ROTATION, Surface.ROTATION_90);
+            }
         } catch (Settings.SettingNotFoundException e) {
-            e.printStackTrace();
+            Log.e(TAG, e.getMessage());
         }
     }
 
