@@ -116,22 +116,27 @@ public class MainActivity extends Activity {
 
     private void loadClinicCodes(Context context) {
         final List<String> codes = sm.getAllClinicIDs();
-        Spinner codeSpinner = (Spinner) findViewById(R.id.clinic_code_spinner);
+        final Spinner codeSpinner = (Spinner) findViewById(R.id.clinic_code_spinner);
 
         ArrayAdapter<String> codeSpinnerAdapter = new ArrayAdapter<>(context, R.layout.spinner_item, codes);
         codeSpinnerAdapter.setDropDownViewResource(R.layout.spinner_item);
         codeSpinner.setAdapter(codeSpinnerAdapter);
 
-        String activeClinic = sm.getActiveClinic();
+        codeSpinner.post(new Runnable() {
+            @Override
+            public void run() {
+                String activeClinic = sm.getActiveClinic();
 
-        if (null != activeClinic) {
-            for (int i = 0; i < codes.size(); i++) {
-                if (codes.get(i).equals(activeClinic)) {
-                    codeSpinner.setSelection(i);
-                    Log.d(TAG, "Setting selection of spinner: " + codes.get(i));
+                if (null != activeClinic) {
+                    for (int i = 0; i < codes.size(); i++) {
+                        if (codes.get(i).equals(activeClinic)) {
+                            codeSpinner.setSelection(i);
+                            Log.d(TAG, "Setting selection of spinner: " + codes.get(i));
+                        }
+                    }
                 }
             }
-        }
+        });
 
         codeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -302,6 +307,7 @@ public class MainActivity extends Activity {
             picker.setValue(Study.numTrials);
             picker.setMaxValue(getResources().getInteger(R.integer.max_trials));
             picker.setMinValue(getResources().getInteger(R.integer.min_trials));
+            picker.setValue(getResources().getInteger(R.integer.default_trials));
             picker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
                 @Override
                 public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
