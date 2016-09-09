@@ -94,11 +94,27 @@ public class MainActivity extends Activity {
 
     private void loadResearchers(Context context) {
         final List<String> researchers = sm.getAllResearchers();
-        Spinner researcherSpinner = (Spinner) findViewById(R.id.researcher_spinner);
+        final Spinner researcherSpinner = (Spinner) findViewById(R.id.researcher_spinner);
 
         ArrayAdapter<String> researcherSpinnerAdapter = new ArrayAdapter<>(context, R.layout.spinner_item, researchers);
         researcherSpinnerAdapter.setDropDownViewResource(R.layout.spinner_item);
         researcherSpinner.setAdapter(researcherSpinnerAdapter);
+
+        researcherSpinner.post(new Runnable() {
+            @Override
+            public void run() {
+                String activeResearcher = sm.getActiveResearcher();
+
+                if (null != activeResearcher) {
+                    for (int i = 0; i < researchers.size(); i++) {
+                        if (researchers.get(i).equals(activeResearcher)) {
+                            researcherSpinner.setSelection(i);
+                            Log.d(TAG, "Setting selection of spinner: " + researchers.get(i));
+                        }
+                    }
+                }
+            }
+        });
 
         researcherSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -226,6 +242,7 @@ public class MainActivity extends Activity {
                     String newResearcher = popupEditText.getText().toString();
                     Log.i(TAG, "Adding new researcher: " + newResearcher);
                     sm.addResearcher(newResearcher);
+                    sm.setActiveResearcher(newResearcher);
                     loadResearchers(context);
                     popup.dismiss();
                 } catch (IOException e) {
@@ -270,6 +287,7 @@ public class MainActivity extends Activity {
                     String newCode = popupEditText.getText().toString();
                     Log.i(TAG, "Adding new clinic code: " + newCode);
                     sm.addClinicID(newCode);
+                    sm.setActiveClinic(newCode);
                     loadClinicCodes(context);
                     popup.dismiss();
                 } catch (IOException e) {
