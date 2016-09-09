@@ -205,8 +205,9 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 try {
-                    Log.i("Adding new researcher:", popupEditText.getText().toString());
-                    sm.addResearcher(popupEditText.getText().toString());
+                    String newResearcher = popupEditText.getText().toString();
+                    Log.i(TAG, "Adding new researcher: " + newResearcher);
+                    sm.addResearcher(newResearcher);
                     loadResearchers(context);
                     popup.dismiss();
                 } catch (IOException e) {
@@ -215,7 +216,7 @@ public class MainActivity extends Activity {
             }
         });
 
-        popup.showAtLocation(view, Gravity.CENTER, 0, 0);
+        popup.showAtLocation(view, Gravity.TOP, 0, 0);
     }
 
     /**
@@ -248,7 +249,9 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 try {
-                    sm.addClinicID(popupEditText.getText().toString());
+                    String newCode = popupEditText.getText().toString();
+                    Log.i(TAG, "Adding new clinic code: " + newCode);
+                    sm.addClinicID(newCode);
                     loadClinicCodes(context);
                     popup.dismiss();
                 } catch (IOException e) {
@@ -257,7 +260,7 @@ public class MainActivity extends Activity {
             }
         });
 
-        popup.showAtLocation(view, Gravity.CENTER, 0, 0);
+        popup.showAtLocation(view, Gravity.TOP, 0, 0);
     }
 
     /**
