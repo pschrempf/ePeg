@@ -122,12 +122,13 @@ public class MainActivity extends Activity {
         codeSpinnerAdapter.setDropDownViewResource(R.layout.spinner_item);
         codeSpinner.setAdapter(codeSpinnerAdapter);
 
-        String activeClinics = sm.getActiveClinic();
+        String activeClinic = sm.getActiveClinic();
 
-        if (null != activeClinics) {
+        if (null != activeClinic) {
             for (int i = 0; i < codes.size(); i++) {
-                if (codes.get(i).equals(activeClinics)) {
+                if (codes.get(i).equals(activeClinic)) {
                     codeSpinner.setSelection(i);
+                    Log.d(TAG, "Setting selection of spinner: " + codes.get(i));
                 }
             }
         }
