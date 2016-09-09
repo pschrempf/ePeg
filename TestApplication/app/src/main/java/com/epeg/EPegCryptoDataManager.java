@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
+import android.text.format.DateFormat;
 import android.util.Base64;
 import android.util.Log;
 
@@ -162,9 +163,13 @@ public class EPegCryptoDataManager {
 
             JSONObject participant = study.getJSONObject(Study.JSON_PARTICIPANT_TAG);
             JSONArray trials = study.getJSONArray(Study.JSON_TRIALS_ARRAY_TAG);
-            
+
             tempArray.add(participant.getString(Participant.JSON_PARTICIPANT_ID_TAG));
             tempArray.add(participant.getString(Participant.JSON_DOM_HAND_TAG));
+
+            String date = (DateFormat.format("dd-MM-yyyy hh:mm:ss", new java.util.Date()).toString());
+
+            tempArray.add(date);
 
             for (int i = 0; i < trials.length(); i++) {
                 JSONObject trial = trials.getJSONObject(i);
@@ -206,12 +211,23 @@ public class EPegCryptoDataManager {
             return false;
 
         File backup = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), fileName);
+        boolean firstTime = backup.exists();
+
         FileOutputStream fileOutputStream = null;
 
         try {
             fileOutputStream = new FileOutputStream( backup, true );
 
             StringBuilder outputBuilder = new StringBuilder();
+
+            // Add array headings
+            if(firstTime){
+                outputBuilder.append("Participant ID,Dominant Hand,Date,");
+                for (int i = 0; i < data.length-3; i++) {
+                    outputBuilder.append("Total time " + i);
+                }
+                outputBuilder.append("\n");
+            }
 
             for (int i = 0; i < data.length; i++) {
                 outputBuilder.append(data[i]);

@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * Created by gf38 on 05/04/16.
  */
-public class DBAccessor {
+public class DBAccessor implements IDataAccessor{
 
     public static String FIELD_DATA = "study_results";
     public static String FIELD_IV = "initialisation_vector";

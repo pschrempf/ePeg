@@ -36,11 +36,13 @@ public class Decryptor {
 
     public static void main(String[] args) throws NoSuchPaddingException, NoSuchAlgorithmException {
 
+        boolean fromCsv = args.length > 0;
+
         //Fetch singletons
         symmetricCipher = Cipher.getInstance(ENCRYPTION_SYMM_PATTERN);
         asymmetricCipher = Cipher.getInstance(ENCRYPTION_ASYMM_PATTERN);
 
-        DBAccessor dbAccessor = new DBAccessor();
+        IDataAccessor dbAccessor = fromCsv ? new CSVAccessor(args[0]) : new DBAccessor();
 
         List<DBEntry> entries = dbAccessor.readDatabase();
 
@@ -82,8 +84,6 @@ public class Decryptor {
 
             System.out.println("Decrypted: " + data);
 
-        } catch (IOException e) {
-            e.printStackTrace();
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         } catch (InvalidKeySpecException e) {
@@ -95,6 +95,8 @@ public class Decryptor {
         } catch (IllegalBlockSizeException e) {
             e.printStackTrace();
         } catch (InvalidAlgorithmParameterException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

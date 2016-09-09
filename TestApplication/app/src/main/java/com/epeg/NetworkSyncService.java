@@ -160,7 +160,7 @@ public class NetworkSyncService extends Service {
                                     nextEntry.remove(JSON_PAYLOAD_ID_TEMP_TAG);
 
                                     // Sets up our connection so that we are ready to call connect()
-                                    setUpConnection(REMOTE_ADDR);
+                                    setUpConnection(getResources().getString(R.string.server_address));
 
                                     //Connect to the remote server
                                     connection.connect();

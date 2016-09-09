@@ -1,4 +1,5 @@
 <resources>
+    <string name="server_address">https://gf38.host.cs.st-andrews.ac.uk/epeg</string>
     <string name="app_name">ePeg</string>
     <string name="action_settings">Settings</string>
     <string name="peg_text">PEG</string>
