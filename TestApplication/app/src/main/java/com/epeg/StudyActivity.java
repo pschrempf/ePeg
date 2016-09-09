@@ -183,6 +183,8 @@ public class StudyActivity extends Activity {
     public void endTrial(Fragment caller, Trial trial) {
         Log.d(TAG, "End of trial.");
 
+        flipOrientation();
+
         if (!demo) {
             try {
 
@@ -201,7 +203,6 @@ public class StudyActivity extends Activity {
                     return;
                 }
 
-                flipOrientation();
 
             } catch (StudyException e) {
                 Log.d(TAG, "Trial failed!");
@@ -214,7 +215,6 @@ public class StudyActivity extends Activity {
             // set demo unavailable
             demoAvailable = false;
 
-            flipOrientation();
             updateCurrentFragment(new SetupFragment(), "setup");
         }
 
