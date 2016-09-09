@@ -211,7 +211,7 @@ public class EPegCryptoDataManager {
             return false;
 
         File backup = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), fileName);
-        boolean firstTime = backup.exists();
+        boolean firstTime = !backup.exists();
 
         FileOutputStream fileOutputStream = null;
 
@@ -222,9 +222,9 @@ public class EPegCryptoDataManager {
 
             // Add array headings
             if(firstTime){
-                outputBuilder.append("Participant ID,Dominant Hand,Date,");
+                outputBuilder.append("Participant ID,Dominant Hand,Date");
                 for (int i = 0; i < data.length-3; i++) {
-                    outputBuilder.append("Total time " + i);
+                    outputBuilder.append(",Total time " + i);
                 }
                 outputBuilder.append("\n");
             }

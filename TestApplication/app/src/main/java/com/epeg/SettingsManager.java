@@ -52,7 +52,7 @@ public class SettingsManager {
     }
 
     public void addClinicID(String clinic_id) throws  IOException{
-        Cursor cursor = database.query(EPegSQLiteHelper.C_TABLE_NAME, EPegSQLiteHelper.C_FIELDS, null,null,null,null,null);
+        Cursor cursor = database.query(EPegSQLiteHelper.C_TABLE_NAME, EPegSQLiteHelper.C_FIELDS, EPegSQLiteHelper.C_FIELD_CLINIC_ID + "='" + clinic_id + "'",null,null,null,null);
 
         if (cursor.getCount() > 0)
             throw new IOException("Clinic ID already exists in database!");
@@ -63,7 +63,7 @@ public class SettingsManager {
     }
 
     public void removeClinicID(String clinic_id){
-        database.delete(EPegSQLiteHelper.C_TABLE_NAME, EPegSQLiteHelper.C_FIELD_CLINIC_ID + " = " + clinic_id, null);
+        database.delete(EPegSQLiteHelper.C_TABLE_NAME, EPegSQLiteHelper.C_FIELD_CLINIC_ID + " = '" + clinic_id +"'", null);
     }
 
     public void setActiveClinic(String clinic_id){
@@ -100,7 +100,7 @@ public class SettingsManager {
     }
 
     public void addResearcher(String researcher) throws  IOException{
-        Cursor cursor = database.query(EPegSQLiteHelper.R_TABLE_NAME, EPegSQLiteHelper.R_FIELDS, null,null,null,null,null);
+        Cursor cursor = database.query(EPegSQLiteHelper.R_TABLE_NAME, EPegSQLiteHelper.R_FIELDS, EPegSQLiteHelper.R_FIELD_RESEARCHER_NAME + "='" + researcher+"'", null,null,null,null);
 
         if (cursor.getCount() > 0)
             throw new IOException("Researcher already exists in database!");
@@ -111,7 +111,7 @@ public class SettingsManager {
     }
 
     public void removeResearcher(String researcher){
-        database.delete(EPegSQLiteHelper.R_FIELD_RESEARCHER_NAME, EPegSQLiteHelper.R_FIELD_RESEARCHER_NAME + " = " + researcher, null);
+        database.delete(EPegSQLiteHelper.R_FIELD_RESEARCHER_NAME, EPegSQLiteHelper.R_FIELD_RESEARCHER_NAME + " = '" + researcher + "'", null);
     }
 
     public List<String> getAllResearchers(){
