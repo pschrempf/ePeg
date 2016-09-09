@@ -54,7 +54,8 @@
             android:layout_margin="@dimen/fab_margin"
             android:layout_toStartOf="@id/cancel_trial"
             android:layout_alignParentLeft="true"
-            android:textColor="@color/colorPrimary"
+            android:background="@color/colorPrimary"
+            android:textColor="@android:color/white"
             android:textSize="@dimen/info_text_size" />
 
     </RelativeLayout>

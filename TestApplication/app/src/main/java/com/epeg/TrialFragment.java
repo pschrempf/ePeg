@@ -80,6 +80,8 @@ public class TrialFragment extends Fragment {
         currentPeg.showArrow(true);
         currentTrial = new Trial(numPegs, 1, activity.isLeftToRight());
         currentTrial.setIsDemo(activity.isDemo());
+
+
     }
 
     /**
@@ -112,7 +114,7 @@ public class TrialFragment extends Fragment {
                     // Incorrect peg lifted
                     if (!peg.equals(currentPeg)) {
                         status.setText(getResources().getString(R.string.wrong_peg));
-                        //activity.endTrial(TrialFragment.this, currentTrial); // call this if trial should end on error
+                        //activity.endTrial(currentTrial); // call this if trial should end on error
 
                     // First peg lifted
                     } else if (peg.equals(pegs.getHead())) {
