@@ -205,6 +205,7 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 try {
+                    Log.i("Adding new researcher:", popupEditText.getText().toString());
                     sm.addResearcher(popupEditText.getText().toString());
                     loadResearchers(context);
                     popup.dismiss();
