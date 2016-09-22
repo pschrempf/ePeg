@@ -113,7 +113,7 @@ public class TrialFragment extends Fragment {
 
                     // Incorrect peg lifted
                     if (!peg.equals(currentPeg)) {
-                        status.setText(getResources().getString(R.string.wrong_peg));
+                        //status.setText(getResources().getString(R.string.wrong_peg));
                         //activity.endTrial(currentTrial); // call this if trial should end on error
 
                     // First peg lifted

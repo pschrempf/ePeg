@@ -24,7 +24,7 @@ public class Study {
     public static final String JSON_TRIALS_ARRAY_TAG = "trials";
 
     //Number of trials to be conducted for each hand (total number is equals to this number times 2)
-    public static int numTrials = 1;
+    public static int numTrials = 5;
 
     private Participant participant;
 

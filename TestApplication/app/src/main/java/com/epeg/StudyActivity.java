@@ -129,8 +129,8 @@ public class StudyActivity extends Activity {
         }
         Log.d(TAG, "Setting dominant hand: " + dominantHand + ".");
 
-        // start all studies from left
-        leftToRight = true;
+        // start all studies from right
+        leftToRight = false;
 
         showActivity();
     }
@@ -184,17 +184,14 @@ public class StudyActivity extends Activity {
 
         flipOrientation();
 
-        // set inverted colours back
+        // swap trial direction
+        leftToRight = !leftToRight;
 
         if (!demo) {
             try {
-
                 // add trial to study
                 Study.addNextTrial(trial);
                 Log.d(TAG, "Trial successful! (changing leftToRight)");
-
-                // swap trial direction
-                leftToRight = !leftToRight;
 
                 if (Study.isFinished()) {
                     Log.d(TAG, "Study finished!");
@@ -204,14 +201,10 @@ public class StudyActivity extends Activity {
                     return;
                 }
 
-
             } catch (StudyException e) {
                 Log.d(TAG, "Trial failed!");
             }
         } else if (demoAvailable) {
-
-            // swap trial direction
-            leftToRight = !leftToRight;
 
             // set demo unavailable
             demoAvailable = false;
