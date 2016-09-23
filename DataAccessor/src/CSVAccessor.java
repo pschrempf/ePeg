@@ -30,7 +30,7 @@ public class CSVAccessor implements IDataAccessor {
             while ((line = br.readLine()) != null){
                 String[] fields = line.split(LINE_SEPARATOR);
 
-                DBEntry entry = new DBEntry(fields[0], fields[1], fields[2], null);
+                DBEntry entry = new DBEntry(fields[0].trim(), fields[2].trim(), fields[1].trim(), null);
 
                 entries.add(entry);
             }

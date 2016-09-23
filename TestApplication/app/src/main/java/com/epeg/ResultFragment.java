@@ -28,6 +28,9 @@ public class ResultFragment extends Fragment {
         try {
             Study.conclude();
             Log.d(TAG, "Study concluded!");
+
+            Intent syncServiceIntent = new Intent(activity, NetworkSyncService.class);
+            activity.startService(syncServiceIntent);
         } catch (StudyException e) {
             Log.e(TAG, "Could not conclude study! Error: " + e.getMessage());
             Study.cancel();

@@ -47,6 +47,7 @@ public class Decryptor {
         List<DBEntry> entries = dbAccessor.readDatabase();
 
         for (DBEntry entry : entries){
+
             decrypt(entry);
         }
     }

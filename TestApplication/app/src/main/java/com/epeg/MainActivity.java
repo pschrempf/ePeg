@@ -345,7 +345,6 @@ public class MainActivity extends Activity {
             setContentView(R.layout.fragment_settings);
             NumberPicker picker = (NumberPicker) findViewById(R.id.trial_num_picker);
             Study.setNumTrials(getResources().getInteger(R.integer.default_trials));
-            picker.setValue(getResources().getInteger(R.integer.default_trials));
             picker.setMaxValue(getResources().getInteger(R.integer.max_trials));
             picker.setMinValue(getResources().getInteger(R.integer.min_trials));
             picker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
@@ -354,6 +353,7 @@ public class MainActivity extends Activity {
                     Study.setNumTrials(newVal);
                 }
             });
+            picker.setValue(getResources().getInteger(R.integer.default_trials));
         }
     }
 

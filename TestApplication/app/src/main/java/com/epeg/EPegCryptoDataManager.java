@@ -177,7 +177,7 @@ public class EPegCryptoDataManager {
                 tempArray.add(trial.getJSONObject(Trial.JSON_MEASUREMENTS_TAG).getString(Trial.JSON_SUM_TIME_TAG));
             }
 
-            writeBackUp(FILE_PUBLIC_DATA, tempArray.toArray( new String[0]));
+            writeBackUp(FILE_PUBLIC_DATA, tempArray.toArray( new String[0]), true);
 
 
             String studyData = study.toString();
@@ -195,7 +195,7 @@ public class EPegCryptoDataManager {
 
             String[] backupData = {firstStage.getCypherText(), firstStage.getSecretKey(), firstStage.getInitVector()};
 
-            writeBackUp(FILE_DATA_BACKUP, backupData);
+            writeBackUp(FILE_DATA_BACKUP, backupData, false);
 
             long id = database.insert(EPegSQLiteHelper.TABLE_NAME, null, values);
 
@@ -206,7 +206,7 @@ public class EPegCryptoDataManager {
         }
     }
 
-    private boolean writeBackUp(String fileName, String[] data){
+    private boolean writeBackUp(String fileName, String[] data, boolean isPublic){
         if ( !isExternalStorageWritable() )
             return false;
 
@@ -221,7 +221,7 @@ public class EPegCryptoDataManager {
             StringBuilder outputBuilder = new StringBuilder();
 
             // Add array headings
-            if(firstTime){
+            if(isPublic && firstTime){
                 outputBuilder.append("Participant ID,Dominant Hand,Date");
                 for (int i = 1; i <= 10; i++) {
                     outputBuilder.append(",Right Hand " + i + ", Left Hand " + i);
