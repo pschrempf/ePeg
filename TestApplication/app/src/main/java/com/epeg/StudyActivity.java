@@ -266,8 +266,12 @@ public class StudyActivity extends Activity {
         try {
             if (Settings.System.getInt(getContentResolver(), Settings.System.USER_ROTATION) == Surface.ROTATION_0) {
                 Settings.System.putInt(getContentResolver(), Settings.System.USER_ROTATION, Surface.ROTATION_180);
-            } else {
+            } else if (Settings.System.getInt(getContentResolver(), Settings.System.USER_ROTATION) == Surface.ROTATION_90) {
+                Settings.System.putInt(getContentResolver(), Settings.System.USER_ROTATION, Surface.ROTATION_270);
+            } else if (Settings.System.getInt(getContentResolver(), Settings.System.USER_ROTATION) == Surface.ROTATION_180) {
                 Settings.System.putInt(getContentResolver(), Settings.System.USER_ROTATION, Surface.ROTATION_0);
+            } else {
+                Settings.System.putInt(getContentResolver(), Settings.System.USER_ROTATION, Surface.ROTATION_90);
             }
         } catch (Settings.SettingNotFoundException e) {
             Log.e(TAG, e.getMessage());

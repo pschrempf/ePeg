@@ -344,7 +344,8 @@ public class MainActivity extends Activity {
         if (view.getId() == R.id.show_settings) {
             setContentView(R.layout.fragment_settings);
             NumberPicker picker = (NumberPicker) findViewById(R.id.trial_num_picker);
-            picker.setValue(Study.numTrials);
+            Study.setNumTrials(getResources().getInteger(R.integer.default_trials));
+            picker.setValue(getResources().getInteger(R.integer.default_trials));
             picker.setMaxValue(getResources().getInteger(R.integer.max_trials));
             picker.setMinValue(getResources().getInteger(R.integer.min_trials));
             picker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
@@ -364,6 +365,22 @@ public class MainActivity extends Activity {
     public void hideSettings(View view) {
         if (view.getId() == R.id.hide_settings) {
             setContentView(R.layout.activity_main);
+        }
+    }
+
+    public void turnScreen(View view) {
+        try {
+            if (Settings.System.getInt(getContentResolver(), Settings.System.USER_ROTATION) == Surface.ROTATION_0) {
+                Settings.System.putInt(getContentResolver(), Settings.System.USER_ROTATION, Surface.ROTATION_90);
+            } else if (Settings.System.getInt(getContentResolver(), Settings.System.USER_ROTATION) == Surface.ROTATION_90) {
+                Settings.System.putInt(getContentResolver(), Settings.System.USER_ROTATION, Surface.ROTATION_180);
+            } else if (Settings.System.getInt(getContentResolver(), Settings.System.USER_ROTATION) == Surface.ROTATION_180) {
+                Settings.System.putInt(getContentResolver(), Settings.System.USER_ROTATION, Surface.ROTATION_270);
+            } else if (Settings.System.getInt(getContentResolver(), Settings.System.USER_ROTATION) == Surface.ROTATION_270) {
+                Settings.System.putInt(getContentResolver(), Settings.System.USER_ROTATION, Surface.ROTATION_0);
+            }
+        } catch (Settings.SettingNotFoundException e) {
+            e.printStackTrace();
         }
     }
 
