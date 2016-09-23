@@ -48,6 +48,8 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        Study.setNumTrials(getResources().getInteger(R.integer.default_trials));
+
         initSettings();
 
         sm = new SettingsManager(this.getApplicationContext());
@@ -375,8 +377,6 @@ public class MainActivity extends Activity {
      * Initialises settings.
      */
     private void initSettings() {
-        Study.setNumTrials(getResources().getInteger(R.integer.default_trials));
-
         getDeviceDefaultOrientation();
 
         try {

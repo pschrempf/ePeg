@@ -12,7 +12,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/fab_margin"
-        android:textColor="@color/colorAccent"
+        android:textColor="@color/colorPrimary"
         android:background="@android:color/transparent"
         android:textSize="@dimen/info_text_size"
         android:padding="@dimen/info_padding" />
