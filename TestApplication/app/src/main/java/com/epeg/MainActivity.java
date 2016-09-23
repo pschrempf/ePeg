@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -128,6 +129,25 @@ public class MainActivity extends Activity {
             @Override
             public void onNothingSelected(AdapterView<?> parent) {}
         });
+    }
+
+    private int getDeviceDefaultOrientation() {
+        WindowManager windowManager =  (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+
+        Configuration config = getResources().getConfiguration();
+
+        int rotation = windowManager.getDefaultDisplay().getRotation();
+
+        if ( ((rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_180) &&
+                config.orientation == Configuration.ORIENTATION_LANDSCAPE)
+                || ((rotation == Surface.ROTATION_90 || rotation == Surface.ROTATION_270) &&
+                config.orientation == Configuration.ORIENTATION_PORTRAIT)) {
+            Log.d(TAG, "Landscape");
+            return Configuration.ORIENTATION_LANDSCAPE;
+        } else {
+            Log.d(TAG, "Portrait");
+            return Configuration.ORIENTATION_PORTRAIT;
+        }
     }
 
     private void loadClinicCodes(Context context) {
@@ -325,7 +345,6 @@ public class MainActivity extends Activity {
             picker.setValue(Study.numTrials);
             picker.setMaxValue(getResources().getInteger(R.integer.max_trials));
             picker.setMinValue(getResources().getInteger(R.integer.min_trials));
-            picker.setValue(getResources().getInteger(R.integer.default_trials));
             picker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
                 @Override
                 public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
@@ -356,6 +375,10 @@ public class MainActivity extends Activity {
      * Initialises settings.
      */
     private void initSettings() {
+        Study.setNumTrials(getResources().getInteger(R.integer.default_trials));
+
+        getDeviceDefaultOrientation();
+
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if (!Settings.System.canWrite(this)) {

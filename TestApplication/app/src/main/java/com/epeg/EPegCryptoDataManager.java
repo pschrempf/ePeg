@@ -223,8 +223,8 @@ public class EPegCryptoDataManager {
             // Add array headings
             if(firstTime){
                 outputBuilder.append("Participant ID,Dominant Hand,Date");
-                for (int i = 0; i < data.length-3; i++) {
-                    outputBuilder.append(",Total time " + i);
+                for (int i = 1; i <= 10; i++) {
+                    outputBuilder.append(",Right Hand " + i + ", Left Hand " + i);
                 }
                 outputBuilder.append("\n");
             }
