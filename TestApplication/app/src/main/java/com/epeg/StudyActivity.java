@@ -27,7 +27,7 @@ public class StudyActivity extends Activity {
     private Fragment currentFragment;
     private boolean leftToRight;
     private boolean demo;
-    private boolean demoAvailable;
+    private int demosAvailable;
 
     private int systemUiVisibilitySetting;
 
@@ -41,7 +41,7 @@ public class StudyActivity extends Activity {
         fm = getFragmentManager();
         currentFragment = null;
         demo = false;
-        demoAvailable = true;
+        demosAvailable = 2;
 
         try {
 
@@ -145,7 +145,7 @@ public class StudyActivity extends Activity {
         info.setText(getResources().getString(R.string.trial_status, Study.getCurrentTrialIndex(), Study.numTrials * 2));
 
         // hide demo button
-        if (!demoAvailable) {
+        if (demosAvailable <= 0) {
             Button demo = (Button) findViewById(R.id.start_demo);
             demo.setVisibility(View.INVISIBLE);
         }
@@ -157,7 +157,6 @@ public class StudyActivity extends Activity {
      */
     public void startTrial(View view) {
         demo = false;
-        demoAvailable = false;
         updateCurrentFragment(new SetupFragment(), "setup");
     }
 
@@ -204,10 +203,10 @@ public class StudyActivity extends Activity {
             } catch (StudyException e) {
                 Log.d(TAG, "Trial failed!");
             }
-        } else if (demoAvailable) {
+        } else if (demosAvailable > 0) {
 
-            // set demo unavailable
-            demoAvailable = false;
+            // set one demo unavailable
+            demosAvailable--;
 
             updateCurrentFragment(new SetupFragment(), "setup");
         }

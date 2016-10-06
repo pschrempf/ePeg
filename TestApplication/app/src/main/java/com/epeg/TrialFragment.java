@@ -55,7 +55,7 @@ public class TrialFragment extends Fragment {
 
         // Add status text
         status = (TextView) activity.findViewById(R.id.trial_status);
-        status.setText(getResources().getString(R.string.start));
+        status.setText(Study.getParticipant.getLabel() + ": " + getResources().getString(R.string.start));
 
         PegRow pegRowTop = (PegRow) activity.findViewById(R.id.top_row_pegs);
         PegRow pegRowBottom = (PegRow) activity.findViewById(R.id.bottom_row_pegs);
@@ -79,8 +79,6 @@ public class TrialFragment extends Fragment {
         currentPeg = pegs.getHead();
         currentPeg.showArrow(true);
         currentTrial = new Trial(numPegs, 1, activity.isLeftToRight());
-        currentTrial.setIsDemo(activity.isDemo());
-
 
     }
 
@@ -121,12 +119,11 @@ public class TrialFragment extends Fragment {
                         currentTrial.start();
                         currentTrial.nextPegLifted();
                         pegLifted = true;
-                        status.setText(getString(R.string.trial_in_progress));
+                        status.setText(Study.getParticipant.getLabel() + ": " + getResources().getString(R.string.start));
 
                         // Jump to next peg
                         currentPeg.showArrow(false);
                         currentPeg = currentPeg.next;
-                        if (activity.isDemo()) currentPeg.showArrow(true);
 
                         // Last peg released
                     } else if (peg.equals(pegs.getTail())) {
@@ -144,24 +141,17 @@ public class TrialFragment extends Fragment {
                             currentTrial.nextPegLifted();
                         pegLifted = !pegLifted;
 
-                        // set status text
-                        if (activity.isDemo()) {
-                            if (pegLifted) status.setText(getResources().getString(R.string.place_peg));
-                            else status.setText(getString(R.string.lift_peg));
-                        } else {
-                            status.setText(getString(R.string.trial_in_progress));
-                        }
+                        //status.setText(getString(R.string.trial_in_progress));
 
                         // Jump to next peg
                         currentPeg.showArrow(false);
                         currentPeg = currentPeg.next;
-                        if (activity.isDemo()) currentPeg.showArrow(true);
 
                     }
 
                 } catch (TrialFailureException e) {
                     e.printStackTrace();
-                    status.setText(e.getMessage());
+                    //status.setText(e.getMessage());
                     activity.endTrial(currentTrial);
                 }
             }
