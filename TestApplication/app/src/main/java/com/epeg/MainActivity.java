@@ -368,22 +368,6 @@ public class MainActivity extends Activity {
         }
     }
 
-    public void turnScreen(View view) {
-        try {
-            if (Settings.System.getInt(this.getContentResolver(), Settings.System.USER_ROTATION) == Surface.ROTATION_0) {
-                Settings.System.putInt(this.getContentResolver(), Settings.System.USER_ROTATION, Surface.ROTATION_90);
-            } else if (Settings.System.getInt(this.getContentResolver(), Settings.System.USER_ROTATION) == Surface.ROTATION_90) {
-                Settings.System.putInt(this.getContentResolver(), Settings.System.USER_ROTATION, Surface.ROTATION_180);
-            } else if (Settings.System.getInt(this.getContentResolver(), Settings.System.USER_ROTATION) == Surface.ROTATION_180) {
-                Settings.System.putInt(this.getContentResolver(), Settings.System.USER_ROTATION, Surface.ROTATION_270);
-            } else if (Settings.System.getInt(this.getContentResolver(), Settings.System.USER_ROTATION) == Surface.ROTATION_270) {
-                Settings.System.putInt(this.getContentResolver(), Settings.System.USER_ROTATION, Surface.ROTATION_0);
-            }
-        } catch (Settings.SettingNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
-
     @Override
     public void onStop() {
         super.onStop();
