@@ -55,7 +55,7 @@ public class TrialFragment extends Fragment {
 
         // Add status text
         status = (TextView) activity.findViewById(R.id.trial_status);
-        status.setText(Study.getParticipant.getLabel() + ": " + getResources().getString(R.string.start));
+        status.setText(Study.getParticipant().getLabel() + ": " + getResources().getString(R.string.start));
 
         PegRow pegRowTop = (PegRow) activity.findViewById(R.id.top_row_pegs);
         PegRow pegRowBottom = (PegRow) activity.findViewById(R.id.bottom_row_pegs);
@@ -119,7 +119,7 @@ public class TrialFragment extends Fragment {
                         currentTrial.start();
                         currentTrial.nextPegLifted();
                         pegLifted = true;
-                        status.setText(Study.getParticipant.getLabel() + ": " + getResources().getString(R.string.start));
+                        status.setText(Study.getParticipant().getLabel() + ": " + getResources().getString(R.string.start));
 
                         // Jump to next peg
                         currentPeg.showArrow(false);

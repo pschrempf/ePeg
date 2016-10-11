@@ -370,17 +370,20 @@ public class MainActivity extends Activity {
 
     public void turnScreen(View view) {
         try {
-            if (Settings.System.getInt(this.getContentResolver(), Settings.System.USER_ROTATION) == Surface.ROTATION_0) {
-                Settings.System.putInt(this.getContentResolver(), Settings.System.USER_ROTATION, Surface.ROTATION_90);
-            } else if (Settings.System.getInt(this.getContentResolver(), Settings.System.USER_ROTATION) == Surface.ROTATION_90) {
-                Settings.System.putInt(this.getContentResolver(), Settings.System.USER_ROTATION, Surface.ROTATION_180);
-            } else if (Settings.System.getInt(this.getContentResolver(), Settings.System.USER_ROTATION) == Surface.ROTATION_180) {
-                Settings.System.putInt(this.getContentResolver(), Settings.System.USER_ROTATION, Surface.ROTATION_270);
-            } else if (Settings.System.getInt(this.getContentResolver(), Settings.System.USER_ROTATION) == Surface.ROTATION_270) {
-                Settings.System.putInt(this.getContentResolver(), Settings.System.USER_ROTATION, Surface.ROTATION_0);
+            int currentRotation = Settings.System.getInt(getContentResolver(), Settings.System.USER_ROTATION);
+            int newRotation = currentRotation;
+            if (currentRotation == Surface.ROTATION_0) {
+                newRotation = Surface.ROTATION_90;
+            } else if (currentRotation == Surface.ROTATION_90) {
+                newRotation = Surface.ROTATION_180;
+            } else if (currentRotation == Surface.ROTATION_180) {
+                newRotation = Surface.ROTATION_270;
+            } else if (currentRotation == Surface.ROTATION_270) {
+                newRotation = Surface.ROTATION_0;
             }
+            Settings.System.putInt(getContentResolver(), Settings.System.USER_ROTATION, newRotation);
         } catch (Settings.SettingNotFoundException e) {
-            e.printStackTrace();
+            Log.e(TAG, e.getMessage());
         }
     }
 

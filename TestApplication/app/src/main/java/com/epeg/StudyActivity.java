@@ -41,7 +41,7 @@ public class StudyActivity extends Activity {
         fm = getFragmentManager();
         currentFragment = null;
         demo = false;
-        demosAvailable = 2;
+        demosAvailable = 3;
 
         try {
 

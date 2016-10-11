@@ -164,7 +164,7 @@ public class EPegCryptoDataManager {
             JSONObject participant = study.getJSONObject(Study.JSON_PARTICIPANT_TAG);
             JSONArray trials = study.getJSONArray(Study.JSON_TRIALS_ARRAY_TAG);
 
-            tempArray.add(participant.getString(Participant.JSON_PARTICIPANT_ID_TAG));
+            tempArray.add(participant.getString(Participant.JSON_LABEL_TAG));
             tempArray.add(participant.getString(Participant.JSON_DOM_HAND_TAG));
 
             String date = (DateFormat.format("dd-MM-yyyy hh:mm:ss", new java.util.Date()).toString());
