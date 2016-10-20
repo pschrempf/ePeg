@@ -367,7 +367,7 @@ public class MainActivity extends Activity {
             setContentView(R.layout.activity_main);
         }
     }
-
+    
     public void turnScreen(View view) {
         try {
             int currentRotation = Settings.System.getInt(getContentResolver(), Settings.System.USER_ROTATION);
