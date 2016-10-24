@@ -133,25 +133,6 @@ public class MainActivity extends Activity {
         });
     }
 
-    private int getDeviceDefaultOrientation() {
-        WindowManager windowManager =  (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-
-        Configuration config = getResources().getConfiguration();
-
-        int rotation = windowManager.getDefaultDisplay().getRotation();
-
-        if ( ((rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_180) &&
-                config.orientation == Configuration.ORIENTATION_LANDSCAPE)
-                || ((rotation == Surface.ROTATION_90 || rotation == Surface.ROTATION_270) &&
-                config.orientation == Configuration.ORIENTATION_PORTRAIT)) {
-            Log.d(TAG, "Landscape");
-            return Configuration.ORIENTATION_LANDSCAPE;
-        } else {
-            Log.d(TAG, "Portrait");
-            return Configuration.ORIENTATION_PORTRAIT;
-        }
-    }
-
     private void loadClinicCodes(Context context) {
         final List<String> codes = sm.getAllClinicIDs();
         final Spinner codeSpinner = (Spinner) findViewById(R.id.clinic_code_spinner);
@@ -367,25 +348,6 @@ public class MainActivity extends Activity {
             setContentView(R.layout.activity_main);
         }
     }
-    
-    public void turnScreen(View view) {
-        try {
-            int currentRotation = Settings.System.getInt(getContentResolver(), Settings.System.USER_ROTATION);
-            int newRotation = currentRotation;
-            if (currentRotation == Surface.ROTATION_0) {
-                newRotation = Surface.ROTATION_90;
-            } else if (currentRotation == Surface.ROTATION_90) {
-                newRotation = Surface.ROTATION_180;
-            } else if (currentRotation == Surface.ROTATION_180) {
-                newRotation = Surface.ROTATION_270;
-            } else if (currentRotation == Surface.ROTATION_270) {
-                newRotation = Surface.ROTATION_0;
-            }
-            Settings.System.putInt(getContentResolver(), Settings.System.USER_ROTATION, newRotation);
-        } catch (Settings.SettingNotFoundException e) {
-            Log.e(TAG, e.getMessage());
-        }
-    }
 
     @Override
     public void onStop() {
@@ -397,8 +359,6 @@ public class MainActivity extends Activity {
      * Initialises settings.
      */
     private void initSettings() {
-        getDeviceDefaultOrientation();
-
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if (!Settings.System.canWrite(this)) {
@@ -421,7 +381,11 @@ public class MainActivity extends Activity {
 
         // set fixed rotation of tablet
         Settings.System.putInt(this.getContentResolver(), Settings.System.ACCELEROMETER_ROTATION, 0);
-        Settings.System.putInt(this.getContentResolver(), Settings.System.USER_ROTATION, Surface.ROTATION_0);
+        if (getResources().getInteger(R.integer.rotation) == 0) {
+            Settings.System.putInt(this.getContentResolver(), Settings.System.USER_ROTATION, Surface.ROTATION_0);
+        } else {
+            Settings.System.putInt(this.getContentResolver(), Settings.System.USER_ROTATION, Surface.ROTATION_90);
+        }
 
         // set fixed brightness of screen
         Settings.System.putInt(getApplicationContext().getContentResolver(), Settings.System.SCREEN_BRIGHTNESS_MODE, Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL);

@@ -11,4 +11,5 @@
     <integer name="max_trials">10</integer>
     <integer name="min_trials">1</integer>
     <integer name="default_trials">5</integer>
+    <integer name="rotation">0</integer>
 </resources>
