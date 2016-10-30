@@ -45,11 +45,15 @@ public class StudyActivity extends Activity {
 
         try {
 
-            Study.startNew(getApplicationContext());
+            Participant participant;
+            if (null == savedInstanceState || !savedInstanceState.getBoolean("isRunning", false)) {
+                Study.startNew(getApplicationContext());
+                // set up new participant with generated label
+                participant = new Participant(Study.generateNewParticipantLabel());
+                Study.setParticipant(participant);
+            }
 
-            // set up new participant with generated label
-            Participant participant = new Participant(Study.generateNewParticipantLabel());
-            Study.setParticipant(participant);
+            participant = Study.getParticipant();
 
             showParticipantLabel(participant.getLabel());
 
@@ -57,6 +61,12 @@ public class StudyActivity extends Activity {
             e.printStackTrace();
             cancelStudy(currentFragment);
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean("isRunning", true);
     }
 
     @Override

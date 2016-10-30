@@ -46,7 +46,7 @@ public class EPegCryptoDataManager {
     //Tag for logging stuff
     public static final String TAG = EPegCryptoDataManager.class.getSimpleName();
 
-    //TODO replace these with actual identifiers
+    // TODO replace these with actual identifiers
     public static final String TMP_DEVICE_ID = "FIRST ASUS TABLET";
     public static final String TMP_EXP_CONDUCTOR = "Silvia Paracchini";
 
