@@ -235,6 +235,8 @@ public class EPegCryptoDataManager {
             }
 
             fileOutputStream.write(outputBuilder.toString().getBytes());
+            fileOutputStream.flush();
+            fileOutputStream.getFD().sync();
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
