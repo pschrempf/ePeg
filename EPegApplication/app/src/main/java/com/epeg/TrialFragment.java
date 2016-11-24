@@ -27,6 +27,8 @@ public class TrialFragment extends Fragment {
     private TextView status;
     private Trial currentTrial;
     private boolean pegLifted;
+    private boolean running;
+    private boolean completed;
 
     // Constants
     private static int numPegs;
@@ -45,6 +47,8 @@ public class TrialFragment extends Fragment {
         numPegs = res.getInteger(R.integer.num_pegs);
         numTrials = res.getInteger(R.integer.num_trials);
         pegLifted = false;
+        running = false;
+        completed = false;
 
         return inflater.inflate(R.layout.fragment_trial, container, false);
     }
@@ -99,6 +103,7 @@ public class TrialFragment extends Fragment {
                 try {
 
                     // Skipped a peg
+                    /*
                     if (peg.equals(currentPeg.next)) {
                         currentPeg = currentPeg.next;
                         if (pegLifted)
@@ -108,40 +113,46 @@ public class TrialFragment extends Fragment {
 
                         pegLifted = !pegLifted;
                     }
+                    */
 
-                    // Incorrect peg lifted
-                    if (!peg.equals(currentPeg)) {
-                        //status.setText(getResources().getString(R.string.wrong_peg));
-                        //activity.endTrial(currentTrial); // call this if trial should end on error
+                    if (running) {
+                        // Last peg released
+                        if (peg.equals(pegs.getTail())) {
+                            if (!completed)
+                                throw new TrialFailureException("Necessary pegs not registered!");
+                            currentTrial.nextPegReleased();
+                            pegLifted = false;
+                            currentTrial.stop();
+                            activity.endTrial(currentTrial);
+
+                        // Incorrect peg lifted
+                        } else {
+                            if (peg.getIndex() == 12) {
+                                completed = true;
+                            }
+                            int dest = peg.getIndex();
+
+                            // Jump to next peg
+                            while (currentPeg != null && currentPeg.getIndex() <= dest) {
+                                if (pegLifted) {
+                                    currentTrial.nextPegReleased();
+                                } else {
+                                    currentTrial.nextPegLifted();
+                                }
+                                pegLifted = !pegLifted;
+                                currentPeg = currentPeg.next;
+                            }
+
+                        }
+                    }
 
                     // First peg lifted
-                    } else if (peg.equals(pegs.getHead())) {
+                    else if (peg.equals(pegs.getHead())) {
                         currentTrial.start();
                         currentTrial.nextPegLifted();
                         pegLifted = true;
+                        running = true;
                         status.setText(Study.getParticipant().getLabel() + ": " + getResources().getString(R.string.start));
-
-                        // Jump to next peg
-                        currentPeg.showArrow(false);
-                        currentPeg = currentPeg.next;
-
-                        // Last peg released
-                    } else if (peg.equals(pegs.getTail())) {
-                        currentTrial.nextPegReleased();
-                        pegLifted = false;
-                        currentTrial.stop();
-                        activity.endTrial(currentTrial);
-
-                    // Correct peg lifted - update trial
-                    } else {
-
-                        if (pegLifted)
-                            currentTrial.nextPegReleased();
-                        else
-                            currentTrial.nextPegLifted();
-                        pegLifted = !pegLifted;
-
-                        //status.setText(getString(R.string.trial_in_progress));
 
                         // Jump to next peg
                         currentPeg.showArrow(false);
@@ -150,9 +161,12 @@ public class TrialFragment extends Fragment {
                     }
 
                 } catch (TrialFailureException e) {
-                    e.printStackTrace();
-                    //status.setText(e.getMessage());
-                    activity.endTrial(currentTrial);
+                    //e.printStackTrace();
+
+                    status.setText("Please restart the trial!");
+//                    status.setText(e.getMessage());
+
+                    //activity.endTrial(currentTrial);
                 }
             }
         };
@@ -180,6 +194,16 @@ public class TrialFragment extends Fragment {
             top = nextTop;
             bottom = nextBottom;
         }
+
+        // set peg indices
+        Peg curr = pegs.getHead();
+        int index = 0;
+        while (!curr.equals(pegs.getTail())) {
+            curr.setIndex(index++);
+            curr = curr.next;
+        }
+        curr.setIndex(index);
+
     }
 
 }

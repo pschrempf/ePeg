@@ -13,6 +13,9 @@ import android.widget.TableLayout;
  */
 public class Peg extends Button {
 
+    // index
+    int index;
+
     // next peg in list
     Peg next;
 
@@ -48,6 +51,23 @@ public class Peg extends Button {
         next = null;
     }
 
+    /**
+     * Set the index of the peg.
+     *
+     * @param index - index to set
+     */
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
+    /**
+     * Get the peg's index.
+     *
+     * @return index of the peg
+     */
+    public int getIndex() {
+        return this.index;
+    }
     /**
      * Sets the arrow corresponding to the peg.
      * @param arrow - ImageView of arrow

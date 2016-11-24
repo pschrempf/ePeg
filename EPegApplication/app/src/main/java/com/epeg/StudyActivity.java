@@ -212,6 +212,7 @@ public class StudyActivity extends Activity {
 
             } catch (StudyException e) {
                 Log.d(TAG, "Trial failed!");
+                Log.d(TAG, e.getMessage());
             }
         } else if (demosAvailable > 0) {
 
