@@ -3,6 +3,7 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
@@ -34,7 +35,7 @@ public class Decryptor {
     //Create ciphers for encryption
     private static Cipher symmetricCipher, asymmetricCipher;
 
-    public static void main(String[] args) throws NoSuchPaddingException, NoSuchAlgorithmException {
+    public static void main(String[] args) throws NoSuchPaddingException, NoSuchAlgorithmException, IOException {
 
         boolean fromCsv = args.length > 0;
 
@@ -42,17 +43,29 @@ public class Decryptor {
         symmetricCipher = Cipher.getInstance(ENCRYPTION_SYMM_PATTERN);
         asymmetricCipher = Cipher.getInstance(ENCRYPTION_ASYMM_PATTERN);
 
-        IDataAccessor dbAccessor = fromCsv ? new CSVAccessor(args[0]) : new DBAccessor();
 
-        List<DBEntry> entries = dbAccessor.readDatabase();
+        FileWriter fileWriter = null;
+        try {
+            fileWriter = new FileWriter(args.length >= 2 ? args[1] : "decrypted.json", true);
 
-        for (DBEntry entry : entries){
+            IDataAccessor dbAccessor = fromCsv ? new CSVAccessor(args[0]) : new DBAccessor();
 
-            decrypt(entry);
+            List<DBEntry> entries = dbAccessor.readDatabase();
+
+            for (DBEntry entry : entries) {
+                fileWriter.write(decrypt(entry));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (fileWriter != null){
+                fileWriter.flush();
+                fileWriter.close();
+            }
         }
     }
 
-    private static void decrypt(DBEntry entry) {
+    private static String decrypt(DBEntry entry) {
 
         File privateKeyFile = new File(PRIVATE_KEY_PATH);
 
@@ -77,13 +90,13 @@ public class Decryptor {
 
             byte[] iv = asymmetricCipher.doFinal(ivRes);
 
-            SecretKey secretKey = new SecretKeySpec(aesKey, aesKey.length-(AES_KEY_SIZE/8), (AES_KEY_SIZE/8), ENCRYPTION_SYMM_ALGORITHM);
+            SecretKey secretKey = new SecretKeySpec(aesKey, aesKey.length - (AES_KEY_SIZE / 8), (AES_KEY_SIZE / 8), ENCRYPTION_SYMM_ALGORITHM);
 
-            symmetricCipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(iv, iv.length-16, 16));
+            symmetricCipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(iv, iv.length - 16, 16));
 
             String data = new String(symmetricCipher.doFinal(decoder.decode(entry.getData().getBytes(CHAR_ENCODING))));
 
-            System.out.println("Decrypted: " + data);
+            return data;
 
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
@@ -100,6 +113,7 @@ public class Decryptor {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return "";
     }
 
 
