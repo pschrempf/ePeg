@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white" >
+
+    <LinearLayout
+        android:id="@+id/researcher_selection"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:orientation="vertical"
+        android:layout_alignParentStart="true" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/researcher"
+            android:textSize="@dimen/info_text_size"
+            android:layout_margin="@dimen/fab_margin" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <Spinner
+                android:id="@+id/researcher_spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/fab_margin" />
+
+            <Button
+                android:id="@+id/add_new_researcher"
+                android:layout_width="100px"
+                android:layout_height="100px"
+                android:background="@android:drawable/ic_menu_add" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/clinic_code_selection"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:orientation="vertical"
+        android:layout_toEndOf="@+id/researcher_selection" >
+
+        <TextView
+            android:id="@+id/clinic_code_spinner_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/clinic_code"
+            android:textSize="@dimen/info_text_size"
+            android:layout_margin="@dimen/fab_margin" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <Spinner
+                android:id="@+id/clinic_code_spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/fab_margin" />
+
+            <Button
+                android:id="@+id/add_new_clinic_code"
+                android:layout_width="100px"
+                android:layout_height="100px"
+                android:background="@android:drawable/ic_menu_add" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@id/researcher_selection" >
+
+        <EditText
+            android:id="@+id/clinic_code_new"
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/fab_margin"
+            android:hint="@string/clinic_code_hint"
+            android:inputType="textCapCharacters" />
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/research_settings_complete"
+        android:layout_width="@dimen/button_width"
+        android:layout_height="@dimen/button_height"
+        android:layout_centerVertical="true"
+        android:text="@string/done"
+        android:onClick="researchSettingsComplete"
+        android:layout_alignParentEnd="true" />
+
+</RelativeLayout>

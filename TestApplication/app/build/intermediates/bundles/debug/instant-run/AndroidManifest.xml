@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.epeg.testapplication"
+    android:versionCode="1"
+    android:versionName="1.0" > <!-- Minimum sdk version is 16 -->
+    <uses-sdk
+        android:minSdkVersion="17"
+        android:targetSdkVersion="23" />
+
+    <!-- Need to change rotation -->
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+
+    <!-- Need to access internet and detect connectivity changes -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- Need to be able to save backup files -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <application
+        android:name="com.android.tools.fd.runtime.BootstrapApplication"
+        android:allowBackup="true"
+        android:icon="@drawable/logo"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.ePeg" >
+        <activity
+            android:name="com.epeg.MainActivity"
+            android:configChanges="keyboardHidden"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.ePeg" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.epeg.StudyActivity"
+            android:label="@string/title_activity_study"
+            android:theme="@style/Theme.ePeg" />
+
+        <service
+            android:name="com.epeg.NetworkSyncService"
+            android:enabled="true"
+            android:exported="false" />
+    </application>
+
+</manifest>

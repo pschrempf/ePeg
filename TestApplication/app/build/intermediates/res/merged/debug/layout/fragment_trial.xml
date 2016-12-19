@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:background="@android:color/white" >
+
+    <include layout="@layout/top_row" />
+
+    <include layout="@layout/bottom_row" />
+
+    <ImageView
+        android:id="@+id/left_hand"
+        android:layout_width="@dimen/hand_button_width"
+        android:layout_height="@dimen/hand_button_height"
+        android:layout_alignParentLeft="true"
+        android:background="@drawable/left_hand"
+        android:layout_centerVertical="true"
+        />
+
+    <ImageView
+        android:id="@+id/right_hand"
+        android:layout_width="@dimen/hand_button_width"
+        android:layout_height="@dimen/hand_button_height"
+        android:layout_alignParentRight="true"
+        android:background="@drawable/right_hand"
+        android:layout_centerVertical="true"
+        />
+
+    <RelativeLayout
+        android:id="@+id/info_center_row"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/fab_margin"
+        android:layout_toRightOf="@id/left_hand"
+        android:layout_toLeftOf="@id/right_hand"
+        android:weightSum="1"
+        android:layout_centerVertical="true" >
+
+        <Button
+            android:id="@+id/cancel_trial"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/fab_margin"
+            android:layout_alignParentRight="true"
+            android:text="@string/cancel_button"
+            android:textColor="@android:color/holo_red_dark"
+            android:onClick="cancelTrial" />
+
+        <TextView
+            android:id="@+id/trial_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/fab_margin"
+            android:layout_toStartOf="@id/cancel_trial"
+            android:layout_alignParentLeft="true"
+            android:textColor="@color/colorPrimary"
+            android:textSize="@dimen/info_text_size" />
+
+    </RelativeLayout>
+
+</RelativeLayout>

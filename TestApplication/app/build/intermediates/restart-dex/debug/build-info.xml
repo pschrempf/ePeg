@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<instant-run
+    abi="arm64-v8a,armeabi-v7a,armeabi"
+    api-level="23"
+    density="mdpi"
+    format="7"
+    timestamp="31606559139291"
+    token="8753591269860106803" >
+
+    <task
+        name="javac"
+        duration="0" />
+    <task
+        name="instant-run-dex"
+        duration="0" />
+    <task
+        name="instant-run-transform"
+        duration="0" />
+    <task
+        name="verifier"
+        duration="0" />
+
+    <artifact
+        location="/home/gregory/Documents/Work/Medical/ePeg/TestApplication/app/build/intermediates/res/resources-debug.ap_"
+        type="RESOURCES" />
+
+    <build timestamp="31090633019372" >
+        <artifact
+            location="/home/gregory/Documents/Work/Medical/ePeg/TestApplication/app/build/outputs/apk/app-debug.apk"
+            type="MAIN" />
+    </build>
+    <build timestamp="31606559139291" >
+        <artifact
+            location="/home/gregory/Documents/Work/Medical/ePeg/TestApplication/app/build/intermediates/res/resources-debug.ap_"
+            type="RESOURCES" />
+    </build>
+
+</instant-run>

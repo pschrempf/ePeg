@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/info_center_row"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="1" >
+
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_margin="@dimen/fab_margin"
+        android:text="@string/app_name"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="@dimen/title_text_size" />
+
+    <Button
+        android:id="@+id/start_study"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_margin="@dimen/fab_margin"
+        android:layout_alignParentEnd="true"
+        android:text="@string/start_button"
+        android:height="@dimen/button_height"
+        android:width="@dimen/button_width"
+        android:onClick="startStudy" />
+
+    <Button
+        android:id="@+id/show_settings"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toStartOf="@id/start_study"
+        android:text="@string/settings"
+        android:onClick="showSettings"
+        />
+
+    <TextView
+        android:id="@+id/study_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/title"
+        android:layout_toStartOf="@id/show_settings"
+        android:layout_centerVertical="true"
+        android:layout_margin="@dimen/fab_margin"
+        android:padding="@dimen/info_padding"
+        android:text="@string/study_info"
+        android:textSize="@dimen/info_text_size"
+        android:textColor="@color/colorPrimary"
+        android:textAlignment="center" />
+
+</RelativeLayout>
