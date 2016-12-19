@@ -119,8 +119,6 @@ public class Trial {
      * Start recording the trial
      */
     public void start(){
-        // TODO: might want to add exception to starting a trial multiple times
-
         long currTime = System.currentTimeMillis();
 
         setStartTime( currTime );

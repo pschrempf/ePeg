@@ -6,6 +6,7 @@ import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -27,6 +28,8 @@ public class TrialFragment extends Fragment {
     private TextView status;
     private Trial currentTrial;
     private boolean pegLifted;
+    private boolean running;
+    private boolean completed;
 
     // Constants
     private static int numPegs;
@@ -45,6 +48,8 @@ public class TrialFragment extends Fragment {
         numPegs = res.getInteger(R.integer.num_pegs);
         numTrials = res.getInteger(R.integer.num_trials);
         pegLifted = false;
+        running = false;
+        completed = false;
 
         return inflater.inflate(R.layout.fragment_trial, container, false);
     }
@@ -91,76 +96,41 @@ public class TrialFragment extends Fragment {
         Peg top = pegsTop.getHead();
         Peg bottom = pegsBottom.getHead();
 
-        // onclick listener for pegs is the same for each peg
-        View.OnClickListener pegClicker = new View.OnClickListener() {
+        // ontouch listener for pegs is the same for each peg
+        View.OnTouchListener pegTouch = new View.OnTouchListener() {
             @Override
-            public void onClick(View v) {
+            public boolean onTouch(View v, MotionEvent event) {
                 Peg peg = (Peg) v;
                 try {
-
-                    // Skipped a peg
-                    if (peg.equals(currentPeg.next)) {
-                        currentPeg = currentPeg.next;
-                        if (pegLifted)
-                            currentTrial.nextPegReleased();
-                        else
-                            currentTrial.nextPegLifted();
-
-                        pegLifted = !pegLifted;
-                    }
-
-                    // Incorrect peg lifted
-                    if (!peg.equals(currentPeg)) {
-                        //status.setText(getResources().getString(R.string.wrong_peg));
-                        //activity.endTrial(currentTrial); // call this if trial should end on error
-
-                    // First peg lifted
-                    } else if (peg.equals(pegs.getHead())) {
-                        currentTrial.start();
-                        currentTrial.nextPegLifted();
-                        pegLifted = true;
-                        status.setText(Study.getParticipant().getLabel() + ": " + getResources().getString(R.string.start));
-
-                        // Jump to next peg
-                        currentPeg.showArrow(false);
-                        currentPeg = currentPeg.next;
-
-                        // Last peg released
-                    } else if (peg.equals(pegs.getTail())) {
-                        currentTrial.nextPegReleased();
-                        pegLifted = false;
-                        currentTrial.stop();
-                        activity.endTrial(currentTrial);
-
-                    // Correct peg lifted - update trial
-                    } else {
-
-                        if (pegLifted)
-                            currentTrial.nextPegReleased();
-                        else
-                            currentTrial.nextPegLifted();
-                        pegLifted = !pegLifted;
-
-                        //status.setText(getString(R.string.trial_in_progress));
-
-                        // Jump to next peg
-                        currentPeg.showArrow(false);
-                        currentPeg = currentPeg.next;
-
-                    }
-
+                    touchPeg(peg);
+                    return true;
                 } catch (TrialFailureException e) {
-                    e.printStackTrace();
-                    //status.setText(e.getMessage());
-                    activity.endTrial(currentTrial);
+                    status.setText("Please restart the trial!");
+                    return false;
                 }
             }
         };
 
-        // set onClicks and create peg list
+        // onclick listener for pegs is the same for each peg
+        View.OnClickListener pegClick = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Peg peg = (Peg) v;
+                try {
+                    touchPeg(peg);
+                } catch (TrialFailureException e) {
+                    status.setText("Please restart the trial!");
+                }
+            }
+        };
+
+        // set onClicks, onTouches and create peg list
         for (int i = 0; i < numPegs; i++) {
-            top.setOnClickListener(pegClicker);
-            bottom.setOnClickListener(pegClicker);
+            top.setOnClickListener(pegClick);
+            bottom.setOnClickListener(pegClick);
+
+            top.setOnTouchListener(pegTouch);
+            bottom.setOnTouchListener(pegTouch);
 
             Peg nextTop = top.next;
             Peg nextBottom = bottom.next;
@@ -180,6 +150,70 @@ public class TrialFragment extends Fragment {
             top = nextTop;
             bottom = nextBottom;
         }
+
+        // set peg indices
+        Peg curr = pegs.getHead();
+        int index = 0;
+        while (!curr.equals(pegs.getTail())) {
+            curr.setIndex(index++);
+            curr = curr.next;
+        }
+        curr.setIndex(index);
+
+    }
+
+    /**
+     * Processes a peg being touched or clicked.
+     *
+     * @param peg - peg to be processed
+     * @throws TrialFailureException
+     */
+    private void touchPeg(Peg peg) throws TrialFailureException {
+        if (running) {
+            // Last peg released
+            if (peg.equals(pegs.getTail())) {
+                if (!completed)
+                    throw new TrialFailureException("Necessary pegs not registered!");
+                currentTrial.nextPegReleased();
+                pegLifted = false;
+                currentTrial.stop();
+                activity.endTrial(currentTrial);
+
+            // Process other pegs
+            } else {
+                if (peg.getIndex() == 12) {
+                    completed = true;
+                }
+                int dest = peg.getIndex();
+
+                // Jump to next peg
+                while (currentPeg != null && currentPeg.getIndex() <= dest) {
+                    if (pegLifted) {
+                        currentTrial.nextPegReleased();
+                    } else {
+                        currentTrial.nextPegLifted();
+                    }
+                    pegLifted = !pegLifted;
+                    currentPeg = currentPeg.next;
+                }
+
+            }
+        }
+
+        // First peg lifted
+        else if (peg.equals(pegs.getHead())) {
+            currentTrial.start();
+            currentTrial.nextPegLifted();
+            pegLifted = true;
+            running = true;
+            status.setText(Study.getParticipant().getLabel() + ": " + getResources().getString(R.string.start));
+
+            // Jump to next peg
+            currentPeg.showArrow(false);
+            currentPeg = currentPeg.next;
+
+        }
+
     }
 
 }

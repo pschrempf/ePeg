@@ -19,19 +19,19 @@ public class Study {
 
     public static final String TAG = Study.class.getName();
 
-    //Tags for JSON
+    // Tags for JSON
     public static final String JSON_PARTICIPANT_TAG = "participant";
     public static final String JSON_TRIALS_ARRAY_TAG = "trials";
 
-    //Number of trials to be conducted for each hand (total number is equals to this number times 2)
+    // Number of trials to be conducted for each hand (total number is equals to this number times 2)
     public static int numTrials = 5;
 
     private Participant participant;
 
-    //Array for all trials that will be conducted within this study
+    // Array for all trials that will be conducted within this study
     private Trial[] trials;
 
-    //Keeps track of which trial we are on right now
+    // Keeps track of which trial we are on right now
     private int currentTrialIndex;
     private Context context;
 
@@ -56,13 +56,13 @@ public class Study {
      * @param context Android context from where the study is started
      * @throws StudyException thrown if there already is an ongoing study
      */
-    public static void startNew( Context context ) throws StudyException{
-        if (secureRandom == null){
+    public static void startNew(Context context) throws StudyException{
+        if (secureRandom == null) {
             secureRandom = new SecureRandom();
         }
 
-        if(currentStudy == null) {
-            currentStudy = new Study( context );
+        if (currentStudy == null) {
+            currentStudy = new Study(context);
         }
         else
             throw new StudyException("A study is already under way!");
@@ -74,9 +74,9 @@ public class Study {
      * @throws StudyException thrown if there is no study to conclude, or if the current study may not be concluded yet.
      */
     public static void conclude() throws StudyException {
-        if ( currentStudy != null ){
+        if (null != currentStudy) {
 
-            if (currentStudy.getCurrentTrialIndex() < numTrials * 2)
+            if (getCurrentTrialIndex() < numTrials * 2)
                 throw new StudyException("Not enough trials have been carried out yet to conclude the study!");
 
             JSONObject studyData = currentStudy.jsonify();
@@ -87,7 +87,6 @@ public class Study {
 
             dataManager.open();
 
-            //TODO change this
             dataManager.writeStudy(studyData, EPegCryptoDataManager.TMP_DEVICE_ID, EPegCryptoDataManager.TMP_EXP_CONDUCTOR);
 
             dataManager.close();
@@ -107,7 +106,7 @@ public class Study {
      */
     public static void addNextTrial(Trial trial) throws StudyException {
         if (trial != null) {
-            if (currentStudy.getCurrentTrialIndex() == numTrials * 2)
+            if (getCurrentTrialIndex() == numTrials * 2)
                 throw new StudyException("Cannot add trial beyond limit of " + (numTrials *2) );
             if (!trial.isFinished())
                 throw new StudyException("An unfinished trial may not be added to a study!");
@@ -197,9 +196,7 @@ public class Study {
             studyObject.put(JSON_PARTICIPANT_TAG, getParticipant().jsonify())
                     .put( JSON_TRIALS_ARRAY_TAG, trials);
 
-        } catch (JSONException e) {
-            e.printStackTrace();
-        } catch (TrialFailureException e) {
+        } catch (JSONException | TrialFailureException e) {
             e.printStackTrace();
         }
 
@@ -212,7 +209,7 @@ public class Study {
     //====================================================================================================
 
     public static boolean isFinished() {
-        return currentStudy.getCurrentTrialIndex() >= numTrials*2;
+        return getCurrentTrialIndex() >= numTrials*2;
     }
 
     private void addTrial(Trial trial){
