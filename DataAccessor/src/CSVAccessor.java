@@ -27,18 +27,28 @@ public class CSVAccessor implements IDataAccessor {
 
             entries = new ArrayList<>();
 
+            int counter = 1;
             while ((line = br.readLine()) != null){
                 String[] fields = line.split(LINE_SEPARATOR);
 
-                DBEntry entry = new DBEntry(fields[0].trim(), fields[2].trim(), fields[1].trim(), null);
+                if(fields.length != 3)
+                {
+                    System.out.println("Line " + counter + " corrupted, " + (3 - fields.length) + " entries missing.");
+                }else {
 
-                entries.add(entry);
+                    DBEntry entry = new DBEntry(fields[0].trim(), fields[2].trim(), fields[1].trim(), null);
+
+                    entries.add(entry);
+                }
+                counter++;
             }
 
+            System.out.println("Processed " + counter + " lines, finished.");
+
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
         return entries;
     }

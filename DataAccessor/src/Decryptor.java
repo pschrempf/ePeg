@@ -56,7 +56,9 @@ public class Decryptor {
                 fileWriter.write(decrypt(entry));
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
+        } catch (Exception e){
+            System.out.println("Unhandled exception occurred: " + e.getMessage());
         } finally {
             if (fileWriter != null){
                 fileWriter.flush();
