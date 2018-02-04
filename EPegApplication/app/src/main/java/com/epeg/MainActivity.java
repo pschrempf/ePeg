@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Surface;
 import android.view.View;
@@ -54,11 +55,23 @@ public class MainActivity extends Activity {
 
         sm = new SettingsManager(this.getApplicationContext());
         researcherSettings(getApplicationContext());
+
+        // set view to update UI flags after change
+        View decorView = getWindow().getDecorView();
+        decorView.setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener() {
+            @Override
+            public void onSystemUiVisibilityChange(int visibility) {
+                Log.d(TAG, "Resetting UI visibility");
+                setDefaultOperationFlags();
+            }
+        });
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        Log.d(TAG, "Resuming epeg Main activity");
+        setDefaultOperationFlags();
     }
 
     /**
@@ -354,10 +367,11 @@ public class MainActivity extends Activity {
     }
 
     /**
-     * Initialises settings.
+     * Initialise settings.
      */
     private void initSettings() {
         try {
+            // Ask for write settings
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if (!Settings.System.canWrite(this)) {
 
@@ -377,6 +391,33 @@ public class MainActivity extends Activity {
             Log.e(TAG, e.getMessage());
         }
 
+        setDefaultOperationFlags();
+    }
+
+    /**
+     * Override volume controls.
+     */
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        boolean result;
+        switch( event.getKeyCode() ) {
+            case KeyEvent.KEYCODE_VOLUME_UP:
+            case KeyEvent.KEYCODE_VOLUME_DOWN:
+                result = true;
+                break;
+
+            default:
+                result= super.dispatchKeyEvent(event);
+                break;
+        }
+
+        return result;
+    }
+
+    /**
+     * Set flags for rotation, brightness and fullscreen mode.
+     */
+    public void setDefaultOperationFlags() {
         // set fixed rotation of tablet
         Settings.System.putInt(this.getContentResolver(), Settings.System.ACCELEROMETER_ROTATION, 0);
         if (getResources().getInteger(R.integer.rotation) == 0) {
@@ -398,7 +439,7 @@ public class MainActivity extends Activity {
                 | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                 | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                 | View.SYSTEM_UI_FLAG_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_IMMERSIVE);
+                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
     }
 
     /**

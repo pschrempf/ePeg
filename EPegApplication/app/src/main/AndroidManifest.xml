@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.epeg">
 
-    <!-- Minimum sdk version is 16 -->
-    <uses-sdk android:minSdkVersion="16"/>
+    <!-- Minimum sdk version is 22 -->
+    <uses-sdk android:minSdkVersion="22"/>
 
     <!-- Need to change rotation -->
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
