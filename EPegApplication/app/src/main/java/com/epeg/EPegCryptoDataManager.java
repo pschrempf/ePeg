@@ -46,9 +46,11 @@ public class EPegCryptoDataManager {
     //Tag for logging stuff
     public static final String TAG = EPegCryptoDataManager.class.getSimpleName();
 
+
+
     // TODO replace these with actual identifiers
-    public static final String TMP_DEVICE_ID = "FIRST ASUS TABLET";
-    public static final String TMP_EXP_CONDUCTOR = "Silvia Paracchini";
+    private String deviceID;
+    private String expConductor;
 
     //Taken from https://docs.oracle.com/javase/8/docs/api/javax/crypto/Cipher.html
     private static final String ENCRYPTION_SYMM_PATTERN = "AES/CBC/PKCS5Padding";
@@ -91,6 +93,11 @@ public class EPegCryptoDataManager {
 
             //Initialise the asymmetric cipher with the key
             asymmetricCipher.init(Cipher.ENCRYPT_MODE, publicKey);
+
+            SettingsManager sm = new SettingsManager(context);
+
+            deviceID = sm.getActiveClinic();
+            expConductor = sm.getActiveResearcher();
 
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | InvalidKeySpecException e) {
             //This bit cannot occur, because all specified constants are required to be implemented after the Java 7 standard
@@ -164,6 +171,8 @@ public class EPegCryptoDataManager {
             JSONObject participant = study.getJSONObject(Study.JSON_PARTICIPANT_TAG);
             JSONArray trials = study.getJSONArray(Study.JSON_TRIALS_ARRAY_TAG);
 
+            tempArray.add(expConductor);
+            tempArray.add(deviceID);
             tempArray.add(participant.getString(Participant.JSON_LABEL_TAG));
             tempArray.add(participant.getString(Participant.JSON_DOM_HAND_TAG));
 
@@ -222,7 +231,7 @@ public class EPegCryptoDataManager {
 
             // Add array headings
             if(isPublic && firstTime){
-                outputBuilder.append("Participant ID,Dominant Hand,Date");
+                outputBuilder.append("Tester ID,Clinic ID,Participant ID,Dominant Hand,Date");
                 for (int i = 1; i <= 10; i++) {
                     outputBuilder.append(",Right Hand " + i + ", Left Hand " + i);
                 }
@@ -264,6 +273,14 @@ public class EPegCryptoDataManager {
         return false;
     }
 
+    public String getDeviceID() {
+        return deviceID;
+    }
+
+    public String getExpConductor() {
+        return expConductor;
+    }
+
     /**
      * Encompasses the results of a single encryption process to then be further passed on and inserted to the database
      * Takes in the raw output {@link Cipher}s generate as a byte array and encodes them as Base64 Strings for storage.
@@ -297,5 +314,6 @@ public class EPegCryptoDataManager {
         public void setCypherText(byte[] cypherText) {
             this.cypherText = Base64.encodeToString(cypherText, Base64.NO_WRAP);
         }
+
     }
 }

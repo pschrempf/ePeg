@@ -87,7 +87,7 @@ public class Study {
 
             dataManager.open();
 
-            dataManager.writeStudy(studyData, EPegCryptoDataManager.TMP_DEVICE_ID, EPegCryptoDataManager.TMP_EXP_CONDUCTOR);
+            dataManager.writeStudy(studyData, dataManager.getDeviceID(), dataManager.getExpConductor());
 
             dataManager.close();
 
