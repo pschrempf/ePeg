@@ -6,11 +6,12 @@ function barchart(width, height){
         vis = chart_selection;
 
         vis.attr("width", width)
-            .attr("height", height)
+            .attr("height", height);
 
         vis.append("rect")
             .attr("width", 200)
-            .attr("height", 100);
+            .attr("height", 100)
+            .attr("y", 50);
     }
 
     chart.width = function(value){
