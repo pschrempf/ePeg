@@ -1,0 +1,27 @@
+{
+  "name": "epeg_exhibition",
+  "version": "1.0.0",
+  "description": "Web Application for the ePeg Project, to be used at exhibitions.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pschrempf/ePeg.git"
+  },
+  "author": "Gergely Flamich",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pschrempf/ePeg/issues"
+  },
+  "homepage": "https://github.com/pschrempf/ePeg#readme",
+  "dependencies": {
+    "express": "^4.16.3",
+    "socket.io": "^2.1.1"
+  },
+  "devDependencies": {
+    "nodemon": "^1.17.5"
+  }
+}

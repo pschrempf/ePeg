@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>
+           EPeg Exhibition
+        </title>
+
+        <script src="js/d3/d3.min.js"></script>
+        <script src="js/socket.io.js"></script>
+        <script src="js/visualisation.js"></script>
+
+        <link href="css/visualisation.css" rel="stylesheet" />
+    </head>
+    <body>
+        <div id="visualisation">
+            <svg class="chart"></svg>
+        </div>
+        <!-- <script src="js/exhibition.js"></script> -->
+        <script>
+         var chart1 = barchart(800, 80);
+
+         chart1(d3.select(".chart"));
+        </script>
+    </body>
+</html>
