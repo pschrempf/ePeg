@@ -1,4 +1,4 @@
-package com.epeg;
+package com.epeg.Study;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -8,6 +8,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.epeg.NetworkSyncService;
+import com.epeg.R;
 
 /**
  * Fragment that is called at the end of a study.

@@ -8,14 +8,14 @@
     android:layout_alignParentTop="true"
     android:layout_weight="1" >
 
-    <com.epeg.PegRow
+    <com.epeg.Study.PegRow
         android:id="@+id/top_row_pegs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:orientation="horizontal" />
 
-    <com.epeg.ArrowRow
+    <com.epeg.Study.ArrowRow
         android:id="@+id/top_row_arrows"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

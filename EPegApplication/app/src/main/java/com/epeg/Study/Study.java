@@ -1,7 +1,10 @@
-package com.epeg;
+package com.epeg.Study;
 
 import android.content.Context;
 import android.util.Log;
+
+import com.epeg.EPegCryptoDataManager;
+import com.epeg.SettingsManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;

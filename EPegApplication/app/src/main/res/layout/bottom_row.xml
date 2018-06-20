@@ -2,19 +2,19 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:com.epeg="http://schemas.android.com/apk/res-auto"
     android:id="@+id/bottom_row"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_alignParentBottom="true" >
+    android:layout_alignParentBottom="true"
+    android:orientation="vertical">
 
-    <com.epeg.ArrowRow
+    <com.epeg.Study.ArrowRow
         android:id="@+id/bottom_row_arrows"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         com.epeg:up="false" />
 
-    <com.epeg.PegRow
+    <com.epeg.Study.PegRow
         android:id="@+id/bottom_row_pegs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

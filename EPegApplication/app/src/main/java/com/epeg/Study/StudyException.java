@@ -1,4 +1,4 @@
-package com.epeg;
+package com.epeg.Study;
 
 /**
  * Created by gregory on 17/03/16.

@@ -1,10 +1,12 @@
-package com.epeg;
+package com.epeg.Study;
 
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -14,6 +16,13 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
+
+import com.epeg.ExhibitionAsyncTask;
+import com.epeg.MainActivity;
+import com.epeg.R;
+import com.epeg.SetupFragment;
+
+import org.json.JSONException;
 
 /**
  * Class that controls the main flow of a study.
@@ -32,6 +41,8 @@ public class StudyActivity extends Activity {
 
     private int systemUiVisibilitySetting;
 
+    private ConnectivityManager connectivityManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +54,10 @@ public class StudyActivity extends Activity {
         currentFragment = null;
         demo = false;
         demosAvailable = 3;
+
+        // Setup the synchronisation task
+        connectivityManager =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 
         try {
 
@@ -219,6 +234,15 @@ public class StudyActivity extends Activity {
      */
     public void endTrial(Trial trial) {
         Log.d(TAG, "End of trial.");
+
+        try {
+            new ExhibitionAsyncTask(
+                    connectivityManager.getActiveNetworkInfo())
+                    .execute(trial.jsonify());
+
+        } catch (Exception e) {
+            Log.e(TAG, "Trial synchronisation failed! Error: " + e. getMessage());
+        }
 
         flipOrientation();
 

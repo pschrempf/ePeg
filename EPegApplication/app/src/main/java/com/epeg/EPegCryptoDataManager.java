@@ -8,6 +8,10 @@ import android.text.format.DateFormat;
 import android.util.Base64;
 import android.util.Log;
 
+import com.epeg.Study.Participant;
+import com.epeg.Study.Study;
+import com.epeg.Study.Trial;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 

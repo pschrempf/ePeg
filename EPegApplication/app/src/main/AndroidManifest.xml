@@ -35,7 +35,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.epeg.StudyActivity"
+            android:name="com.epeg.Study.StudyActivity"
             android:label="@string/title_activity_study"
             android:theme="@style/Theme.ePeg"/>
 

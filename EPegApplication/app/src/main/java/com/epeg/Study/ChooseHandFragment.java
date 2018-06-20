@@ -1,4 +1,4 @@
-package com.epeg;
+package com.epeg.Study;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.epeg.R;
 
 /**
  * Fragment that lets a user choose left or right handed.

@@ -1,4 +1,4 @@
-package com.epeg;
+package com.epeg.Study;
 
 import org.json.JSONArray;
 import org.json.JSONException;

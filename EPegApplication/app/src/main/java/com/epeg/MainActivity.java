@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -24,6 +23,9 @@ import android.widget.NumberPicker;
 import android.widget.PopupWindow;
 import android.widget.Spinner;
 import android.widget.TextView;
+
+import com.epeg.Study.Study;
+import com.epeg.Study.StudyActivity;
 
 import java.io.IOException;
 import java.util.List;

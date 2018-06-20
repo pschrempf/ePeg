@@ -1,10 +1,12 @@
-package com.epeg;
+package com.epeg.Study;
 
 import android.content.Context;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TableLayout;
+
+import com.epeg.R;
 
 /**
  * Created by pschrempf on 15/03/16.

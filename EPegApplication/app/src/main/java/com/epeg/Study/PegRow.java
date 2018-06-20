@@ -1,9 +1,11 @@
-package com.epeg;
+package com.epeg.Study;
 
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.widget.LinearLayout;
+
+import com.epeg.R;
 
 /**
  * Models a row of pegs as a LinearLayout.

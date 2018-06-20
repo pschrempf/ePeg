@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="com.epeg.StudyActivity"
+    tools:context="com.epeg.Study.StudyActivity"
     android:background="@android:color/white"
     android:orientation="horizontal"
     android:weightSum="1"
@@ -47,21 +47,21 @@
         android:layout_margin="@dimen/fab_margin" />
 
     <!--
-    <com.epeg.PegRow
+ com.epeg.Study.PegRowgRow
         android:id="@+id/peg_row_top"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_alignParentTop="true">
-    </com.epeg.PegRow>
+  com.epeg.Study.PegRowgRow>
 
-    <com.epeg.PegRow
+ com.epeg.Study.PegRowgRow
         android:id="@+id/peg_row_bottom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_alignParentBottom="true">
-    </com.epeg.PegRow>
+  com.epeg.Study.PegRowgRow>
     -->
 
     <!--

@@ -1,18 +1,15 @@
-// Make connection
-var socket = io.connect("http://localhost:4000");
+// Start doing things when the page has loaded completely.
+document.addEventListener("DOMContentLoaded", (e) => {
 
-var message = document.getElementById('message');
-var handle = document.getElementById('handle');
-var btn = document.getElementById('send');
-var output = document.getElementById('output');
+    var chart1 = barchart(window.innerWidth - 120, 600, 7);
 
-btn.addEventListener('click', function(){
-    socket.emit('chat', {
-        message: message.value,
-        handle: handle.value
+    chart1("#visualisation");
+
+    // Make connection
+    var socket = io();
+
+    socket.on('peg_info', function(data){
+        chart1.update_chart(data);
     });
-});
 
-socket.on('chat', function(data){
-    output.innerHTML += "<p><strong>" + data.handle + "</strong>" + data.message + "</p>";
 });

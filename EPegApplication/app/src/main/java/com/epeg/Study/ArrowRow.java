@@ -1,4 +1,4 @@
-package com.epeg;
+package com.epeg.Study;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -7,6 +7,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+
+import com.epeg.R;
 
 /**
  * Models a row of arrows.
