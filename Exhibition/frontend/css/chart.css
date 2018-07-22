@@ -1,0 +1,27 @@
+/* School of Medicine colours:
+
+blue: #5f819e
+light blue: #6dbcdb
+gray: #757575
+
+Bathing in the Sun
+dark orange: #c14b22	(193,75,34)
+light orange: #f28143	(242,129,67)
+yellow: #fde033	(253,224,51)
+deep sea: #106f7c	(16,111,124)
+light blue: #2199c3	(33,153,195)
+
+Muted neutral tones
+navy: #27567b	(39,86,123)
+dark red: #b63b3b	(182,59,59)
+yellow: #f9c414	(249,196,20)
+beige: #f7ebd8	(247,235,216)
+dark gray: #505050	(80,80,80)
+*/
+
+.bar_group rect.right {
+    fill: #ffd700;
+}
+.bar_group rect.left {
+    fill: #2199c3;
+}
