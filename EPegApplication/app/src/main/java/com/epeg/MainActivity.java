@@ -26,16 +26,24 @@ import android.widget.TextView;
 
 import com.epeg.Study.Study;
 import com.epeg.Study.StudyActivity;
+import com.github.nkzawa.socketio.client.IO;
+import com.github.nkzawa.socketio.client.Socket;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.List;
 
 /**
  * Class for the main activity and settings page.
  *
- * @author Patrick Schrempf
+ * @author Gergely Flamich, Patrick Schrempf
  */
 public class MainActivity extends Activity {
+
+    private static final String EXHIBITION_URL = "http://192.168.0.4:18216";
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -46,6 +54,8 @@ public class MainActivity extends Activity {
     private int screenBrightnessModeSetting;
     private int screenBrightnessSetting;
     private int systemUiVisibilitySetting;
+
+    private Socket epegWebSocket;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +77,13 @@ public class MainActivity extends Activity {
                 setDefaultOperationFlags();
             }
         });
+
+        // Attempt to establish the socket connection to the server.
+        try{
+            epegWebSocket = IO.socket(EXHIBITION_URL);
+        } catch (URISyntaxException e) {
+            Log.e(TAG, "Couldn't establish socket connection: " + e.getMessage());
+        }
     }
 
     @Override
@@ -74,6 +91,18 @@ public class MainActivity extends Activity {
         super.onResume();
         Log.d(TAG, "Resuming epeg Main activity");
         setDefaultOperationFlags();
+
+        // When the app is in the foreground, reconnect to the server
+        epegWebSocket.connect();
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        // When the app is moved to the background, we disconnect from the server.
+        epegWebSocket.disconnect();
     }
 
     /**
@@ -463,5 +492,4 @@ public class MainActivity extends Activity {
         getWindow().getDecorView().setSystemUiVisibility(systemUiVisibilitySetting);
 
     }
-
 }

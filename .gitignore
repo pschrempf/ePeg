@@ -3,3 +3,5 @@ public.csv
 backup.csv
 out/
 uni_logos/
+.#*
+node_modules/
