@@ -28,8 +28,6 @@ function barchart(width, height, num_bars, palette){
     var bars;
 
     // Constants for reference
-    const bar_width = height / (2 * (num_bars + 2));
-    const margin = {top: 30, right: 10, bottom: 40, left: 60};
 
     const default_palette = {background: "#f7ebd8",
                              right: "#27567b",
@@ -37,6 +35,20 @@ function barchart(width, height, num_bars, palette){
                              frame: "#505050",
                              emphasis: "#f9c414"
                             };
+
+    const separator_width = 4;
+    const hsw = separator_width / 2; // Half separator width
+
+    const separator_height = height * .8;
+
+    const separator_offset = {
+        x: width * .5 - hsw,
+        y: height * .05
+    };
+
+    const bar_width = separator_height / (2 * num_bars);
+
+    const text_offset = 30;
 
     // If the user has not provided us with a palette, use the default one
     palette = palette || default_palette;
@@ -56,17 +68,17 @@ function barchart(width, height, num_bars, palette){
 
         // Append the separator for the bars
         vis.append("rect")
-            .attr("width", "4px")
-            .attr("height", (height * .8))
-            .attr("y", height * .05)
-            .attr("x", width * .5 - 2)
+            .attr("width", separator_width)
+            .attr("height", separator_height)
+            .attr("y", separator_offset.y)
+            .attr("x", separator_offset.x)
             .style("fill", "black")
             .style("stroke", "none");
 
         // Create a group for the bars
         bars = vis.append("g")
             .attr("class", "bar_group")
-            .attr("transform", "translate(" + width * .5 + ", " + height * .05 + ")");
+            .attr("transform", "translate(" + (separator_offset.x + hsw) + ", " + separator_offset.y + ")");
 
         //create_legend();
 
@@ -80,8 +92,8 @@ function barchart(width, height, num_bars, palette){
         // Create a band scale for the bars (Y-axis will be the pegs)
         y_scale = d3.scaleBand()
             .domain([1, 2, 3, 4, 5, 6, 7])
-            .rangeRound([0, height * .8])
-            .paddingInner([(height * .8 - num_bars * bar_width) / (num_bars - 1)]);
+            .rangeRound([0, separator_height])
+            .paddingInner([0.5]);
 
         // Create linear scale for the peg deltas
         x_scale = d3.scaleLinear()
@@ -118,7 +130,18 @@ function barchart(width, height, num_bars, palette){
 
     };
 
-    chart.update_chart = function(data){
+    chart.clear = function(){
+        bars.selectAll("g text").remove();
+
+        bars.selectAll("g").transition().duration(750)
+            .remove()
+            .select("rect")
+            .attr("width", 0)
+            .attr("x", 0);
+
+    };
+
+    chart.update = function(data){
 
         var deltas = data.measurements.pegDeltas;
         var hand_used = data.handUsed;
@@ -126,26 +149,34 @@ function barchart(width, height, num_bars, palette){
         console.log(deltas);
         console.log(hand_used);
 
-        var new_bars = bars.selectAll("rect." + hand_used);
+        var bar_selection = bars.selectAll("g." + hand_used)
+            .data(deltas);
 
-        var old_bars = bars.selectAll("rect.old_" + hand_used)
-            .data(new_bars.data());
-
-            new_bars = new_bars.data(deltas);
-
-        new_bars.enter().append("rect")
+        var selection_enter = bar_selection.enter()
+            .append("g")
             .attr("class", hand_used)
+            .attr("transform", (d, i) =>
+                  "translate(" +
+                  (hand_used == "left" ? -hsw : hsw) +
+                  "," +
+                  y_scale(i + 1) +
+                  ")");
+
+        selection_enter.append("rect")
             .attr("height", bar_width)
             .attr("width", 0)
-            .attr("x", (d) => hand_used == "left" ? "-2" : "2")
-            .attr("y", (d, i) => y_scale(i + 1))
             .transition().duration(750)
             .attr("width", (d) => x_scale(d))
-            .attr("x", (d) => hand_used == "left" ? -x_scale(d) - 2 : 2);
+            .attr("x", (d) => hand_used == "left" ? -x_scale(d) : 0);
 
-        new_bars.transition().duration(750)
-            .attr("width", (d) => x_scale(d))
-            .attr("x", (d) => hand_used == "left" ? -x_scale(d) - 2 : 2);
+        selection_enter.append("text")
+            .attr("text-anchor", () => hand_used == "left" ? "end": "start")
+            .attr("alignment-baseline", "middle")
+            .attr("x", () => hand_used == "left" ? -text_offset : text_offset)
+            .attr("y", bar_width / 2 )
+            .text((d) => d + "ms")
+            .transition().duration(750)
+            .attr("x", (d) => hand_used == "left" ? -x_scale(d) - text_offset : x_scale(d) + text_offset);
 
     };
 
@@ -169,8 +200,107 @@ function barchart(width, height, num_bars, palette){
  */
 var results_vis = function(width, height){
 
-    function results(container_selector){
+    // Constants
+    const handedness_scale_width = width * .6;
+    const handedness_scale_height = 40;
+
+
+    var scene;
+    var handedness_scale;
+    var histogram_group;
+
+    var stats;
+
+    function results(container_selector, peg_data){
+
+        scene = d3.select(container_selector).append("g");
+
+        handedness_scale = scene.append("g")
+            .attr("class", "handedness_scale")
+            .attr("transform", "translate(" + width * .1 + "," + 200 + ")");
+
+        histogram_group = scene.append("g");
+
+        stats = calculate_statistics(peg_data);
+
+        make_handedness_scale(handedness_scale);
+
+        make_histogram(histogram_group);
     }
+
+    var calculate_statistics = function(peg_data){
+        var left_avg =
+            peg_data.filter(data => data.handUsed == "left")
+            .map(data => data.measurements.sumTime)
+            .reduce((x, y) => x + y) / peg_data.length * 2;
+
+        var right_avg =
+            peg_data.filter(data => data.handUsed == "right")
+            .map(data => data.measurements.sumTime)
+            .reduce((x, y) => x + y) / peg_data.length * 2;
+
+        // The peg quotient formula is 2(R-L)/(R+L)
+        var pegQ = 2 * (right_avg - left_avg) / (right_avg + left_avg);
+
+        console.log(left_avg);
+        console.log(right_avg);
+        console.log(pegQ);
+
+        return {
+            pegQ: pegQ
+        };
+    };
+
+    var make_handedness_scale = function(scale_container){
+
+        var svgDefs = scale_container.append('defs');
+        var mainGradient = svgDefs.append('linearGradient')
+            .attr('id', 'mainGradient');
+
+        // Create the stops of the main gradient. Each stop will be assigned
+        // a class to style the stop using CSS.
+
+        mainGradient.append('stop')
+            .attr('class', 'stop-left')
+            .attr('offset', '0');
+
+        mainGradient.append('stop')
+            .attr('class', 'stop-right')
+            .attr('offset', '1');
+
+        scale_container.append("rect")
+            .classed("filled", true)
+            .attr("x", 60)
+            .attr("y", 40)
+            .attr("width", handedness_scale_width)
+            .attr("height", handedness_scale_height);
+
+        scale_container.append("svg:image")
+            .attr("x", handedness_scale_width + 80)
+            .attr("width", 40)
+            .attr("height", 100)
+            .attr("xlink:href", "img/right_hand.png");
+
+        scale_container.append("svg:image")
+            .attr("x", 0)
+            .attr("width", 40)
+            .attr("height", 100)
+            .attr("xlink:href", "img/left_hand.png");
+
+        var tick_scale = d3.scaleLinear()
+            .domain([-2, 2])
+            .range([0, handedness_scale_width]);
+
+        scale_container.append("text")
+            .attr("text-anchor", "middle")
+            .attr("alignment-baseline", "hanging")
+            .attr("x", 60 + tick_scale(stats.pegQ))
+            .attr("y", 40 + handedness_scale_height)
+            .html(() => "&#9650");
+    };
+
+    var make_histogram = function(histogram_container){
+    };
 
     results.width = function(value){
         if(!arguments.length) return width;

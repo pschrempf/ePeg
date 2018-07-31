@@ -19,9 +19,23 @@ beige: #f7ebd8	(247,235,216)
 dark gray: #505050	(80,80,80)
 */
 
-.bar_group rect.right {
+/* Stuff for the barchart */
+.bar_group .right rect{
     fill: #ffd700;
 }
-.bar_group rect.left {
+.bar_group .left rect{
     fill: #2199c3;
+}
+
+/* Stuff for the results screen */
+.stop-left {
+    stop-color: #2199c3;
+}
+
+.stop-right {
+    stop-color: #ffd700;
+}
+
+.filled {
+    fill: url(#mainGradient);
 }

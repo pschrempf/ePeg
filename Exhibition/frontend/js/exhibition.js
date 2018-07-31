@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
 
     // The number of trials that will be conducted for a player
     // One trial consits of one right hand or one left hand pass
-    const NUM_PLAYER_TRIALS = 2000;
+    const NUM_PLAYER_TRIALS = 4;
 
     // This will store the state of each player.
     var players = {};
@@ -98,13 +98,15 @@ document.addEventListener("DOMContentLoaded", (e) => {
             "chart": barchart(chart1.offsetWidth, window.innerHeight * .8, 7),
             "cover": covers[0],
             "vis_base": vis_bases[0],
-            "vis_id": "#vis1"
+            "vis_id": "#vis1",
+            "results": results_vis(chart1.offsetWidth, window.innerHeight * .8)
         },
         {
-            "chart": barchart(chart1.offsetWidth, window.innerHeight * .8, 7),
+            "chart": barchart(chart2.offsetWidth, window.innerHeight * .8, 7),
             "cover": covers[1],
             "vis_base": vis_bases[1],
-            "vis_id": "#vis2"
+            "vis_id": "#vis2",
+            "results": results_vis(chart2.offsetWidth, window.innerHeight * .8)
         }
     ];
 
@@ -169,7 +171,8 @@ document.addEventListener("DOMContentLoaded", (e) => {
                 .style("height", "100%")
                 .on("end", () => {
                     player["assets"]["vis_base"].select("svg").html("");
-                    player["assets"]["vis_base"].select("svg").html("<rect height='200' width='200' x='0' y='0' style='fill:red'></rect>");
+                    player["assets"]["results"](player["assets"]["vis_id"] + " .chart",
+                                                study_data);
 
                     player["assets"]["cover"].transition().duration(1000)
                         .style("height", "0%");
@@ -184,10 +187,11 @@ document.addEventListener("DOMContentLoaded", (e) => {
         };
 
         game.run_trial = function(){
+            player["assets"]["chart"].clear();
         };
 
         game.finish_trial = function(data){
-            player["assets"]["chart"].update_chart(data);
+            player["assets"]["chart"].update(data);
 
             num_trials_finished++;
 
