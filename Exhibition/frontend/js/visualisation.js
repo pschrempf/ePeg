@@ -39,14 +39,14 @@ function barchart(width, height, num_bars, palette){
     const separator_width = 4;
     const hsw = separator_width / 2; // Half separator width
 
-    const separator_height = height * .8;
+    const separator_height = height * .6;
 
     const separator_offset = {
         x: width * .5 - hsw,
-        y: height * .05
+        y: height * .2
     };
 
-    const bar_width = separator_height / (2 * num_bars);
+    const bar_width = height * .4 / num_bars;
 
     const text_offset = 30;
 
@@ -175,6 +175,7 @@ function barchart(width, height, num_bars, palette){
             .attr("x", () => hand_used == "left" ? -text_offset : text_offset)
             .attr("y", bar_width / 2 )
             .text((d) => d + "ms")
+            .style("font-weight", "bold")
             .transition().duration(750)
             .attr("x", (d) => hand_used == "left" ? -x_scale(d) - text_offset : x_scale(d) + text_offset);
 
@@ -201,25 +202,39 @@ function barchart(width, height, num_bars, palette){
 var results_vis = function(width, height){
 
     // Constants
-    const handedness_scale_width = width * .6;
-    const handedness_scale_height = 40;
+    const handedness_scale_width = width * .7;
+    const handedness_scale_height = 20;
 
+    const handedness_scale_margin = 20;
+    const handedness_scale_offset = {
+        x: 60,
+        y: 60
+    };
 
     var scene;
     var handedness_scale;
     var histogram_group;
 
+    var histogram;
+    var peg_index_scale;
+
     var stats;
 
     function results(container_selector, peg_data){
+
+        peg_index_scale = d3.scaleLinear()
+            .domain([-1.5, 1.5])
+            .range([0, handedness_scale_width]);
 
         scene = d3.select(container_selector).append("g");
 
         handedness_scale = scene.append("g")
             .attr("class", "handedness_scale")
-            .attr("transform", "translate(" + width * .1 + "," + 200 + ")");
+            .attr("transform", "translate(" + width * .1 + "," + 300 + ")");
 
-        histogram_group = scene.append("g");
+        histogram_group = scene.append("g")
+            .attr("class", "histogram_group")
+            .attr("transform", "translate(" + (width * .1 + 60 ) + "," + 140 + ")");
 
         stats = calculate_statistics(peg_data);
 
@@ -242,10 +257,6 @@ var results_vis = function(width, height){
         // The peg quotient formula is 2(R-L)/(R+L)
         var pegQ = 2 * (right_avg - left_avg) / (right_avg + left_avg);
 
-        console.log(left_avg);
-        console.log(right_avg);
-        console.log(pegQ);
-
         return {
             pegQ: pegQ
         };
@@ -259,47 +270,97 @@ var results_vis = function(width, height){
 
         // Create the stops of the main gradient. Each stop will be assigned
         // a class to style the stop using CSS.
-
         mainGradient.append('stop')
             .attr('class', 'stop-left')
-            .attr('offset', '0');
+            .attr('offset', '0.3');
 
         mainGradient.append('stop')
             .attr('class', 'stop-right')
-            .attr('offset', '1');
+            .attr('offset', '0.7');
 
         scale_container.append("rect")
             .classed("filled", true)
-            .attr("x", 60)
-            .attr("y", 40)
+            .attr("x", handedness_scale_offset.x)
+            .attr("y", handedness_scale_offset.y)
             .attr("width", handedness_scale_width)
             .attr("height", handedness_scale_height);
 
         scale_container.append("svg:image")
-            .attr("x", handedness_scale_width + 80)
+            .attr("x", handedness_scale_width + handedness_scale_offset.x + handedness_scale_margin)
             .attr("width", 40)
             .attr("height", 100)
             .attr("xlink:href", "img/right_hand.png");
 
+        scale_container.append("text")
+            .attr("x", handedness_scale_width + handedness_scale_offset.x + handedness_scale_margin)
+            .attr("y", 100)
+            .style("font-weight", "bold")
+            .attr("text-anchor", "middle")
+            .text("Right Affinity");
+
+
         scale_container.append("svg:image")
             .attr("x", 0)
-            .attr("width", 40)
+            .attr("width", handedness_scale_offset.x - handedness_scale_margin)
             .attr("height", 100)
             .attr("xlink:href", "img/left_hand.png");
 
-        var tick_scale = d3.scaleLinear()
-            .domain([-2, 2])
-            .range([0, handedness_scale_width]);
+        scale_container.append("text")
+            .attr("x", handedness_scale_offset.x - handedness_scale_margin)
+            .attr("text-anchor", "middle")
+            .style("font-weight", "bold")
+            .attr("y", 100)
+            .text("Left Affinity");
+
+
+
+        scale_container.append("rect")
+            .attr("width", "2")
+            .attr("height", "20")
+            .style("fill", "black")
+            .attr("x", handedness_scale_offset.x + peg_index_scale(stats.pegQ))
+            .attr("y", handedness_scale_offset.y + handedness_scale_height);
 
         scale_container.append("text")
             .attr("text-anchor", "middle")
             .attr("alignment-baseline", "hanging")
-            .attr("x", 60 + tick_scale(stats.pegQ))
+            .attr("x", handedness_scale_offset.x + peg_index_scale(stats.pegQ))
             .attr("y", 40 + handedness_scale_height)
             .html(() => "&#9650");
     };
 
     var make_histogram = function(histogram_container){
+
+        var y_scale = d3.scaleLinear()
+            .range([0, 200]);
+
+        var color_scale = d3.scaleLinear()
+            .domain([-0.3, 0, 0.3])
+            .range(["#2199c3", "#1D9B30", "#ffd700"]);
+
+        histogram = d3.histogram()
+            .value((d) => d["pegs.ndx"])
+            .domain(peg_index_scale.domain())
+            .thresholds(peg_index_scale.ticks([100]));
+
+        d3.csv("resources/alspac_pegboard_20180711.csv").then( (data) => {
+            var bins = histogram(data);
+
+
+            y_scale.domain([0, d3.max(bins, (d) => d.length)]);
+
+            histogram_container.selectAll("rect")
+                .data(bins).enter().append("rect")
+                .attr("class", "bar")
+                .attr("x", 1)
+                .style("fill", (d) => color_scale((d.x1 + d.x0) / 2))
+                .attr("transform", (d) =>
+                      "translate(" + peg_index_scale(d.x0) + "," + (200 - y_scale(d.length)) + ")")
+                .attr("width", (d) =>
+                      peg_index_scale(d.x1) - peg_index_scale(d.x0))
+                //.attr("height", 0).transition().duration(4000)
+                .attr("height", (d)=>y_scale(d.length));
+        });
     };
 
     results.width = function(value){

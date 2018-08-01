@@ -9,7 +9,7 @@ dark orange: #c14b22	(193,75,34)
 light orange: #f28143	(242,129,67)
 yellow: #fde033	(253,224,51)
 deep sea: #106f7c	(16,111,124)
-light blue: #2199c3	(33,153,195)
+light blue: #046282	(33,153,195)
 
 Muted neutral tones
 navy: #27567b	(39,86,123)
@@ -21,7 +21,7 @@ dark gray: #505050	(80,80,80)
 
 Actual colours used:
 Primary: white
-Secondary: #2199c3
+Secondary: #046282
 Ternary: #ffd700
 */
 
@@ -54,7 +54,12 @@ body {
     color: #ffd700;
 
 
-    background-color: #2199c3;
+    /*background-color: #046282;*/
+    background-image: url('../img/cortana.jpg');
+    background-repeat: no-repeat;
+    background-size:cover;
+    background-attachment:fixed;
+    background-position: 0% 300%;
 
     vertical-align: middle;
 
@@ -90,7 +95,7 @@ body {
 .cover {
     width:100%;
     height:100%;
-    background-color: #2199c3;
+    background-color: #046282;
     position:absolute;
     overflow:hidden;
 }
@@ -125,7 +130,7 @@ body {
 
     height:80px;
     width: 100%;
-    background-color:#2199c3;
+    background-color:#046282;
 }
 
 #footer img {

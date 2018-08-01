@@ -175,15 +175,16 @@ document.addEventListener("DOMContentLoaded", (e) => {
                                                 study_data);
 
                     player["assets"]["cover"].transition().duration(1000)
-                        .style("height", "0%");
+                        .style("height", "2%");
                 });
         };
 
         game.begin_study = function(){
+            player["assets"]["cover"].select(".cover_info").html("");
             player["assets"]["chart"](player["assets"]["vis_id"] + " .chart");
 
             player["assets"]["cover"].transition().duration(1000)
-                .style("height", "0%");
+                .style("height", "2%");
         };
 
         game.run_trial = function(){

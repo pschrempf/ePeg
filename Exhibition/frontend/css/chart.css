@@ -24,7 +24,7 @@ dark gray: #505050	(80,80,80)
     fill: #ffd700;
 }
 .bar_group .left rect{
-    fill: #2199c3;
+    fill: #046282;
 }
 
 /* Stuff for the results screen */
@@ -32,6 +32,9 @@ dark gray: #505050	(80,80,80)
     stop-color: #2199c3;
 }
 
+.stop-center {
+    stop-color: #1D9B30;
+}
 .stop-right {
     stop-color: #ffd700;
 }
