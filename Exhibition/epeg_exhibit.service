@@ -1,0 +1,17 @@
+# Based on https://stackoverflow.com/questions/4018154/how-do-i-run-a-node-js-app-as-a-background-service
+# A copy of this file should be placed in /etc/systemd/system
+
+[Unit]
+Description=Node.js server daemon for the ePeg Exhibition project.
+
+[Service]
+ExecStart=/var/www/html/ePeg/Exhibition/server.js
+Restart=always
+User=nobody
+Group=nogroup
+Environment=PATH=/usr/bin:/usr/local/bin
+Environment=NODE_ENV=production
+WorkingDirectory=/var/www/html/ePeg/Exhibition
+
+[Install]
+WantedBy=multi-user.target

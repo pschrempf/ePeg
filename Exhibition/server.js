@@ -1,3 +1,5 @@
+#!/usr/bin/node
+
 var express = require('express');
 var app = express();
 var server = require('http').createServer(app);
@@ -78,12 +80,13 @@ server.listen(LISTEN_PORT, function(){
 
 // Request handler function
 var requestHandler = function (request, response){
-    console.log(request.body);
+console.log("Got:" + request);
+    //console.log(request.body);
 
-    response.json({"code": 200, "status" : "Data Synchronised"});
+    //response.json({"code": 200, "status" : "Data Synchronised"});
 
     // Emit to all connected frontends the data that we just received from the tablet.
-    io.sockets.emit('peg_info', request.body);
+    //io.sockets.emit('peg_info', request.body);
 
 };
 
@@ -97,6 +100,7 @@ app.use("/epegExhibition", express.static('frontend'));
 io.on('connection', function(socket){
     console.log('Made socket connection', socket.id);
 
+    socket.on('newmessage', (data) => { console.log(data); });
     socket.emit('peg_info', test1);
     socket.emit('peg_info', test2);
 });
