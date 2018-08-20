@@ -24,16 +24,16 @@ dark gray: #505050	(80,80,80)
     fill: #ffd700;
 }
 .bar_group .left rect{
-    fill: #046282;
+    fill: #6DC0DC;
 }
 
 /* Stuff for the results screen */
 .stop-left {
-    stop-color: #2199c3;
+    stop-color: #6DC0DC;
 }
 
 .stop-center {
-    stop-color: #1D9B30;
+    stop-color: #eeeeee;
 }
 .stop-right {
     stop-color: #ffd700;

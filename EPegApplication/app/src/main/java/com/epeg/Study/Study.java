@@ -20,7 +20,7 @@ import java.security.SecureRandom;
  */
 public class Study {
 
-    public static final String TAG = Study.class.getName();
+    private static final String TAG = Study.class.getName();
 
     // Tags for JSON
     public static final String JSON_PARTICIPANT_TAG = "participant";
@@ -165,16 +165,16 @@ public class Study {
      * @return String containing results of study
      */
     private String getStudyResultString() {
-        String results = "";
+        StringBuilder results = new StringBuilder();
         for (int i = 0; i < trials.length; i++) {
-            results += "Trial " + (i+1) + " ";
+            results.append("Trial ").append(i + 1).append(" ");
             if (trials[i].isFinished()) {
-                results += "time: " + trials[i].getActualTime() + " ms\n";
+                results.append("time: ").append(trials[i].getActualTime()).append(" ms\n");
             } else {
-                results += "not completed.\n";
+                results.append("not completed.\n");
             }
         }
-        return results;
+        return results.toString();
     }
 
     /**

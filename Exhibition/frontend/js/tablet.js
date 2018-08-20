@@ -114,4 +114,20 @@ document.addEventListener("DOMContentLoaded", (e) => {
         });
     });
 
+    d3.select("#right_peg").on("click", () => {
+        socket.emit("player_action", {
+            "sender_id": TABLET_ID,
+            "action_type": REQ_PEG_PLACED,
+            "action_data": rightTest
+        });
+    });
+
+    d3.select("#left_peg").on("click", () => {
+        socket.emit("player_action", {
+            "sender_id": TABLET_ID,
+            "action_type": REQ_PEG_PLACED,
+            "action_data": rightTest
+        });
+    });
+
 });

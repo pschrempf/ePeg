@@ -2,23 +2,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="horizontal"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:background="@android:color/white"
-    android:orientation="horizontal"
     android:weightSum="1"
-    tools:context="com.epeg.Study.ChooseHandFragment"
-    >
+    tools:context="com.epeg.Study.ChooseHandFragment">
 
     <Button
         android:id="@+id/left_hand_button"
         android:layout_width="@dimen/hand_button_width"
         android:layout_height="@dimen/hand_button_height"
-        android:layout_gravity="start"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
+        android:layout_gravity="start"
         android:background="@drawable/left_hand"
         android:onClick="setDominantHand" />
 
@@ -35,12 +33,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
+        android:layout_margin="@dimen/fab_margin"
         android:layout_toRightOf="@id/left_hand_button"
         android:layout_toStartOf="@id/right_hand_button"
-        android:layout_margin="@dimen/fab_margin"
         android:text="@string/hand_prompt"
-        android:textColor="@color/colorPrimary"
-        android:textSize="@dimen/info_text_size"
-        android:textAlignment="center" />
+        android:textAlignment="center"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="@dimen/info_text_size" />
 
 </RelativeLayout>

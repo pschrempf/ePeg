@@ -35,4 +35,10 @@
     <string name="done">Done</string>
     <string name="researcher_hint">Researcher name</string>
     <string name="clinic_code_hint">Clinic code</string>
+    <string name="new_clinic_code_message">Add new clinic code:</string>
+    <string name="new_researcher_message">Add new researcher:</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="participantCodeSeen">Done</string>
 </resources>

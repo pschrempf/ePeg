@@ -1,9 +1,9 @@
 fun_facts = [
-    "most humans are right-handed and most parrots are left-footed",
-    "the same genes implicated in human handedness control the chirality in shells",
-    "most animals have sidedness but humans are the only one with a 1left:9right ratio",
-    "many genes controls handedness",
-    "handedness is not just left/right but can be measures along a continuum"
+    "Most humans are right-handed and most parrots are left-footed.",
+    "The same genes implicated in human handedness control the chirality in shells.",
+    "Most animals have sidedness but humans are the only one with a 1:9 left-right ratio.",
+    "Many genes control handedness.",
+    "Handedness is not just left/right but can be measured along a continuum."
 ];
 
 // Start doing things when the page has loaded completely.
@@ -38,6 +38,9 @@ document.addEventListener("DOMContentLoaded", (e) => {
     var vis_bases = [ d3.select("#vis1")
                     , d3.select("#vis2")
                     ];
+
+    var fun_fact_interval;
+    var fun_fact_index = 0;
 
     // Make connection to the server
     // We also advertise the fact that this is the frontend connection.
@@ -136,6 +139,33 @@ document.addEventListener("DOMContentLoaded", (e) => {
 
         console.log("Assigned Player ", player_index + 1);
         console.log(players);
+
+        player["assets"]["cover"].select(".cover_info")
+            .append("p")
+            .style("float", "bottom")
+            .style("padding-top", "20px")
+            .style("border-top", "2px solid white")
+            .html("Did you know?");
+
+        var fact_box = player["assets"]["cover"].select(".cover_info")
+            .append("p")
+            .style("float", "bottom")
+            .style("font-weight", "bold")
+            .style("line-height", "25px")
+            .html(fun_facts[0]);
+
+        fun_fact_interval = setInterval(() => {
+            fact_box.transition().duration(500)
+                .style("opacity", 0)
+                .on("end", () => {
+                    if(fun_fact_index == fun_facts.length) fun_fact_index = 0;
+
+                    fact_box.html(fun_facts[fun_fact_index++]);
+
+                    fact_box.transition().duration(500)
+                        .style("opacity", 1);
+                });
+        }, 3000);
     }
 
     function initialise_single_player_game(player_id){
@@ -171,11 +201,12 @@ document.addEventListener("DOMContentLoaded", (e) => {
                 .style("height", "100%")
                 .on("end", () => {
                     player["assets"]["vis_base"].select("svg").html("");
+                    player["assets"]["vis_base"].select("svg").style("background-color", "#27567b");
                     player["assets"]["results"](player["assets"]["vis_id"] + " .chart",
                                                 study_data);
 
                     player["assets"]["cover"].transition().duration(1000)
-                        .style("height", "2%");
+                        .style("height", "0%");
                 });
         };
 
@@ -222,42 +253,4 @@ document.addEventListener("DOMContentLoaded", (e) => {
             multi_player_game :
             current_multi_player_game;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // We need to wait for both tablets to connect to the server
-    var phase = 0;
-
-
-
-
-    d3.select("#haha")
-        .on("click", () => {
-            switch(phase){
-            case 0:
-                d3.select("#cover1")
-                    .transition().duration(1500)
-                    .style("height", "0px");
-                    phase = 1;
-                break;
-
-            case 1:
-                phase = 0;
-                break;
-            }
-        });
-
 });

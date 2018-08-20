@@ -1,14 +1,10 @@
 package com.epeg.Study;
 
-import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
-import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Surface;
@@ -17,31 +13,60 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.epeg.ExhibitionAsyncTask;
 import com.epeg.MainActivity;
 import com.epeg.R;
-import com.epeg.SetupFragment;
+import com.epeg.StudyFragmentPagerAdapter;
+import com.github.nkzawa.socketio.client.IO;
+import com.github.nkzawa.socketio.client.Socket;
 
 import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.net.URISyntaxException;
 
 /**
  * Class that controls the main flow of a study.
  *
- * @author Patrick Schrempf
+ * @author Gergely Flamich, Patrick Schrempf
  */
-public class StudyActivity extends Activity {
+public class StudyActivity extends AppCompatActivity {
+
+    public enum STUDY_FRAG_TAG{
+        PARTICIPANT_CODE(0),
+        CHOOSE_HAND(1),
+        LANDING_SCREEN(2),
+        SETUP(3),
+        TRIAL(4),
+        RESULTS(5);
+
+        int fragmentIndex;
+
+        STUDY_FRAG_TAG(int fragmentIndex){
+            this.fragmentIndex = fragmentIndex;
+        }
+
+        public int index(){
+            return fragmentIndex;
+        }
+    }
 
     private static final String TAG = StudyActivity.class.getSimpleName();
+    private static final String EXHIBITION_URL = "http://192.168.0.4:18216";
 
-    private FragmentManager fm;
-    private Fragment currentFragment;
+    // The view pager will control the flow of the application, as it will hold all the fragments
+    // That form a part of the study
+    private StudyFragmentPagerAdapter studyFragmentPagerAdapter;
+    private ViewPager studyFragmentContainer;
+
     private boolean leftToRight;
     private boolean demo;
     private int demosAvailable;
 
+    Participant participant;
+
     private int systemUiVisibilitySetting;
 
-    private ConnectivityManager connectivityManager;
+    private Socket epegWebSocket;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,20 +75,16 @@ public class StudyActivity extends Activity {
 
         initSettings();
 
-        fm = getFragmentManager();
-        currentFragment = null;
-        demo = false;
-        demosAvailable = 3;
-
-        // Setup the synchronisation task
-        connectivityManager =
-                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+//        fm = getFragmentManager();
+//        currentFragment = null;
+//        demo = false;
+//        demosAvailable = 3;
 
         try {
 
-            Participant participant;
             if (null == savedInstanceState || !savedInstanceState.getBoolean("isRunning", false)) {
                 Study.startNew(getApplicationContext());
+
                 // set up new participant with generated label
                 participant = new Participant(Study.generateNewParticipantLabel());
                 Study.setParticipant(participant);
@@ -71,27 +92,65 @@ public class StudyActivity extends Activity {
 
             participant = Study.getParticipant();
 
-            showParticipantLabel(participant.getLabel());
-
         } catch (StudyException e) {
             e.printStackTrace();
-            cancelStudy(currentFragment);
+            cancelStudy();
+        }
+
+        studyFragmentPagerAdapter = new StudyFragmentPagerAdapter(getSupportFragmentManager());
+
+        studyFragmentContainer = (ViewPager) findViewById(R.id.study_fragment_pager);
+
+        setupStudyFragments(studyFragmentContainer);
+
+
+        // Attempt to establish the socket connection to the server.
+        try{
+            epegWebSocket = IO.socket(EXHIBITION_URL);
+        } catch (URISyntaxException e) {
+            Log.e(TAG, "Couldn't establish socket connection: " + e.getMessage());
         }
 
         // set view to update UI flags after change
         View decorView = getWindow().getDecorView();
-        decorView.setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener() {
-            @Override
-            public void onSystemUiVisibilityChange(int visibility) {
-                Log.d(TAG, "Resetting UI visibility");
-                getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-            }
+        decorView.setOnSystemUiVisibilityChangeListener(visibility -> {
+            Log.d(TAG, "Resetting UI visibility");
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         });
+    }
+
+    private void setupStudyFragments(ViewPager viewPager){
+        StudyFragmentPagerAdapter adapter = new StudyFragmentPagerAdapter(getSupportFragmentManager());
+
+        ParticipantCodeFragment pcf = new ParticipantCodeFragment();
+        Bundle labelArg = new Bundle();
+        labelArg.putString("label", participant.getLabel());
+        pcf.setArguments(labelArg);
+
+        adapter.addFragment(pcf, "participant code");
+        adapter.addFragment(new ChooseHandFragment(), "choose hand");
+        adapter.addFragment(new StudyLandingScreenFragment(), "landing screen");
+        adapter.addFragment(new SetupFragment(), "setup");
+        adapter.addFragment(new TrialFragment(), "trial");
+        adapter.addFragment(new ResultFragment(), "results");
+
+        viewPager.setAdapter(adapter);
+    }
+
+    public void setStudyFragment(STUDY_FRAG_TAG tag){
+
+        studyFragmentContainer.setCurrentItem(tag.index(), true);
+
+        // TODO: to be sent after the hand fragment has been chosen
+        //sendMessage(R.integer.REQ_DISPLAY_READ, null);
+
+        // TODO: to be sent after we started the trial
+        //sendMessage(R.integer.REQ_START_TRIAL, null);
     }
 
     @Override
@@ -105,6 +164,20 @@ public class StudyActivity extends Activity {
                 | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                 | View.SYSTEM_UI_FLAG_FULLSCREEN
                 | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+
+        // When the app is in the foreground, reconnect to the server
+        epegWebSocket.connect();
+
+        sendMessage(R.integer.REQ_NEW_SINGLE_GAME, null);
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        // When the app is moved to the background, we disconnect from the server.
+        epegWebSocket.disconnect();
     }
 
     @Override
@@ -120,33 +193,12 @@ public class StudyActivity extends Activity {
     }
 
     /**
-     * Inflates fragment_participant_code layout to show participant label.
-     */
-    public void showParticipantLabel(String label) {
-        setContentView(R.layout.fragment_participant_code);
-
-        TextView tv1 = (TextView) findViewById(R.id.participant_code);
-        tv1.setText(getResources().getString(R.string.participant_code, label));
-    }
-
-    /**
-     * Show ChooseHandFragment.
-     * @param view - caller
-     */
-    public void chooseHand(View view) {
-        if (view.getId() == R.id.start_choose_hand)
-            updateCurrentFragment(new ChooseHandFragment(), "choose_hand");
-    }
-
-    /**
      * Callback function that enables Fragments to cancel the current study cleanly.
-     *
-     * @param caller - Fragment that is performing the callback
      */
-    public void cancelStudy(Fragment caller) {
+    public void cancelStudy() {
         // start intent to go back to MainActivity
         Study.cancel();
-        fm.beginTransaction().remove(caller).commit();
+        //fm.beginTransaction().remove(caller).commit();
         startActivity(new Intent(this, MainActivity.class));
     }
 
@@ -186,33 +238,9 @@ public class StudyActivity extends Activity {
         // start all studies from right
         leftToRight = false;
 
-        showActivity();
+        setStudyFragment(STUDY_FRAG_TAG.LANDING_SCREEN);
     }
 
-    /**
-     * Shows activity_study layout, setting the number of trials completed.
-     */
-    public void showActivity() {
-        setContentView(R.layout.activity_study);
-
-        TextView info = (TextView) findViewById(R.id.trial_status);
-        info.setText(getResources().getString(R.string.trial_status, Study.getCurrentTrialIndex(), Study.numTrials * 2));
-
-        // hide demo button
-        if (demosAvailable <= 0) {
-            Button demo = (Button) findViewById(R.id.start_demo);
-            demo.setVisibility(View.INVISIBLE);
-        }
-    }
-
-    /**
-     * Starts a new SetupFragment.
-     * @param view - caller
-     */
-    public void startTrial(View view) {
-        demo = false;
-        updateCurrentFragment(new SetupFragment(), "setup");
-    }
 
     /**
      * Cancels the current trial - flips orientation and shows study activity.
@@ -222,7 +250,7 @@ public class StudyActivity extends Activity {
         switch(view.getId()) {
             case R.id.cancel_trial:
                 flipOrientation();
-                showActivity();
+                setStudyFragment(STUDY_FRAG_TAG.LANDING_SCREEN);
                 break;
         }
     }
@@ -236,12 +264,11 @@ public class StudyActivity extends Activity {
         Log.d(TAG, "End of trial.");
 
         try {
-            new ExhibitionAsyncTask(
-                    connectivityManager.getActiveNetworkInfo())
-                    .execute(trial.jsonify());
-
-        } catch (Exception e) {
-            Log.e(TAG, "Trial synchronisation failed! Error: " + e. getMessage());
+            sendMessage(R.integer.REQ_TRIAL_FINISHED, trial.jsonify());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (TrialFailureException e) {
+            e.printStackTrace();
         }
 
         flipOrientation();
@@ -259,7 +286,7 @@ public class StudyActivity extends Activity {
                     Log.d(TAG, "Study finished!");
 
                     // show result fragment
-                    updateCurrentFragment(new ResultFragment(), "results");
+                    setStudyFragment(STUDY_FRAG_TAG.RESULTS);
                     return;
                 }
 
@@ -272,55 +299,19 @@ public class StudyActivity extends Activity {
             // set one demo unavailable
             demosAvailable--;
 
-            updateCurrentFragment(new SetupFragment(), "setup");
+            setStudyFragment(STUDY_FRAG_TAG.SETUP);
         }
 
-        showActivity();
+        setStudyFragment(STUDY_FRAG_TAG.LANDING_SCREEN);
     }
 
     /**
      * Complete the setup of the study and start trial.
-     * @param view - caller
      */
     public void setupComplete(View view) {
-        switch(view.getId()) {
-            case R.id.setup_complete:
-                updateCurrentFragment(new TrialFragment(), "trial");
-                break;
-        }
+        setStudyFragment(STUDY_FRAG_TAG.TRIAL); // trial
     }
 
-    /**
-     * Start trial demo.
-     * @param view - caller
-     */
-    public void startDemo(View view) {
-        switch(view.getId()) {
-            case R.id.start_demo:
-                demo = true;
-                updateCurrentFragment(new SetupFragment(), "setup");
-                break;
-        }
-    }
-
-    /**
-     * Removes and updates the current fragment, adding the new fragment with a specified tag.
-     *
-     * @param newFragment - new fragment to replace current fragment
-     * @param tag - tag to add to new fragment in fragment manager
-     */
-    private void updateCurrentFragment(Fragment newFragment, String tag) {
-        FragmentTransaction ft = fm.beginTransaction();
-
-        // remove current fragment
-        if (currentFragment != null) {
-            ft.remove(currentFragment);
-        }
-
-        // set, add and commit new fragment
-        currentFragment = newFragment;
-        ft.add(currentFragment, tag).commit();
-    }
 
     /**
      * Changes the orientation of the screen by 180 degrees.
@@ -403,5 +394,18 @@ public class StudyActivity extends Activity {
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         getWindow().getDecorView().setSystemUiVisibility(systemUiVisibilitySetting);
 
+    }
+
+    private void sendMessage(final int actionType, final JSONObject actionData){
+        try {
+            JSONObject message = new JSONObject();
+            message.put("sender_id", "BLALA");
+            message.put("action_type", actionType);
+            message.put("action_data", actionData);
+
+            epegWebSocket.emit("player_action", message);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 }

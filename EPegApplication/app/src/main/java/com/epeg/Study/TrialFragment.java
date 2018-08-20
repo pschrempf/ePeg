@@ -1,6 +1,6 @@
 package com.epeg.Study;
 
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.LayoutInflater;

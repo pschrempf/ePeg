@@ -211,6 +211,8 @@ var results_vis = function(width, height){
         y: 60
     };
 
+    const histogram_height = height * .6;
+
     var scene;
     var handedness_scale;
     var histogram_group;
@@ -275,6 +277,10 @@ var results_vis = function(width, height){
             .attr('offset', '0.3');
 
         mainGradient.append('stop')
+            .attr('class', 'stop-center')
+            .attr('offset', '0.5');
+
+        mainGradient.append('stop')
             .attr('class', 'stop-right')
             .attr('offset', '0.7');
 
@@ -295,6 +301,7 @@ var results_vis = function(width, height){
             .attr("x", handedness_scale_width + handedness_scale_offset.x + handedness_scale_margin)
             .attr("y", 100)
             .style("font-weight", "bold")
+            .style("fill", "white")
             .attr("text-anchor", "middle")
             .text("Right Affinity");
 
@@ -308,6 +315,7 @@ var results_vis = function(width, height){
         scale_container.append("text")
             .attr("x", handedness_scale_offset.x - handedness_scale_margin)
             .attr("text-anchor", "middle")
+            .style("fill", "white")
             .style("font-weight", "bold")
             .attr("y", 100)
             .text("Left Affinity");
@@ -315,28 +323,29 @@ var results_vis = function(width, height){
 
 
         scale_container.append("rect")
-            .attr("width", "2")
-            .attr("height", "20")
+            .attr("width", "1")
+            .attr("height", handedness_scale_height)
             .style("fill", "black")
             .attr("x", handedness_scale_offset.x + peg_index_scale(stats.pegQ))
-            .attr("y", handedness_scale_offset.y + handedness_scale_height);
+            .attr("y", handedness_scale_offset.y );
 
         scale_container.append("text")
             .attr("text-anchor", "middle")
             .attr("alignment-baseline", "hanging")
             .attr("x", handedness_scale_offset.x + peg_index_scale(stats.pegQ))
-            .attr("y", 40 + handedness_scale_height)
+            .attr("y", handedness_scale_offset.y + handedness_scale_height)
+            .style("fill", "white")
             .html(() => "&#9650");
     };
 
     var make_histogram = function(histogram_container){
 
         var y_scale = d3.scaleLinear()
-            .range([0, 200]);
+            .range([0, histogram_height]);
 
         var color_scale = d3.scaleLinear()
             .domain([-0.3, 0, 0.3])
-            .range(["#2199c3", "#1D9B30", "#ffd700"]);
+            .range(["#2199c3", "#eeeeee", "#ffd700"]); // "#1D9B30"
 
         histogram = d3.histogram()
             .value((d) => d["pegs.ndx"])
@@ -355,7 +364,7 @@ var results_vis = function(width, height){
                 .attr("x", 1)
                 .style("fill", (d) => color_scale((d.x1 + d.x0) / 2))
                 .attr("transform", (d) =>
-                      "translate(" + peg_index_scale(d.x0) + "," + (200 - y_scale(d.length)) + ")")
+                      "translate(" + peg_index_scale(d.x0) + "," + (histogram_height - y_scale(d.length) - 150) + ")")
                 .attr("width", (d) =>
                       peg_index_scale(d.x1) - peg_index_scale(d.x0))
                 //.attr("height", 0).transition().duration(4000)

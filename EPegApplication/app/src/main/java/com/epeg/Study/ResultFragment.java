@@ -1,15 +1,13 @@
 package com.epeg.Study;
 
 import android.app.Activity;
-import android.app.Fragment;
-import android.content.Intent;
+import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.epeg.NetworkSyncService;
 import com.epeg.R;
 
 /**
@@ -24,25 +22,17 @@ public class ResultFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final Activity activity = getActivity();
-        activity.setContentView(R.layout.fragment_result);
 
         // Conclude study if possible
         try {
             Study.conclude();
             Log.d(TAG, "Study concluded!");
 
-            Intent syncServiceIntent = new Intent(activity, NetworkSyncService.class);
-            activity.startService(syncServiceIntent);
         } catch (StudyException e) {
             Log.e(TAG, "Could not conclude study! Error: " + e.getMessage());
             Study.cancel();
             Log.d(TAG, "Study cancelled!");
         }
-
-        // sync with network
-        Intent syncServiceIntent = new Intent(this.getActivity(), NetworkSyncService.class);
-        this.getActivity().startService(syncServiceIntent);
     }
 
     @Override
