@@ -15,45 +15,29 @@
     </head>
     <body>
         <div id="header">
-            <div style="width:90%;margin:0px auto;text-align:center; ">How are <span class="emph">genes</span> related to our <span class="emph">dominant hand</span>?
+            <div style="width:90%;margin:0px auto;text-align:center; ">
+                <!-- style="text-shadow: 2px 2px black;" --><span >How are <span class="emph">genes</span> related to our <span class="emph">dominant hand</span>?</span>
             </div>
-
         </div>
         <div id="contents">
-
             <div id="vis1" class="visualisation">
-            </div>
-            <div id="stats">
-                <div style="float:none; position:relative; left:49%; width:2%; height:20%; background-color:#ffd700;"></div>
-                <div class="stat_content"  style="float:none">
-                    <h1 style="text-align:center;font-weight:bold;">&larr; Player 1</h1>
-                    <table>
-                        <tr>
-                            <td>Average Time</td><td> 4.2s</td>
-                        </tr>
-                        <tr>
-                            <td>Biggest Difference</td><td> 5.3s</td>
-                        </tr>
-                    </table>
+                <svg class="chart">
+                </svg>
+                <div id="cover1" class="cover">
+                    <div class="cover_info">
+                        Waiting for tablet...
+                    </div>
                 </div>
-                <!--  <div style="position:relative; left:20%; width:60%; height:5px; background-color:#ffd700;"></div> -->
-                <div id="separator" style="float:none; position:relative; left:49%; width:2%; height:20%; background-color:#ffd700;"></div>
-                <div class="stat_content"  style="float:none">
-                    <h1 style="text-align:center;font-weight:bold;">Player 2 &rarr;</h1>
-                    <table>
-                        <tr>
-                            <td>Average Time</td><td> 4.2s</td>
-                        </tr>
-                        <tr>
-                            <td>Biggest Difference</td><td> 5.3s</td>
-                        </tr>
-                    </table>
-                </div>
-                <div id="separator" style="float:none; position:relative; left:49%; width:2%; height:30%; background-color:#ffd700;"></div>
             </div>
-            <div id="vis2" class="visualisation" >
+           <div id="vis2" class="visualisation" >
+               <svg class="chart">
+               </svg>
+               <div id="cover2" class="cover">
+                   <div class="cover_info">
+                       Waiting for tablet...
+                   </div>
+               </div>
             </div>
-        </div>
         <div id="footer">
             <img src="img/04-foundation-monochrome-white.png" style="height:inherit; width: auto;" />
             <div id="sources">
@@ -63,6 +47,7 @@
             <button id="haha"></button>
             </div>
         </div>
+
         <script src="js/exhibition.js"></script>
     </body>
 </html>

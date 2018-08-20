@@ -9,7 +9,7 @@ dark orange: #c14b22	(193,75,34)
 light orange: #f28143	(242,129,67)
 yellow: #fde033	(253,224,51)
 deep sea: #106f7c	(16,111,124)
-light blue: #2199c3	(33,153,195)
+light blue: #046282	(33,153,195)
 
 Muted neutral tones
 navy: #27567b	(39,86,123)
@@ -17,6 +17,12 @@ dark red: #b63b3b	(182,59,59)
 yellow: #f9c414	(249,196,20)
 beige: #f7ebd8	(247,235,216)
 dark gray: #505050	(80,80,80)
+
+
+Actual colours used:
+Primary: white
+Secondary: #046282
+Ternary: #ffd700
 */
 
 body {
@@ -24,7 +30,7 @@ body {
     padding: 0px;
 
     background-color: white;
-    color: #ffd700;
+    color: white;/*#ffd700;*/
     font-weight:200;
 
     letter-spacing: 3px;
@@ -38,17 +44,24 @@ body {
 
     width: 100%;
     height: 100px;
-    padding: 20px 0px 0 0px;
+    padding: 20px 0px 0px 0px;
 
     text-align: center;
 
-    font-size: 64px;
+    font-size: 40px;
     font-weight: 100;
     letter-spacing: 4px;
-    color: #ffd700;
+    /*color: #ffd700;*/
+    color:white;
 
 
-    background-color: #2199c3;
+    /*background-color: #046282;*/
+    background-color: #27567b;
+    /* background-image: url('../img/cortana.jpg'); */
+    /* background-repeat: no-repeat; */
+    /* background-size:cover; */
+    /* background-attachment:fixed; */
+    /* background-position: 0% 300%; */
 
     vertical-align: middle;
 
@@ -71,46 +84,36 @@ body {
     height: auto;
 
     position:absolute;
-    top:135px;
+    top:120px; /* This should always be the total height of the header */
 }
 
 .visualisation {
-    width: 35%;
+    width: 50%;
+    height:2000px;
     float:left;
     position:relative;
 }
 
-#stats {
-    width:24%;
-    height:500px;
+.cover {
+    width:100%;
+    height:100%;
+    background-color: #27567b;
+    position:absolute;
+    overflow:hidden;
+}
 
+.cover_info {
+    margin:auto;
+    width:90%;
+    height:50%;
+    color: white; /*#ffd700;*/
     position:relative;
-
-    float:left;
-
-    margin: 20px 30px;
-
-    background-color: white;
-    color: #2199c3;
-
-    /* border-left: 2px solid #505050;
-    border-right: 2px solid #505050; */
-
 }
 
-.stat_content {
-    z-index: 3;
-}
-
-.stat_content table {
-    margin: 30px auto;
-    width: 80%;
-}
-
-.stat_content table td {
-    height: 30px;
-    padding: 10px 0px;
-    font-weight: bold;
+.visualisation svg{
+    position:absolute;
+    width:100%;
+    height:100%;
 }
 
 #footer {
@@ -129,7 +132,7 @@ body {
 
     height:80px;
     width: 100%;
-    background-color:#2199c3;
+    background-color:#27567b;
 }
 
 #footer img {

@@ -6,10 +6,16 @@
     <integer name="start_stop_width">200</integer>
     <integer name="peg_height">100</integer>
     <integer name="peg_width">100</integer>
-    <integer name="num_trials">5</integer>
+    <integer name="num_trials">2</integer>
     <integer name="num_pegs">7</integer>
     <integer name="max_trials">10</integer>
     <integer name="min_trials">1</integer>
-    <integer name="default_trials">5</integer>
+    <integer name="default_trials">2</integer>
     <integer name="rotation">0</integer>
+
+    <integer name="REQ_NEW_SINGLE_GAME">0</integer>
+    <integer name="REQ_NEW_MULTI_GAME">1</integer>
+    <integer name="REQ_START_TRIAL">2</integer>
+    <integer name="REQ_TRIAL_FINISHED">3</integer>
+    <integer name="REQ_DISPLAY_READ">4</integer>
 </resources>

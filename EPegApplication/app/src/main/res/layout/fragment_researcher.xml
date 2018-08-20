@@ -2,8 +2,7 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@android:color/white" >
+    android:layout_height="match_parent" >
 
     <LinearLayout
         android:id="@+id/researcher_selection"
@@ -33,8 +32,8 @@
 
             <Button
                 android:id="@+id/add_new_researcher"
-                android:layout_width="100px"
-                android:layout_height="100px"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:background="@android:drawable/ic_menu_add" />
 
         </LinearLayout>
@@ -70,8 +69,8 @@
 
             <Button
                 android:id="@+id/add_new_clinic_code"
-                android:layout_width="100px"
-                android:layout_height="100px"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:background="@android:drawable/ic_menu_add" />
 
         </LinearLayout>

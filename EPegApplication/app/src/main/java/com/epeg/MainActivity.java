@@ -33,9 +33,10 @@ import java.util.List;
 /**
  * Class for the main activity and settings page.
  *
- * @author Patrick Schrempf
+ * @author Gergely Flamich, Patrick Schrempf
  */
 public class MainActivity extends Activity {
+
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -60,13 +61,12 @@ public class MainActivity extends Activity {
 
         // set view to update UI flags after change
         View decorView = getWindow().getDecorView();
-        decorView.setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener() {
-            @Override
-            public void onSystemUiVisibilityChange(int visibility) {
-                Log.d(TAG, "Resetting UI visibility");
-                setDefaultOperationFlags();
-            }
+        decorView.setOnSystemUiVisibilityChangeListener(visibility -> {
+            Log.d(TAG, "Resetting UI visibility");
+            setDefaultOperationFlags();
         });
+
+
     }
 
     @Override
@@ -74,7 +74,11 @@ public class MainActivity extends Activity {
         super.onResume();
         Log.d(TAG, "Resuming epeg Main activity");
         setDefaultOperationFlags();
+
+
     }
+
+
 
     /**
      * Show researcher settings fragment.
@@ -88,23 +92,13 @@ public class MainActivity extends Activity {
         loadResearchers(context);
 
         Button newResearcherButton = (Button) findViewById(R.id.add_new_researcher);
-        newResearcherButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                addNewResearcher(context, v);
-            }
-        });
+        newResearcherButton.setOnClickListener(v -> addNewResearcher(context, v));
 
         // initialise clinic code spinner
         loadClinicCodes(context);
 
         Button newClinicButton = (Button) findViewById(R.id.add_new_clinic_code);
-        newClinicButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                addNewClinicCode(context, v);
-            }
-        });
+        newClinicButton.setOnClickListener(v -> addNewClinicCode(context, v));
 
     }
 
@@ -116,17 +110,14 @@ public class MainActivity extends Activity {
         researcherSpinnerAdapter.setDropDownViewResource(R.layout.spinner_item);
         researcherSpinner.setAdapter(researcherSpinnerAdapter);
 
-        researcherSpinner.post(new Runnable() {
-            @Override
-            public void run() {
-                String activeResearcher = sm.getActiveResearcher();
+        researcherSpinner.post(() -> {
+            String activeResearcher = sm.getActiveResearcher();
 
-                if (null != activeResearcher) {
-                    for (int i = 0; i < researchers.size(); i++) {
-                        if (researchers.get(i).equals(activeResearcher)) {
-                            researcherSpinner.setSelection(i);
-                            Log.d(TAG, "Setting selection of spinner: " + researchers.get(i));
-                        }
+            if (null != activeResearcher) {
+                for (int i = 0; i < researchers.size(); i++) {
+                    if (researchers.get(i).equals(activeResearcher)) {
+                        researcherSpinner.setSelection(i);
+                        Log.d(TAG, "Setting selection of spinner: " + researchers.get(i));
                     }
                 }
             }
@@ -154,17 +145,14 @@ public class MainActivity extends Activity {
         codeSpinnerAdapter.setDropDownViewResource(R.layout.spinner_item);
         codeSpinner.setAdapter(codeSpinnerAdapter);
 
-        codeSpinner.post(new Runnable() {
-            @Override
-            public void run() {
-                String activeClinic = sm.getActiveClinic();
+        codeSpinner.post(() -> {
+            String activeClinic = sm.getActiveClinic();
 
-                if (null != activeClinic) {
-                    for (int i = 0; i < codes.size(); i++) {
-                        if (codes.get(i).equals(activeClinic)) {
-                            codeSpinner.setSelection(i);
-                            Log.d(TAG, "Setting selection of spinner: " + codes.get(i));
-                        }
+            if (null != activeClinic) {
+                for (int i = 0; i < codes.size(); i++) {
+                    if (codes.get(i).equals(activeClinic)) {
+                        codeSpinner.setSelection(i);
+                        Log.d(TAG, "Setting selection of spinner: " + codes.get(i));
                     }
                 }
             }
@@ -211,6 +199,8 @@ public class MainActivity extends Activity {
      */
     private void showPopup(View view, String textToShow) {
         LayoutInflater inflater = (LayoutInflater) MainActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        assert inflater != null;
         View layout = inflater.inflate(R.layout.popup, (ViewGroup) findViewById(R.id.popup));
         TextView popupText = (TextView) layout.findViewById(R.id.popup_text);
         popupText.setText(textToShow);
@@ -232,10 +222,12 @@ public class MainActivity extends Activity {
      */
     public void addNewResearcher(final Context context, View view) {
         LayoutInflater inflater = (LayoutInflater) MainActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        assert inflater != null;
         View layout = inflater.inflate(R.layout.editable_popup, (ViewGroup) findViewById(R.id.editable_popup));
 
         TextView popupText = (TextView) layout.findViewById(R.id.popup_text);
-        popupText.setText("Add new researcher:");
+        popupText.setText(R.string.new_researcher_message);
 
         final EditText popupEditText = (EditText) layout.findViewById(R.id.popup_edit_text);
         popupEditText.setHint("e.g. Dr. Abc");
@@ -243,27 +235,19 @@ public class MainActivity extends Activity {
         final PopupWindow popup = new PopupWindow(layout, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
 
         Button popupCloseButton = (Button) layout.findViewById(R.id.popup_close);
-        popupCloseButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                popup.dismiss();
-            }
-        });
+        popupCloseButton.setOnClickListener(v -> popup.dismiss());
 
         Button popupSaveButton = (Button) layout.findViewById(R.id.popup_save);
-        popupSaveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    String newResearcher = popupEditText.getText().toString();
-                    Log.i(TAG, "Adding new researcher: " + newResearcher);
-                    sm.addResearcher(newResearcher);
-                    sm.setActiveResearcher(newResearcher);
-                    loadResearchers(context);
-                    popup.dismiss();
-                } catch (IOException e) {
-                    Log.e(TAG, e.getMessage());
-                }
+        popupSaveButton.setOnClickListener(v -> {
+            try {
+                String newResearcher = popupEditText.getText().toString();
+                Log.i(TAG, "Adding new researcher: " + newResearcher);
+                sm.addResearcher(newResearcher);
+                sm.setActiveResearcher(newResearcher);
+                loadResearchers(context);
+                popup.dismiss();
+            } catch (IOException e) {
+                Log.e(TAG, e.getMessage());
             }
         });
 
@@ -277,10 +261,12 @@ public class MainActivity extends Activity {
      */
     public void addNewClinicCode(final Context context, View view) {
         LayoutInflater inflater = (LayoutInflater) MainActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        assert inflater != null;
         View layout = inflater.inflate(R.layout.editable_popup, (ViewGroup) findViewById(R.id.editable_popup));
 
         TextView popupText = (TextView) layout.findViewById(R.id.popup_text);
-        popupText.setText("Add new clinic code:");
+        popupText.setText(R.string.new_clinic_code_message);
 
         final EditText popupEditText = (EditText) layout.findViewById(R.id.popup_edit_text);
         popupEditText.setHint("e.g. STA");
@@ -288,27 +274,19 @@ public class MainActivity extends Activity {
         final PopupWindow popup = new PopupWindow(layout, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
 
         Button popupCloseButton = (Button) layout.findViewById(R.id.popup_close);
-        popupCloseButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                popup.dismiss();
-            }
-        });
+        popupCloseButton.setOnClickListener(v -> popup.dismiss());
 
         Button popupSaveButton = (Button) layout.findViewById(R.id.popup_save);
-        popupSaveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    String newCode = popupEditText.getText().toString();
-                    Log.i(TAG, "Adding new clinic code: " + newCode);
-                    sm.addClinicID(newCode);
-                    sm.setActiveClinic(newCode);
-                    loadClinicCodes(context);
-                    popup.dismiss();
-                } catch (IOException e) {
-                    Log.e(TAG, e.getMessage());
-                }
+        popupSaveButton.setOnClickListener(v -> {
+            try {
+                String newCode = popupEditText.getText().toString();
+                Log.i(TAG, "Adding new clinic code: " + newCode);
+                sm.addClinicID(newCode);
+                sm.setActiveClinic(newCode);
+                loadClinicCodes(context);
+                popup.dismiss();
+            } catch (IOException e) {
+                Log.e(TAG, e.getMessage());
             }
         });
 
@@ -320,13 +298,23 @@ public class MainActivity extends Activity {
      *
      * @param view - caller
      */
-    public void startStudy(View view) {
+    public void startSingleStudy(View view) {
         Intent studyIntent = new Intent(MainActivity.this, StudyActivity.class);
+        studyIntent.putExtra("isSinglePlayer", true);
         sm.close();
         MainActivity.this.startActivity(studyIntent);
+    }
 
-        Intent syncServiceIntent = new Intent(MainActivity.this, NetworkSyncService.class);
-        MainActivity.this.startService(syncServiceIntent);
+    /**
+     * Starts study and syncs with network.
+     *
+     * @param view - caller
+     */
+    public void startMultiStudy(View view) {
+        Intent studyIntent = new Intent(MainActivity.this, StudyActivity.class);
+        studyIntent.putExtra("isSinglePlayer", false);
+        sm.close();
+        MainActivity.this.startActivity(studyIntent);
     }
 
     /**
@@ -341,12 +329,7 @@ public class MainActivity extends Activity {
             Study.setNumTrials(getResources().getInteger(R.integer.default_trials));
             picker.setMaxValue(getResources().getInteger(R.integer.max_trials));
             picker.setMinValue(getResources().getInteger(R.integer.min_trials));
-            picker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
-                @Override
-                public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                    Study.setNumTrials(newVal);
-                }
-            });
+            picker.setOnValueChangedListener((picker1, oldVal, newVal) -> Study.setNumTrials(newVal));
             picker.setValue(getResources().getInteger(R.integer.default_trials));
         }
     }
@@ -463,5 +446,4 @@ public class MainActivity extends Activity {
         getWindow().getDecorView().setSystemUiVisibility(systemUiVisibilitySetting);
 
     }
-
 }

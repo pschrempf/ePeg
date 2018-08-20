@@ -2,8 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@android:color/white" >
+    android:layout_height="match_parent" >
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -16,7 +15,7 @@
             android:layout_margin="@dimen/fab_margin"
             android:text="Number of trials per hand:"
             android:textSize="@dimen/info_text_size"
-            android:textColor="@color/colorPrimary" />
+            android:textColor="@color/colorPrimaryDark" />
 
         <NumberPicker
             android:id="@+id/trial_num_picker"

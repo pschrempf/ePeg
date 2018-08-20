@@ -64,6 +64,8 @@ var test2 = { id: 2,
         '2018-06-19 15:15:41.107' ],
      pegDeltas: [ 287, 344, 304, 403, 359, 311, 534 ] } };
 
+const STATUS_CONNECTED = 0;
+const STATUS_DISCONNECTED = 1;
 
 //Parse application/json
 app.use(bodyParser.json());
@@ -78,33 +80,57 @@ server.listen(LISTEN_PORT, function(){
     console.log('Listening to requests on port ' + LISTEN_PORT);
 });
 
-// Request handler function
-var requestHandler = function (request, response){
-console.log("Got:" + request);
-    //console.log(request.body);
-
-    //response.json({"code": 200, "status" : "Data Synchronised"});
-
-    // Emit to all connected frontends the data that we just received from the tablet.
-    //io.sockets.emit('peg_info', request.body);
-
-};
-
-// We will receive the data from the tablets in the form of a post request.
-// We pass the data to the request handler function
-app.post("/tabletData", requestHandler);
-
 // Load in static files
 app.use("/epegExhibition", express.static('frontend'));
+
+// List of frontends connected to the server
+var frontends = [];
+
+// List of tablets connected to the server
+var tablets = [];
 
 io.on('connection', function(socket){
     console.log('Made socket connection', socket.id);
 
-    socket.on('newmessage', (data) => { console.log(data); });
-    socket.emit('peg_info', test1);
-    socket.emit('peg_info', test2);
+    // Can be either "tablet" or "frontend"
+    var client_type = socket.handshake.query.client_type;
+
+    console.log('Socket query information:', client_type);
+
+    if (client_type == "tablet"){
+        let tablet_id = tablets.push(socket) - 1;
+
+        // Set up relaying of all player_action messages
+        socket.on('player_action', (d) =>
+                  frontends.forEach((s) => s.emit('player_action', d)));
+
+        // If the tablet disconnects, we remove it from our connection table
+        socket.on('disconnect', () => {
+            tablets.splice(tablet_id, 1);
+
+            frontends.forEach((s) => s.emit('player_status', {
+                id: s.handshake.query.tablet_id,
+                status: STATUS_DISCONNECTED
+            }));
+        });
+
+        // If a tablet connects, we alert every frontend
+        frontends.forEach((s) => s.emit("player_status", {
+            id: socket.handshake.query.tablet_id,
+            status: STATUS_CONNECTED
+        }));
+
+    }
+    else if (client_type == "frontend"){
+        frontends.push(socket);
+
+        // If a frontend connects, we update it with the list of tablets
+        tablets.forEach((s) => socket.emit("player_status", {
+            id: s.handshake.query.tablet_id,
+            status: STATUS_CONNECTED
+        }));
+    }
+    else{
+        console.log("Unknown client type: ", client_type);
+    }
 });
-
-
-
-

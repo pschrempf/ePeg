@@ -39,10 +39,6 @@
             android:label="@string/title_activity_study"
             android:theme="@style/Theme.ePeg"/>
 
-        <service
-            android:name="com.epeg.NetworkSyncService"
-            android:enabled="true"
-            android:exported="false" />
     </application>
 
 </manifest>

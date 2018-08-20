@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:com.epeg="http://schemas.android.com/apk/res-auto"
-    android:layout_height="match_parent"
     android:layout_width="match_parent"
-    android:background="@android:color/white">
+    android:layout_height="match_parent">
+
     <RelativeLayout
         android:id="@+id/info_center_row"
-        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:weightSum="1"
+        android:layout_alignParentBottom="false"
+        android:layout_alignParentStart="false"
+        android:layout_alignParentEnd="false"
         android:layout_alignParentTop="false"
         android:layout_centerInParent="true"
-        android:layout_alignParentLeft="false"
-        android:layout_alignParentBottom="false"
-        android:layout_alignParentRight="false">
+        android:orientation="horizontal"
+        android:weightSum="1">
 
         <TextView
             android:id="@+id/setup_info"
@@ -22,34 +22,31 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/fab_margin"
             android:text="@string/setup_info"
-            android:textSize="@dimen/info_text_size"
             android:textColor="@color/colorPrimary"
-            />
+            android:textSize="@dimen/info_text_size" />
 
         <Button
             android:id="@+id/setup_complete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/setup_complete_button"
-            android:height="@dimen/button_height"
-            android:width="@dimen/button_width"
+            android:layout_alignParentEnd="true"
             android:layout_margin="@dimen/fab_margin"
-            android:layout_alignParentRight="true"
-            android:onClick="setupComplete"
-            />
+            android:width="@dimen/button_width"
+            android:height="@dimen/button_height"
+            android:text="@string/setup_complete_button" />
     </RelativeLayout>
 
     <LinearLayout
         android:id="@+id/top_arrows"
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true" >
+        android:layout_alignParentTop="true"
+        android:orientation="vertical">
 
         <com.epeg.Study.PegRow
             android:id="@+id/peg_row_top"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_weight="1"
             android:orientation="horizontal" />
 

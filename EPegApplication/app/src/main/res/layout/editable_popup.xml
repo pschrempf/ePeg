@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="@dimen/fab_margin"
-    android:background="@android:color/darker_gray" >
+    android:background="@color/colorPrimaryDark" >
 
     <TextView
         android:id="@+id/popup_text"
@@ -32,6 +32,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:background="@color/colorPrimary"
+        android:textColor="@color/colorPrimaryDark"
         android:text="Save" />
 
     <Button
@@ -39,6 +41,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:background="@color/colorPrimary"
+        android:textColor="@color/colorPrimaryDark"
         android:text="Cancel" />
 
 </LinearLayout>

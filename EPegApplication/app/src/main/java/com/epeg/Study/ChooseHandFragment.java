@@ -1,11 +1,12 @@
 package com.epeg.Study;
 
 import android.app.Activity;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.epeg.R;
 
@@ -16,18 +17,27 @@ import com.epeg.R;
  */
 public class ChooseHandFragment extends Fragment {
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        // Get current activity and set layout
-        Activity activity = getActivity();
-        activity.setContentView(R.layout.fragment_choose_hand);
-    }
+    Button leftHandButton;
+    Button rightHandButton;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_choose_hand, container, false);
+        View view = inflater.inflate(R.layout.fragment_choose_hand, container, false);
+
+        leftHandButton = (Button) view.findViewById(R.id.left_hand_button);
+        rightHandButton = (Button) view.findViewById(R.id.right_hand_button);
+
+        // Add the appropriate hand choosing method
+        leftHandButton.setOnClickListener(v -> {
+            StudyActivity parent = (StudyActivity) getActivity();
+
+            Study.getParticipant().setIsRightHanded(true);
+
+            parent.setStudyFragment(StudyActivity.STUDY_FRAG_TAG.LANDING_SCREEN);
+            parent.sendMessage(R.integer.REQ_DISPLAY_READ, null);
+        });
+
+        return view;
     }
 }
