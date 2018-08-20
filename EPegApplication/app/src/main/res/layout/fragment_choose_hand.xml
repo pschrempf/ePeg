@@ -14,27 +14,26 @@
         android:id="@+id/left_hand_button"
         android:layout_width="@dimen/hand_button_width"
         android:layout_height="@dimen/hand_button_height"
-        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
         android:layout_gravity="start"
-        android:background="@drawable/left_hand"
-        android:onClick="setDominantHand" />
+        android:background="@drawable/left_hand" />
 
     <Button
         android:id="@+id/right_hand_button"
         android:layout_width="@dimen/hand_button_width"
         android:layout_height="@dimen/hand_button_height"
-        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
-        android:background="@drawable/right_hand"
-        android:onClick="setDominantHand" />
+        android:layout_gravity="left"
+        android:background="@drawable/right_hand" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_margin="@dimen/fab_margin"
-        android:layout_toRightOf="@id/left_hand_button"
+        android:layout_toEndOf="@id/left_hand_button"
         android:layout_toStartOf="@id/right_hand_button"
         android:text="@string/hand_prompt"
         android:textAlignment="center"

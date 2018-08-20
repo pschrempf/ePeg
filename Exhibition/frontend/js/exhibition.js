@@ -154,6 +154,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
             .style("line-height", "25px")
             .html(fun_facts[0]);
 
+        // Switch the fun facts at regular intervals
         fun_fact_interval = setInterval(() => {
             fact_box.transition().duration(500)
                 .style("opacity", 0)

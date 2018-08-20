@@ -53,14 +53,10 @@ public class StudyActivity extends AppCompatActivity {
     private static final String TAG = StudyActivity.class.getSimpleName();
     private static final String EXHIBITION_URL = "http://192.168.0.4:18216";
 
-    // The view pager will control the flow of the application, as it will hold all the fragments
-    // That form a part of the study
-    private StudyFragmentPagerAdapter studyFragmentPagerAdapter;
     private ViewPager studyFragmentContainer;
 
-    private boolean leftToRight;
-    private boolean demo;
-    private int demosAvailable;
+    private boolean leftToRight = false;
+    private boolean isSinglePlayer;
 
     Participant participant;
 
@@ -73,15 +69,12 @@ public class StudyActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_study);
 
+        // Lock the orientation of the device and disable various physical controls
         initSettings();
-
-//        fm = getFragmentManager();
-//        currentFragment = null;
-//        demo = false;
-//        demosAvailable = 3;
 
         try {
 
+            // Either create a new study if one is not running already, or resume the previous one.
             if (null == savedInstanceState || !savedInstanceState.getBoolean("isRunning", false)) {
                 Study.startNew(getApplicationContext());
 
@@ -97,8 +90,6 @@ public class StudyActivity extends AppCompatActivity {
             cancelStudy();
         }
 
-        studyFragmentPagerAdapter = new StudyFragmentPagerAdapter(getSupportFragmentManager());
-
         studyFragmentContainer = (ViewPager) findViewById(R.id.study_fragment_pager);
 
         setupStudyFragments(studyFragmentContainer);
@@ -111,6 +102,15 @@ public class StudyActivity extends AppCompatActivity {
             Log.e(TAG, "Couldn't establish socket connection: " + e.getMessage());
         }
 
+        // Once we successfully established the connection to the ePeg server, send what type of study we want to start
+        isSinglePlayer = getIntent().getExtras().getBoolean("isSinglePlayer");
+
+        if(isSinglePlayer)
+            sendMessage(R.integer.REQ_NEW_SINGLE_GAME, null);
+        else
+            sendMessage(R.integer.REQ_NEW_MULTI_GAME, null);
+
+
         // set view to update UI flags after change
         View decorView = getWindow().getDecorView();
         decorView.setOnSystemUiVisibilityChangeListener(visibility -> {
@@ -122,6 +122,7 @@ public class StudyActivity extends AppCompatActivity {
                     | View.SYSTEM_UI_FLAG_FULLSCREEN
                     | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         });
+
     }
 
     private void setupStudyFragments(ViewPager viewPager){
@@ -215,34 +216,6 @@ public class StudyActivity extends AppCompatActivity {
     }
 
     /**
-     * Callback that sets the dominant hand and starts trial.
-     *
-     * @param view - Button of hand chosen
-     */
-    public void setDominantHand(View view) throws StudyException {
-        String dominantHand;
-        switch(view.getId()) {
-            case R.id.right_hand_button:
-                dominantHand = getResources().getString(R.string.right_hand_button);
-                Study.getParticipant().setIsRightHanded(true);
-                break;
-            case R.id.left_hand_button:
-                dominantHand = getResources().getString(R.string.left_hand_button);
-                Study.getParticipant().setIsRightHanded(false);
-                break;
-            default:
-                throw new StudyException("Incorrect callback on 'setDominantHand' from id: " + view.getId());
-        }
-        Log.d(TAG, "Setting dominant hand: " + dominantHand + ".");
-
-        // start all studies from right
-        leftToRight = false;
-
-        setStudyFragment(STUDY_FRAG_TAG.LANDING_SCREEN);
-    }
-
-
-    /**
      * Cancels the current trial - flips orientation and shows study activity.
      * @param view - caller
      */
@@ -276,42 +249,26 @@ public class StudyActivity extends AppCompatActivity {
         // swap trial direction
         leftToRight = !leftToRight;
 
-        if (!demo) {
-            try {
-                // add trial to study
-                Study.addNextTrial(trial);
-                Log.d(TAG, "Trial successful! (changing leftToRight)");
+        try {
+            // add trial to study
+            Study.addNextTrial(trial);
+            Log.d(TAG, "Trial successful! (changing leftToRight)");
 
-                if (Study.isFinished()) {
-                    Log.d(TAG, "Study finished!");
+            if (Study.isFinished()) {
+                Log.d(TAG, "Study finished!");
 
-                    // show result fragment
-                    setStudyFragment(STUDY_FRAG_TAG.RESULTS);
-                    return;
-                }
-
-            } catch (StudyException e) {
-                Log.d(TAG, "Trial failed!");
-                Log.d(TAG, e.getMessage());
+                // show result fragment
+                setStudyFragment(STUDY_FRAG_TAG.RESULTS);
+                return;
             }
-        } else if (demosAvailable > 0) {
 
-            // set one demo unavailable
-            demosAvailable--;
-
-            setStudyFragment(STUDY_FRAG_TAG.SETUP);
+        } catch (StudyException e) {
+            Log.d(TAG, "Trial failed!");
+            Log.d(TAG, e.getMessage());
         }
 
         setStudyFragment(STUDY_FRAG_TAG.LANDING_SCREEN);
     }
-
-    /**
-     * Complete the setup of the study and start trial.
-     */
-    public void setupComplete(View view) {
-        setStudyFragment(STUDY_FRAG_TAG.TRIAL); // trial
-    }
-
 
     /**
      * Changes the orientation of the screen by 180 degrees.
@@ -339,14 +296,6 @@ public class StudyActivity extends AppCompatActivity {
      */
     public boolean isLeftToRight() {
         return leftToRight;
-    }
-
-    /**
-     * Return if the current trial is a demo trial.
-     * @return if current trial is a demo trial
-     */
-    public boolean isDemo() {
-        return demo;
     }
 
     /**
@@ -396,7 +345,7 @@ public class StudyActivity extends AppCompatActivity {
 
     }
 
-    private void sendMessage(final int actionType, final JSONObject actionData){
+    public void sendMessage(final int actionType, final JSONObject actionData){
         try {
             JSONObject message = new JSONObject();
             message.put("sender_id", "BLALA");

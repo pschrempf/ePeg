@@ -298,8 +298,21 @@ public class MainActivity extends Activity {
      *
      * @param view - caller
      */
-    public void startStudy(View view) {
+    public void startSingleStudy(View view) {
         Intent studyIntent = new Intent(MainActivity.this, StudyActivity.class);
+        studyIntent.putExtra("isSinglePlayer", true);
+        sm.close();
+        MainActivity.this.startActivity(studyIntent);
+    }
+
+    /**
+     * Starts study and syncs with network.
+     *
+     * @param view - caller
+     */
+    public void startMultiStudy(View view) {
+        Intent studyIntent = new Intent(MainActivity.this, StudyActivity.class);
+        studyIntent.putExtra("isSinglePlayer", false);
         sm.close();
         MainActivity.this.startActivity(studyIntent);
     }

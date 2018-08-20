@@ -13,7 +13,6 @@ import com.epeg.R;
 public class StudyLandingScreenFragment extends Fragment {
 
     Button startTrialButton;
-    Button startDemoButton;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -23,10 +22,13 @@ public class StudyLandingScreenFragment extends Fragment {
 
         // Add the click listeners
         startTrialButton = (Button) view.findViewById(R.id.start_trial);
-        startDemoButton = (Button) view.findViewById(R.id.start_demo);
 
-        startTrialButton.setOnClickListener((v) -> ((StudyActivity)getActivity()).setStudyFragment(StudyActivity.STUDY_FRAG_TAG.TRIAL));
-        startDemoButton.setOnClickListener((v) -> ((StudyActivity)getActivity()).setStudyFragment(StudyActivity.STUDY_FRAG_TAG.TRIAL));
+        startTrialButton.setOnClickListener((v) -> {
+            StudyActivity parent = ((StudyActivity)getActivity());
+
+            parent.setStudyFragment(StudyActivity.STUDY_FRAG_TAG.TRIAL);
+            parent.sendMessage(R.integer.REQ_START_TRIAL, null);
+        });
 
         return view;
     }
