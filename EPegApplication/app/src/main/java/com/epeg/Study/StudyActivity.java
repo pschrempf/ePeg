@@ -138,20 +138,13 @@ public class StudyActivity extends AppCompatActivity {
         adapter.addFragment(new StudyLandingScreenFragment(), "landing screen");
         adapter.addFragment(new SetupFragment(), "setup");
         adapter.addFragment(new TrialFragment(), "trial");
-        adapter.addFragment(new ResultFragment(), "results");
+        //adapter.addFragment(new ResultFragment(), "results");
 
         viewPager.setAdapter(adapter);
     }
 
     public void setStudyFragment(STUDY_FRAG_TAG tag){
-
         studyFragmentContainer.setCurrentItem(tag.index(), true);
-
-        // TODO: to be sent after the hand fragment has been chosen
-        //sendMessage(R.integer.REQ_DISPLAY_READ, null);
-
-        // TODO: to be sent after we started the trial
-        //sendMessage(R.integer.REQ_START_TRIAL, null);
     }
 
     @Override

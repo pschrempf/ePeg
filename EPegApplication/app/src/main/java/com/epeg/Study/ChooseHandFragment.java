@@ -32,6 +32,15 @@ public class ChooseHandFragment extends Fragment {
         leftHandButton.setOnClickListener(v -> {
             StudyActivity parent = (StudyActivity) getActivity();
 
+            Study.getParticipant().setIsRightHanded(false);
+
+            parent.setStudyFragment(StudyActivity.STUDY_FRAG_TAG.LANDING_SCREEN);
+            parent.sendMessage(R.integer.REQ_DISPLAY_READ, null);
+        });
+
+        rightHandButton.setOnClickListener(v -> {
+            StudyActivity parent = (StudyActivity) getActivity();
+
             Study.getParticipant().setIsRightHanded(true);
 
             parent.setStudyFragment(StudyActivity.STUDY_FRAG_TAG.LANDING_SCREEN);

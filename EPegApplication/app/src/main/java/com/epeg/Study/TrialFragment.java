@@ -96,30 +96,24 @@ public class TrialFragment extends Fragment {
         Peg bottom = pegsBottom.getHead();
 
         // ontouch listener for pegs is the same for each peg
-        View.OnTouchListener pegTouch = new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                Peg peg = (Peg) v;
-                try {
-                    touchPeg(peg);
-                    return true;
-                } catch (TrialFailureException e) {
-                    status.setText("Please restart the trial!");
-                    return false;
-                }
+        View.OnTouchListener pegTouch = (v, event) -> {
+            Peg peg = (Peg) v;
+            try {
+                touchPeg(peg);
+                return true;
+            } catch (TrialFailureException e) {
+                status.setText("Please restart the trial!");
+                return false;
             }
         };
 
         // onclick listener for pegs is the same for each peg
-        View.OnClickListener pegClick = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Peg peg = (Peg) v;
-                try {
-                    touchPeg(peg);
-                } catch (TrialFailureException e) {
-                    status.setText("Please restart the trial!");
-                }
+        View.OnClickListener pegClick = v -> {
+            Peg peg = (Peg) v;
+            try {
+                touchPeg(peg);
+            } catch (TrialFailureException e) {
+                status.setText("Please restart the trial!");
             }
         };
 
