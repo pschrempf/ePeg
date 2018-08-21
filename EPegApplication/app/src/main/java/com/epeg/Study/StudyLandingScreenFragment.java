@@ -27,7 +27,7 @@ public class StudyLandingScreenFragment extends Fragment {
             StudyActivity parent = ((StudyActivity)getActivity());
 
             parent.setStudyFragment(StudyActivity.STUDY_FRAG_TAG.SETUP);
-            parent.sendMessage(R.integer.REQ_START_TRIAL, null);
+            parent.sendMessage(StudyActivity.STUDY_REQ.START_TRIAL, null);
         });
 
         return view;

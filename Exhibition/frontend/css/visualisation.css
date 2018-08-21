@@ -32,8 +32,9 @@ body {
     background-color: white;
     color: white;/*#ffd700;*/
     font-weight:200;
+    font-size:40px;
 
-    letter-spacing: 3px;
+    letter-spacing: 8px;
 
     font-family: "Josefin Sans", Roboto, Helvetica, Arial, sans-serif;
 
@@ -43,12 +44,12 @@ body {
 #header {
 
     width: 100%;
-    height: 100px;
-    padding: 20px 0px 0px 0px;
+    height: 130px;
+    padding: 30px 0px 0px 0px;
 
     text-align: center;
 
-    font-size: 40px;
+    font-size: 108px;
     font-weight: 100;
     letter-spacing: 4px;
     /*color: #ffd700;*/
@@ -84,7 +85,7 @@ body {
     height: auto;
 
     position:absolute;
-    top:120px; /* This should always be the total height of the header */
+    top:160px; /* This should always be the total height of the header */
 }
 
 .visualisation {

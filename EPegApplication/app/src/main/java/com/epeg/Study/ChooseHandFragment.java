@@ -35,7 +35,7 @@ public class ChooseHandFragment extends Fragment {
             Study.getParticipant().setIsRightHanded(false);
 
             parent.setStudyFragment(StudyActivity.STUDY_FRAG_TAG.LANDING_SCREEN);
-            parent.sendMessage(R.integer.REQ_DISPLAY_READ, null);
+            parent.sendMessage(StudyActivity.STUDY_REQ.DISPLAY_READ, null);
         });
 
         rightHandButton.setOnClickListener(v -> {
@@ -44,7 +44,7 @@ public class ChooseHandFragment extends Fragment {
             Study.getParticipant().setIsRightHanded(true);
 
             parent.setStudyFragment(StudyActivity.STUDY_FRAG_TAG.LANDING_SCREEN);
-            parent.sendMessage(R.integer.REQ_DISPLAY_READ, null);
+            parent.sendMessage(StudyActivity.STUDY_REQ.DISPLAY_READ, null);
         });
 
         return view;

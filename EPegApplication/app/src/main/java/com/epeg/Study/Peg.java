@@ -13,7 +13,7 @@ import com.epeg.R;
  *
  * Class extending Button that represents where a peg is placed on the screen (also contains basic linked list implementation).
  */
-public class Peg extends Button {
+public class Peg extends android.support.v7.widget.AppCompatButton {
 
     // index
     int index;
@@ -34,8 +34,14 @@ public class Peg extends Button {
         this.setHeight(getResources().getInteger(R.integer.peg_height));
         this.setWidth(getResources().getInteger(R.integer.peg_width));
 
+
         final TableLayout.LayoutParams pegParams = new TableLayout.LayoutParams(
                 TableLayout.LayoutParams.WRAP_CONTENT, TableLayout.LayoutParams.WRAP_CONTENT, 1);
+
+        // This will separate the buttons from each other
+        pegParams.setMarginStart(2);
+        pegParams.setMarginEnd(2);
+
         this.setLayoutParams(pegParams);
     }
 

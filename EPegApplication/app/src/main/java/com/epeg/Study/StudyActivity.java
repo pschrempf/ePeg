@@ -17,6 +17,7 @@ import com.epeg.MainActivity;
 import com.epeg.R;
 import com.epeg.StudyFragmentPagerAdapter;
 import com.github.nkzawa.socketio.client.IO;
+import com.github.nkzawa.socketio.client.Manager;
 import com.github.nkzawa.socketio.client.Socket;
 
 import org.json.JSONException;
@@ -30,6 +31,8 @@ import java.net.URISyntaxException;
  * @author Gergely Flamich, Patrick Schrempf
  */
 public class StudyActivity extends AppCompatActivity {
+
+    private static final String UUID = "epegExhibTestTablet";
 
     public enum STUDY_FRAG_TAG{
         PARTICIPANT_CODE(0),
@@ -47,6 +50,24 @@ public class StudyActivity extends AppCompatActivity {
 
         public int index(){
             return fragmentIndex;
+        }
+    }
+
+    public enum STUDY_REQ{
+        NEW_SINGLE_GAME(0),
+        NEW_MULTI_GAME(1),
+        START_TRIAL(2),
+        TRIAL_FINISHED(3),
+        DISPLAY_READ(4);
+
+        int requestIndex;
+
+        STUDY_REQ(int fragmentIndex){
+            this.requestIndex = fragmentIndex;
+        }
+
+        public int index(){
+            return requestIndex;
         }
     }
 
@@ -99,7 +120,11 @@ public class StudyActivity extends AppCompatActivity {
 
         // Attempt to establish the socket connection to the server.
         try{
-            epegWebSocket = IO.socket(EXHIBITION_URL);
+            IO.Options extras = new IO.Options();
+
+            extras.query = "client_type=tablet&tablet_id="+UUID;
+
+            epegWebSocket = IO.socket(EXHIBITION_URL, extras);
         } catch (URISyntaxException e) {
             Log.e(TAG, "Couldn't establish socket connection: " + e.getMessage());
         }
@@ -107,10 +132,12 @@ public class StudyActivity extends AppCompatActivity {
         // Once we successfully established the connection to the ePeg server, send what type of study we want to start
         isSinglePlayer = getIntent().getExtras().getBoolean("isSinglePlayer");
 
+        Log.i(TAG, "IS SINGLE? " + isSinglePlayer);
+
         if(isSinglePlayer)
-            sendMessage(R.integer.REQ_NEW_SINGLE_GAME, null);
+            sendMessage(STUDY_REQ.NEW_SINGLE_GAME, null);
         else
-            sendMessage(R.integer.REQ_NEW_MULTI_GAME, null);
+            sendMessage(STUDY_REQ.NEW_MULTI_GAME, null);
 
 
         // set view to update UI flags after change
@@ -122,8 +149,11 @@ public class StudyActivity extends AppCompatActivity {
                     | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                     | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                     | View.SYSTEM_UI_FLAG_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_LOW_PROFILE
                     | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+
         });
+
 
     }
 
@@ -163,8 +193,6 @@ public class StudyActivity extends AppCompatActivity {
 
         // When the app is in the foreground, reconnect to the server
         epegWebSocket.connect();
-
-        sendMessage(R.integer.REQ_NEW_SINGLE_GAME, null);
 
     }
 
@@ -232,7 +260,7 @@ public class StudyActivity extends AppCompatActivity {
         Log.d(TAG, "End of trial.");
 
         try {
-            sendMessage(R.integer.REQ_TRIAL_FINISHED, trial.jsonify());
+            sendMessage(STUDY_REQ.TRIAL_FINISHED, trial.jsonify());
         } catch (JSONException e) {
             e.printStackTrace();
         } catch (TrialFailureException e) {
@@ -265,7 +293,7 @@ public class StudyActivity extends AppCompatActivity {
                     Study.cancel();
                     Log.d(TAG, "Study cancelled!");
                 }
-                
+
                 return;
             }
 
@@ -352,12 +380,14 @@ public class StudyActivity extends AppCompatActivity {
 
     }
 
-    public void sendMessage(final int actionType, final JSONObject actionData){
+    public void sendMessage(final STUDY_REQ actionType, final JSONObject actionData){
         try {
             JSONObject message = new JSONObject();
-            message.put("sender_id", "BLALA");
-            message.put("action_type", actionType);
+            message.put("sender_id", UUID);
+            message.put("action_type", actionType.index());
             message.put("action_data", actionData);
+
+            Log.i(TAG, "SENT:" + message.toString());
 
             epegWebSocket.emit("player_action", message);
         } catch (JSONException e) {

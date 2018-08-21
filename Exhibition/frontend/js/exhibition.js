@@ -135,7 +135,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
 
         // Update the visuals
         player["assets"]["cover"].select(".cover_info")
-            .html("Tablet connected!");
+            .html("<span style='display:block;margin:200px auto;font-weight:bold;font-size:60px;text-align:center'>Come and try yourself at our experiment!</span>");
 
         console.log("Assigned Player ", player_index + 1);
         console.log(players);
@@ -144,14 +144,16 @@ document.addEventListener("DOMContentLoaded", (e) => {
             .append("p")
             .style("float", "bottom")
             .style("padding-top", "20px")
-            .style("border-top", "2px solid white")
+            .style("text-align", "center")
+            //.style("border-top", "2px solid white")
             .html("Did you know?");
 
         var fact_box = player["assets"]["cover"].select(".cover_info")
             .append("p")
             .style("float", "bottom")
+            .style("text-align", "center")
             .style("font-weight", "bold")
-            .style("line-height", "25px")
+            .style("line-height", "50px")
             .html(fun_facts[0]);
 
         // Switch the fun facts at regular intervals

@@ -8,48 +8,17 @@
     android:layout_alignParentStart="false"
     android:layout_alignParentTop="false"
     android:layout_centerVertical="true"
-    android:fitsSystemWindows="true"
+    android:fitsSystemWindows="false"
     android:orientation="horizontal"
     android:weightSum="1"
     tools:context="com.epeg.Study.StudyActivity">
+<!-- android:fitsSystemWindows="false", due to https://stackoverflow.com/questions/39563447/hidden-navigation-bar-still-occupies-space -->
 
     <android.support.v4.view.ViewPager
+        android:id="@+id/study_fragment_pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/study_fragment_pager"
-        >
-    </android.support.v4.view.ViewPager>
-    <!-- TODO: Add this back in
-
-    -->
-    <!--
- com.epeg.Study.PegRowgRow
-        android:id="@+id/peg_row_top"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_alignParentTop="true">
-  com.epeg.Study.PegRowgRow>
-
- com.epeg.Study.PegRowgRow
-        android:id="@+id/peg_row_bottom"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_alignParentBottom="true">
-  com.epeg.Study.PegRowgRow>
-    -->
-
-    <!--
-        <include layout="@layout/content_study" />
-
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center|end"
-            android:layout_margin="@dimen/fab_margin"
-            android:src="@android:drawable/ic_delete" />
-    -->
+        android:background="@android:color/white"
+        android:visibility="visible" />
 
 </RelativeLayout>

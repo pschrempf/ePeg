@@ -201,7 +201,11 @@ function barchart(width, height, num_bars, palette){
  */
 var results_vis = function(width, height){
 
+
     // Constants
+
+    const NUM_HIST_BINS = 50;
+
     const handedness_scale_width = width * .7;
     const handedness_scale_height = 20;
 
@@ -211,7 +215,7 @@ var results_vis = function(width, height){
         y: 60
     };
 
-    const histogram_height = height * .6;
+    const histogram_height = height * .5;
 
     var scene;
     var handedness_scale;
@@ -232,11 +236,11 @@ var results_vis = function(width, height){
 
         handedness_scale = scene.append("g")
             .attr("class", "handedness_scale")
-            .attr("transform", "translate(" + width * .1 + "," + 300 + ")");
+            .attr("transform", "translate(" + width * .1 + "," + (100 + histogram_height) + ")");
 
         histogram_group = scene.append("g")
             .attr("class", "histogram_group")
-            .attr("transform", "translate(" + (width * .1 + 60 ) + "," + 140 + ")");
+            .attr("transform", "translate(" + (width * .1 + 60 ) + "," + 150 + ")");
 
         stats = calculate_statistics(peg_data);
 
@@ -270,8 +274,10 @@ var results_vis = function(width, height){
         var mainGradient = svgDefs.append('linearGradient')
             .attr('id', 'mainGradient');
 
+        // =====================================================================
         // Create the stops of the main gradient. Each stop will be assigned
         // a class to style the stop using CSS.
+        // =====================================================================
         mainGradient.append('stop')
             .attr('class', 'stop-left')
             .attr('offset', '0.3');
@@ -284,6 +290,9 @@ var results_vis = function(width, height){
             .attr('class', 'stop-right')
             .attr('offset', '0.7');
 
+        // =====================================================================
+        // Draw the scale
+        // =====================================================================
         scale_container.append("rect")
             .classed("filled", true)
             .attr("x", handedness_scale_offset.x)
@@ -299,8 +308,9 @@ var results_vis = function(width, height){
 
         scale_container.append("text")
             .attr("x", handedness_scale_width + handedness_scale_offset.x + handedness_scale_margin)
-            .attr("y", 100)
+            .attr("y", 110)
             .style("font-weight", "bold")
+            .style("font-size", "30px")
             .style("fill", "white")
             .attr("text-anchor", "middle")
             .text("Right Affinity");
@@ -317,25 +327,42 @@ var results_vis = function(width, height){
             .attr("text-anchor", "middle")
             .style("fill", "white")
             .style("font-weight", "bold")
-            .attr("y", 100)
+            .style("font-size", "30px")
+            .attr("y", 110)
             .text("Left Affinity");
 
-
+        // =====================================================================
+        // Draw the indicators
+        // =====================================================================
 
         scale_container.append("rect")
-            .attr("width", "1")
+            .attr("width", "3")
             .attr("height", handedness_scale_height)
             .style("fill", "black")
-            .attr("x", handedness_scale_offset.x + peg_index_scale(stats.pegQ))
+            .attr("x", handedness_scale_offset.x + peg_index_scale(stats.pegQ) - 1)
             .attr("y", handedness_scale_offset.y );
 
         scale_container.append("text")
             .attr("text-anchor", "middle")
             .attr("alignment-baseline", "hanging")
             .attr("x", handedness_scale_offset.x + peg_index_scale(stats.pegQ))
-            .attr("y", handedness_scale_offset.y + handedness_scale_height)
+            .attr("y", handedness_scale_offset.y + handedness_scale_height + 5)
             .style("fill", "white")
-            .html(() => "&#9650");
+            .style("font-size", "30pt")
+            .html(() => "&#8593");
+
+        scale_container.append("text")
+            .attr("text-anchor", "middle")
+            .attr("alignment-baseline", "hanging")
+            .attr("x", handedness_scale_offset.x + peg_index_scale(stats.pegQ))
+            .attr("y", handedness_scale_offset.y + handedness_scale_height + 45)
+            .style("fill", "white")
+            .style("font-size", "25pt")
+            .html(() => "Your laterality score: " + stats.pegQ.toFixed(2));
+
+
+        // Triangle: #9650
+        // Arrow: #8593
     };
 
     var make_histogram = function(histogram_container){
@@ -350,7 +377,7 @@ var results_vis = function(width, height){
         histogram = d3.histogram()
             .value((d) => d["pegs.ndx"])
             .domain(peg_index_scale.domain())
-            .thresholds(peg_index_scale.ticks([100]));
+            .thresholds(peg_index_scale.ticks([NUM_HIST_BINS]));
 
         d3.csv("resources/alspac_pegboard_20180711.csv").then( (data) => {
             var bins = histogram(data);
@@ -364,7 +391,7 @@ var results_vis = function(width, height){
                 .attr("x", 1)
                 .style("fill", (d) => color_scale((d.x1 + d.x0) / 2))
                 .attr("transform", (d) =>
-                      "translate(" + peg_index_scale(d.x0) + "," + (histogram_height - y_scale(d.length) - 150) + ")")
+                      "translate(" + peg_index_scale(d.x0) + "," + (histogram_height - y_scale(d.length)) + ")")
                 .attr("width", (d) =>
                       peg_index_scale(d.x1) - peg_index_scale(d.x0))
                 //.attr("height", 0).transition().duration(4000)

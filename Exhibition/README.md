@@ -125,6 +125,43 @@ Finally, restart the Samba service:
 > sudo systemctl restart smbd
 ```
 
+### Setting up the Dymo LabelWriter 450 Turbo
+
+In this step we shall cover how to set up the Dymo LabelWriter 450 Turbo so that it can be used from the ePeg server to print
+the reward labels after each study.
+
+First, we install the necessary libraries:
+
+```
+> sudo apt-get install libcups2-dev libcupsimage2-dev g++ cups cups-client
+```
+
+Install the Dymo printer drivers:
+
+```
+> sudo apt-get install printer-driver-dymo
+```
+
+Now add the ``pi`` user to the printer group so we have the permission to print:
+
+```
+> sudo usermod -a -G pi lpadmin pi
+```
+
+Then, open Chromium and navigate to the CUPS web admin service:
+
+```
+localhost:631/admin
+```
+
+Click ``Add Printer`` and when prompted, log in with the ``pi`` user credentials.
+
+In the list of Local Printers, the LabelWriter 450 should already be found. Select it and continue.
+
+Enter a name, say ``ePeg_DYMO_LabelWriter`` and a description and continue.
+
+The driver for the LabelWriter should already be selected, continue. The printer should be added now!
+
 ### Setting up the hostapd service
 
 Hostapd is the program that will allow us to set up the Pi as the wireless hotspot.
@@ -277,8 +314,9 @@ Then, enable it, so that it runs on startup:
 Useful links
 ---------------
 https://thepi.io/how-to-use-your-raspberry-pi-as-a-wireless-access-point/
-
-
+https://github.com/socketio/socket.io-website/blob/master/source/_posts/20150120-native-socket-io-and-android.md
+https://community.ubnt.com/t5/UniFi-Wireless/RPI-Dashbutton-Turn-RaspberryPI-with-Dymo-LabelWriter-into-a/td-p/1667513
+https://ubuntuforums.org/showthread.php?t=2376862&styleid=118
 
 Socket Communications
 --------------------------------------------------------------------------------
