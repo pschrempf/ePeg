@@ -23,16 +23,6 @@ public class ResultFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Conclude study if possible
-        try {
-            Study.conclude();
-            Log.d(TAG, "Study concluded!");
-
-        } catch (StudyException e) {
-            Log.e(TAG, "Could not conclude study! Error: " + e.getMessage());
-            Study.cancel();
-            Log.d(TAG, "Study cancelled!");
-        }
     }
 
     @Override
@@ -40,4 +30,5 @@ public class ResultFragment extends Fragment {
                              Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_result, container, false);
     }
+
 }

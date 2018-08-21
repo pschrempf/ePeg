@@ -19,8 +19,8 @@ import com.epeg.R;
  */
 public class TrialFragment extends Fragment {
 
-    // Activity and resources
-    private StudyActivity activity;
+    private StudyActivity parent;
+    private View trialLayout;
 
     private PegList pegs;
     private Peg currentPeg;
@@ -38,9 +38,9 @@ public class TrialFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
-        // set activity
-        activity = (StudyActivity) getActivity();
-        activity.setContentView(R.layout.fragment_trial);
+        parent = (StudyActivity) getActivity();
+
+        trialLayout = inflater.inflate(R.layout.fragment_trial, container, false);
 
         // set default variables
         Resources res = getResources();
@@ -50,7 +50,7 @@ public class TrialFragment extends Fragment {
         running = false;
         completed = false;
 
-        return inflater.inflate(R.layout.fragment_trial, container, false);
+        return trialLayout;
     }
 
     @Override
@@ -58,21 +58,23 @@ public class TrialFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         // Add status text
-        status = (TextView) activity.findViewById(R.id.trial_status);
+        status = (TextView) trialLayout.findViewById(R.id.trial_status);
         status.setText(Study.getParticipant().getLabel() + ": " + getResources().getString(R.string.start));
 
-        PegRow pegRowTop = (PegRow) activity.findViewById(R.id.top_row_pegs);
-        PegRow pegRowBottom = (PegRow) activity.findViewById(R.id.bottom_row_pegs);
-        ArrowRow arrowRowTop = (ArrowRow) activity.findViewById(R.id.top_row_arrows);
-        ArrowRow arrowRowBottom = (ArrowRow) activity.findViewById(R.id.bottom_row_arrows);
+        PegRow pegRowTop = (PegRow) trialLayout.findViewById(R.id.top_row_pegs);
+        PegRow pegRowBottom = (PegRow) trialLayout.findViewById(R.id.bottom_row_pegs);
+        ArrowRow arrowRowTop = (ArrowRow) trialLayout.findViewById(R.id.top_row_arrows);
+        ArrowRow arrowRowBottom = (ArrowRow) trialLayout.findViewById(R.id.bottom_row_arrows);
+
+
 
         // hide hand
         ImageView hand;
-        if (activity.isLeftToRight()) {
-            hand = (ImageView) activity.findViewById(R.id.right_hand);
+        if (parent.isLeftToRight()) {
+            hand = (ImageView) trialLayout.findViewById(R.id.right_hand);
             hand.setVisibility(View.INVISIBLE);
         } else {
-            hand = (ImageView) activity.findViewById(R.id.left_hand);
+            hand = (ImageView) trialLayout.findViewById(R.id.left_hand);
             hand.setVisibility(View.INVISIBLE);
         }
 
@@ -82,7 +84,7 @@ public class TrialFragment extends Fragment {
         // set current peg
         currentPeg = pegs.getHead();
         currentPeg.showArrow(true);
-        currentTrial = new Trial(numPegs, 1, activity.isLeftToRight());
+        currentTrial = new Trial(numPegs, 1, parent.isLeftToRight());
 
     }
 
@@ -129,7 +131,7 @@ public class TrialFragment extends Fragment {
             Peg nextBottom = bottom.next;
 
             // add pegs to pegList in the correct order
-            if (activity.isLeftToRight()) {
+            if (parent.isLeftToRight()) {
                 pegs.addLastPeg(top);
                 pegs.addLastPeg(bottom);
             } else {
@@ -170,7 +172,7 @@ public class TrialFragment extends Fragment {
                 currentTrial.nextPegReleased();
                 pegLifted = false;
                 currentTrial.stop();
-                activity.endTrial(currentTrial);
+                parent.endTrial(currentTrial);
 
             // Process other pegs
             } else {

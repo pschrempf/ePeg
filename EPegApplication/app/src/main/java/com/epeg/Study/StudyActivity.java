@@ -94,6 +94,8 @@ public class StudyActivity extends AppCompatActivity {
 
         setupStudyFragments(studyFragmentContainer);
 
+        setStudyFragment(STUDY_FRAG_TAG.PARTICIPANT_CODE);
+
 
         // Attempt to establish the socket connection to the server.
         try{
@@ -138,7 +140,7 @@ public class StudyActivity extends AppCompatActivity {
         adapter.addFragment(new StudyLandingScreenFragment(), "landing screen");
         adapter.addFragment(new SetupFragment(), "setup");
         adapter.addFragment(new TrialFragment(), "trial");
-        //adapter.addFragment(new ResultFragment(), "results");
+        adapter.addFragment(new ResultFragment(), "results");
 
         viewPager.setAdapter(adapter);
     }
@@ -252,6 +254,18 @@ public class StudyActivity extends AppCompatActivity {
 
                 // show result fragment
                 setStudyFragment(STUDY_FRAG_TAG.RESULTS);
+
+                // Conclude study if possible
+                try {
+                    Study.conclude();
+                    Log.d(TAG, "Study concluded!");
+
+                } catch (StudyException e) {
+                    Log.e(TAG, "Could not conclude study! Error: " + e.getMessage());
+                    Study.cancel();
+                    Log.d(TAG, "Study cancelled!");
+                }
+                
                 return;
             }
 
