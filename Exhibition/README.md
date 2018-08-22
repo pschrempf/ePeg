@@ -162,6 +162,23 @@ Enter a name, say ``ePeg_DYMO_LabelWriter`` and a description and continue.
 
 The driver for the LabelWriter should already be selected, continue. The printer should be added now!
 
+Now, we must compile the C++ interface to the ePeg application. Thus, navigate to the the print folder in the ePeg directory structure:
+
+```
+> cd /path/to/ePeg/Exhibition/printer
+```
+
+and execute the build script
+
+```
+> chmod +x build.sh
+> ./build.sh
+```
+
+__Note: The options for the PageSize parameter can be found in the lw450.ppd file (/dymo-cups-drivers-1.4.0.5/ppd/lw450.ppd). It lists all paper types and sizes available for that printer. Use the English name of the label!__
+
+Once the build script runs, a file called ``labelPrinter`` should appear.
+
 ### Setting up the hostapd service
 
 Hostapd is the program that will allow us to set up the Pi as the wireless hotspot.
