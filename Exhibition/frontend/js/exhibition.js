@@ -22,6 +22,9 @@ document.addEventListener("DOMContentLoaded", (e) => {
     const REQ_EXPERIMENT_DONE = 5;
     const REQ_GAME_RESET = 6;
 
+    // Frontend action constants;
+    const RES_PRINT_LABEL = 0;
+
     // The number of tablets we will wait for to connect before we allow
     // the game state to progress further.
     const MAX_PLAYERS = 2;
@@ -91,6 +94,13 @@ document.addEventListener("DOMContentLoaded", (e) => {
             break;
 
         case REQ_GAME_RESET:
+
+            // Here we check if we are calling the reset because someone has correctly finished the game and
+            // now we should print a reward label.
+            if (typeof data.action_data != 'undefined' && data.action_data.reason == "finished"){
+                socket.emit('frontend_action', players[data.sender_id].game.get_stats());
+            }
+
             players[data.sender_id].game.reset();
             players[data.sender_id].game = 0;
             break;
@@ -157,6 +167,8 @@ document.addEventListener("DOMContentLoaded", (e) => {
 
         var study_data = [];
 
+        var stats;
+
         var num_trials_finished = 0;
 
         function game(){
@@ -177,6 +189,10 @@ document.addEventListener("DOMContentLoaded", (e) => {
             reset_cover(player);
         };
 
+        game.get_stats = function () {
+            return stats;
+        };
+
         game.show_results = function(){
             player["assets"]["cover"].select(".cover_info").html("");
 
@@ -185,8 +201,10 @@ document.addEventListener("DOMContentLoaded", (e) => {
                 .on("end", () => {
                     player["assets"]["vis_base"].select("svg").html("");
                     player["assets"]["vis_base"].select("svg").style("background-color", "#27567b");
-                    player["assets"]["results"](player["assets"]["vis_id"] + " .chart",
-                                                study_data);
+
+                    // Creating the player histograms will also calculate the statistics we need, so we can retrieve them here.
+                    stats = player["assets"]["results"](player["assets"]["vis_id"] + " .chart",
+                                                        study_data);
 
                     player["assets"]["cover"].transition().duration(1000)
                         .style("height", "0%");
