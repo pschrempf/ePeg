@@ -24,12 +24,12 @@ def run(pegQ, avg_time):
     extra_texts = ["You're pretty quick with your\ndominant hand!"]
 
     # Load the font that we want to use to write onto the label
-    score_font = ImageFont.truetype("font/josefinsans.ttf", 24, encoding='unic')
-    arrow_font = ImageFont.truetype("font/arial.ttf", 18, encoding='unic')
-    extra_font = ImageFont.truetype("font/josefinsans.ttf", 19, encoding='unic')
+    score_font = ImageFont.truetype("printer/font/josefinsans.ttf", 24, encoding='unic')
+    arrow_font = ImageFont.truetype("printer/font/arial.ttf", 18, encoding='unic')
+    extra_font = ImageFont.truetype("printer/font/josefinsans.ttf", 19, encoding='unic')
 
     # Load the label template
-    im = Image.open("hist_template.png")
+    im = Image.open("printer/hist_template.png")
 
     draw = ImageDraw.Draw(im)
 
@@ -57,7 +57,7 @@ def run(pegQ, avg_time):
     draw.text(extra_text_coords, extra_texts[0], font=extra_font, fill="black")
 
     # Save the image
-    im.save("testtt.png", "PNG")
+    im.save("printer/customLabel.png", "PNG")
 
 if __name__ == "__main__":
 
