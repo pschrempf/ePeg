@@ -247,6 +247,8 @@ var results_vis = function(width, height){
         make_handedness_scale(handedness_scale);
 
         make_histogram(histogram_group);
+
+        return stats;
     }
 
     var calculate_statistics = function(peg_data){
@@ -264,7 +266,8 @@ var results_vis = function(width, height){
         var pegQ = 2 * (right_avg - left_avg) / (right_avg + left_avg);
 
         return {
-            pegQ: pegQ
+            pegQ: pegQ,
+            avg_time: 539
         };
     };
 
