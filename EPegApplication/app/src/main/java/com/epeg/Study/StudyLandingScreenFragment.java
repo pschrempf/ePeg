@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.epeg.R;
+import com.epeg.SocketIOHandler;
 
 public class StudyLandingScreenFragment extends Fragment {
 
@@ -25,9 +26,9 @@ public class StudyLandingScreenFragment extends Fragment {
 
         startTrialButton.setOnClickListener((v) -> {
             StudyActivity parent = ((StudyActivity)getActivity());
-
+ 
             parent.setStudyFragment(StudyActivity.STUDY_FRAG_TAG.SETUP);
-            parent.sendMessage(StudyActivity.STUDY_REQ.START_TRIAL, null);
+            SocketIOHandler.sendMessage(StudyActivity.STUDY_REQ.START_TRIAL, null);
         });
 
         return view;
