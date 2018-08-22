@@ -98,7 +98,10 @@ document.addEventListener("DOMContentLoaded", (e) => {
             // Here we check if we are calling the reset because someone has correctly finished the game and
             // now we should print a reward label.
             if (typeof data.action_data != 'undefined' && data.action_data.reason == "finished"){
-                socket.emit('frontend_action', players[data.sender_id].game.get_stats());
+                socket.emit('frontend_action', {
+			"action_type": RES_PRINT_LABEL,			
+			"action_data": players[data.sender_id].game.get_stats()
+		});
             }
 
             players[data.sender_id].game.reset();

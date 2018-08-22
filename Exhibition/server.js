@@ -4,7 +4,7 @@ var express = require('express');
 var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
-var exec = require('child_process').exec;
+var execSync = require('child_process').execSync;
 
 var bodyParser = require('body-parser');
 
@@ -138,7 +138,10 @@ io.on('connection', function(socket){
 
         // Handle the frontend_action requests
         socket.on("frontend_action", (s) => {
+		console.log("frontend_action: ");
+		console.log(s);
             if (s.action_type == PRINT_LABEL && should_print){
+                
                 print_label(s.action_data.pegQ, s.action_data.avg_time)
             }
         })
