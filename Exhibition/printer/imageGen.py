@@ -25,7 +25,7 @@ def run(pegQ, avg_time):
 
     # Load the font that we want to use to write onto the label
     score_font = ImageFont.truetype("font/josefinsans.ttf", 24, encoding='unic')
-    arrow_font = ImageFont.truetype("arial.ttf", 18, encoding='unic')
+    arrow_font = ImageFont.truetype("font/arial.ttf", 18, encoding='unic')
     extra_font = ImageFont.truetype("font/josefinsans.ttf", 19, encoding='unic')
 
     # Load the label template
