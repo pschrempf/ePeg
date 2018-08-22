@@ -38,7 +38,7 @@ int main(int argc, char** argv)
     int             num_options = 0;
     cups_option_t*  options = NULL;
 
-    num_options = cupsAddOption("PageSize", "w215h120", num_options, &options);
+    num_options = cupsAddOption("PageSize", "w168h252", num_options, &options);
     num_options = cupsAddOption("scaling", "100", num_options, &options);
     num_options = cupsAddOption("DymoHalftoning", "ErrorDiffusion", num_options, &options);
     num_options = cupsAddOption("DymoPrintQuality", "Graphics", num_options, &options);
