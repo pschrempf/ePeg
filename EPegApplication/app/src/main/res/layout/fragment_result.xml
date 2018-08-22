@@ -10,18 +10,17 @@
         android:layout_height="@dimen/button_height"
         android:text="@string/end_study_button"
         android:layout_margin="@dimen/fab_margin"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
-        android:onClick="endStudy" />
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true" />
 
     <TextView
         android:id="@+id/end_study_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/colorPrimary"
-        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
-        android:layout_toLeftOf="@id/end_study_button"
+        android:layout_toStartOf="@id/end_study_button"
         android:text="@string/study_end"
         android:textSize="@dimen/info_text_size"
         android:layout_margin="@dimen/fab_margin" />

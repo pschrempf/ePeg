@@ -4,6 +4,7 @@ var express = require('express');
 var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
+var exec = require('child_process').exec;
 
 var bodyParser = require('body-parser');
 
@@ -64,8 +65,20 @@ var test2 = { id: 2,
         '2018-06-19 15:15:41.107' ],
      pegDeltas: [ 287, 344, 304, 403, 359, 311, 534 ] } };
 
+
+function print_label(pegQ, avg_time){
+    execSync("printer/venv/bin/python3 printer/imageGen.py " + pegQ + " " + avg_time, (err, stdout, stderr) => console.log(stdout));
+    execSync("./printer/labelPrinter printer/customLabel.png", (err, stdout, stderr) => console.log(stdout));
+    execSync("rm printer/customLabel.png", (err, stdout, stderr) => console.log(stdout));
+}
+
+// This is a debug flag, should set to false if we want to temporarily turn of printing
+const should_print = true;
+
 const STATUS_CONNECTED = 0;
 const STATUS_DISCONNECTED = 1;
+
+const PRINT_LABEL = 0;
 
 //Parse application/json
 app.use(bodyParser.json());
@@ -101,8 +114,7 @@ io.on('connection', function(socket){
         let tablet_id = tablets.push(socket) - 1;
 
         // Set up relaying of all player_action messages
-        socket.on('player_action', (d) =>
-                  frontends.forEach((s) => s.emit('player_action', d)));
+        socket.on('player_action', (d) => frontends.forEach((s) => s.emit('player_action', d)));
 
         // If the tablet disconnects, we remove it from our connection table
         socket.on('disconnect', () => {
@@ -123,6 +135,13 @@ io.on('connection', function(socket){
     }
     else if (client_type == "frontend"){
         frontends.push(socket);
+
+        // Handle the frontend_action requests
+        socket.on("frontend_action", (s) => {
+            if (s.action_type == PRINT_LABEL && should_print){
+                print_label(s.action_data.pegQ, s.action_data.avg_time)
+            }
+        })
 
         // If a frontend connects, we update it with the list of tablets
         tablets.forEach((s) => socket.emit("player_status", {

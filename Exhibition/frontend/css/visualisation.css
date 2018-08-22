@@ -111,6 +111,19 @@ body {
     position:relative;
 }
 
+.cover_info span{
+    display:block;
+    margin: 200px 0;
+    font-weight:bold;
+    font-size:60px;
+    text-align:center;
+}
+
+.cover_info p {
+    float:bottom;
+    text-align:center;
+}
+
 .visualisation svg{
     position:absolute;
     width:100%;

@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.epeg.MainActivity;
 import com.epeg.R;
+import com.epeg.SocketIOHandler;
 import com.epeg.StudyFragmentPagerAdapter;
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Manager;
@@ -32,7 +33,6 @@ import java.net.URISyntaxException;
  */
 public class StudyActivity extends AppCompatActivity {
 
-    private static final String UUID = "epegExhibTestTablet";
 
     public enum STUDY_FRAG_TAG{
         PARTICIPANT_CODE(0),
@@ -58,7 +58,9 @@ public class StudyActivity extends AppCompatActivity {
         NEW_MULTI_GAME(1),
         START_TRIAL(2),
         TRIAL_FINISHED(3),
-        DISPLAY_READ(4);
+        DISPLAY_READ(4),
+        EXPERIMENT_DONE(5),
+        GAME_RESET(6);
 
         int requestIndex;
 
@@ -72,7 +74,6 @@ public class StudyActivity extends AppCompatActivity {
     }
 
     private static final String TAG = StudyActivity.class.getSimpleName();
-    private static final String EXHIBITION_URL = "http://192.168.0.4:18216";
 
     private ViewPager studyFragmentContainer;
 
@@ -82,8 +83,6 @@ public class StudyActivity extends AppCompatActivity {
     Participant participant;
 
     private int systemUiVisibilitySetting;
-
-    private Socket epegWebSocket;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,27 +116,15 @@ public class StudyActivity extends AppCompatActivity {
 
         setStudyFragment(STUDY_FRAG_TAG.PARTICIPANT_CODE);
 
-
-        // Attempt to establish the socket connection to the server.
-        try{
-            IO.Options extras = new IO.Options();
-
-            extras.query = "client_type=tablet&tablet_id="+UUID;
-
-            epegWebSocket = IO.socket(EXHIBITION_URL, extras);
-        } catch (URISyntaxException e) {
-            Log.e(TAG, "Couldn't establish socket connection: " + e.getMessage());
-        }
-
         // Once we successfully established the connection to the ePeg server, send what type of study we want to start
         isSinglePlayer = getIntent().getExtras().getBoolean("isSinglePlayer");
 
         Log.i(TAG, "IS SINGLE? " + isSinglePlayer);
 
         if(isSinglePlayer)
-            sendMessage(STUDY_REQ.NEW_SINGLE_GAME, null);
+            SocketIOHandler.sendMessage(STUDY_REQ.NEW_SINGLE_GAME, null);
         else
-            sendMessage(STUDY_REQ.NEW_MULTI_GAME, null);
+            SocketIOHandler.sendMessage(STUDY_REQ.NEW_MULTI_GAME, null);
 
 
         // set view to update UI flags after change
@@ -192,7 +179,7 @@ public class StudyActivity extends AppCompatActivity {
                 | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
 
         // When the app is in the foreground, reconnect to the server
-        epegWebSocket.connect();
+        SocketIOHandler.getSocket().connect();
 
     }
 
@@ -201,7 +188,7 @@ public class StudyActivity extends AppCompatActivity {
         super.onPause();
 
         // When the app is moved to the background, we disconnect from the server.
-        epegWebSocket.disconnect();
+        SocketIOHandler.getSocket().disconnect();
     }
 
     @Override
@@ -227,18 +214,6 @@ public class StudyActivity extends AppCompatActivity {
     }
 
     /**
-     * End study and return to main activity.
-     * @param v - must be R.id.end_study_button
-     */
-    public void endStudy(View v) {
-        switch(v.getId()) {
-            case R.id.end_study_button:
-                startActivity(new Intent(this, MainActivity.class));
-                break;
-        }
-    }
-
-    /**
      * Cancels the current trial - flips orientation and shows study activity.
      * @param view - caller
      */
@@ -260,7 +235,7 @@ public class StudyActivity extends AppCompatActivity {
         Log.d(TAG, "End of trial.");
 
         try {
-            sendMessage(STUDY_REQ.TRIAL_FINISHED, trial.jsonify());
+            SocketIOHandler.sendMessage(STUDY_REQ.TRIAL_FINISHED, trial.jsonify());
         } catch (JSONException e) {
             e.printStackTrace();
         } catch (TrialFailureException e) {
@@ -287,6 +262,8 @@ public class StudyActivity extends AppCompatActivity {
                 try {
                     Study.conclude();
                     Log.d(TAG, "Study concluded!");
+
+                    SocketIOHandler.sendMessage(STUDY_REQ.EXPERIMENT_DONE, null);
 
                 } catch (StudyException e) {
                     Log.e(TAG, "Could not conclude study! Error: " + e.getMessage());
@@ -380,18 +357,5 @@ public class StudyActivity extends AppCompatActivity {
 
     }
 
-    public void sendMessage(final STUDY_REQ actionType, final JSONObject actionData){
-        try {
-            JSONObject message = new JSONObject();
-            message.put("sender_id", UUID);
-            message.put("action_type", actionType.index());
-            message.put("action_data", actionData);
 
-            Log.i(TAG, "SENT:" + message.toString());
-
-            epegWebSocket.emit("player_action", message);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
 }

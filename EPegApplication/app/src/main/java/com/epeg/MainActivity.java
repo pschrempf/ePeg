@@ -26,8 +26,11 @@ import android.widget.TextView;
 
 import com.epeg.Study.Study;
 import com.epeg.Study.StudyActivity;
+import com.github.nkzawa.socketio.client.IO;
 
 import java.io.IOException;
+import java.net.Socket;
+import java.net.URISyntaxException;
 import java.util.List;
 
 /**
@@ -66,7 +69,10 @@ public class MainActivity extends Activity {
             setDefaultOperationFlags();
         });
 
+        String uuid = sm.getActiveResearcher() + "-" + sm.getActiveClinic();
 
+        // Create socket and connect it to the server with the above UUID
+        SocketIOHandler.getSocket(uuid).connect();
     }
 
     @Override
@@ -75,9 +81,7 @@ public class MainActivity extends Activity {
         Log.d(TAG, "Resuming epeg Main activity");
         setDefaultOperationFlags();
 
-
     }
-
 
 
     /**
@@ -206,12 +210,7 @@ public class MainActivity extends Activity {
         popupText.setText(textToShow);
         Button popupButton = (Button) layout.findViewById(R.id.popup_close);
         final PopupWindow popup = new PopupWindow(layout, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
-        popupButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                popup.dismiss();
-            }
-        });
+        popupButton.setOnClickListener(v -> popup.dismiss());
         popup.showAtLocation(view, Gravity.CENTER, 0, 0);
     }
 
@@ -317,22 +316,6 @@ public class MainActivity extends Activity {
         MainActivity.this.startActivity(studyIntent);
     }
 
-    /**
-     * Shows settings fragment.
-     *
-     * @param view - caller
-     */
-    public void showSettings(View view) {
-        if (view.getId() == R.id.show_settings) {
-            setContentView(R.layout.fragment_settings);
-            NumberPicker picker = (NumberPicker) findViewById(R.id.trial_num_picker);
-            Study.setNumTrials(getResources().getInteger(R.integer.default_trials));
-            picker.setMaxValue(getResources().getInteger(R.integer.max_trials));
-            picker.setMinValue(getResources().getInteger(R.integer.min_trials));
-            picker.setOnValueChangedListener((picker1, oldVal, newVal) -> Study.setNumTrials(newVal));
-            picker.setValue(getResources().getInteger(R.integer.default_trials));
-        }
-    }
 
     /**
      * Hides settings fragment.

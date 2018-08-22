@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.epeg.R;
+import com.epeg.SocketIOHandler;
 
 /**
  * Fragment that lets a user choose left or right handed.
@@ -35,7 +36,7 @@ public class ChooseHandFragment extends Fragment {
             Study.getParticipant().setIsRightHanded(false);
 
             parent.setStudyFragment(StudyActivity.STUDY_FRAG_TAG.LANDING_SCREEN);
-            parent.sendMessage(StudyActivity.STUDY_REQ.DISPLAY_READ, null);
+            SocketIOHandler.sendMessage(StudyActivity.STUDY_REQ.DISPLAY_READ, null);
         });
 
         rightHandButton.setOnClickListener(v -> {
@@ -44,7 +45,7 @@ public class ChooseHandFragment extends Fragment {
             Study.getParticipant().setIsRightHanded(true);
 
             parent.setStudyFragment(StudyActivity.STUDY_FRAG_TAG.LANDING_SCREEN);
-            parent.sendMessage(StudyActivity.STUDY_REQ.DISPLAY_READ, null);
+            SocketIOHandler.sendMessage(StudyActivity.STUDY_REQ.DISPLAY_READ, null);
         });
 
         return view;

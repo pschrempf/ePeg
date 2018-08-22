@@ -363,8 +363,29 @@ action_type :: [ NEW_SINGLE_GAME  = 0    // Request a new single player game
                | NEW_MULTI_GAME   = 1    // Request a new multi player game
                | START_NEXT_TRIAL = 2    // Request that the tablet start a new trial
                | TRIAL_FINISHED   = 3    // Let us know that 
-               | DISPLAY_READ     = 5    // This is the message sent when the tablet is ready to begin the first trial.
+               | DISPLAY_READ     = 4    // This is the message sent when the tablet is ready to begin the first trial.
+               | EXPERIMENT_DONE  = 5    // The player has finished the required number of trials and we should display the results
+               | GAME_RESET       = 6    // The player is either leaving the experiment or something bad happened, so we should reset
                ]
 action_data :: JSON Object               // Contains additional data about the action
 }
 ```
+
+If ``action_type`` is:
+ - ``TRIAL_FINISHED`` then ``action_data`` contains the trial JSON packet that was defined for the original ePeg project
+ - ``GAME_RESET`` then ``action_data`` can be ``null`` if it is unclear why we disconnected, or ``{reason: finished}`` if we are resetting at the end of the game.
+
+The frontend can also communicate with the server, through ``frontend_action`` messages, which look as follows:
+
+```javascript
+{
+action_type :: [ PRINT_LABEL = 0 // This is sent from the frontend once we receive the final message withing a game from a tablet
+               | 
+               ]
+               
+action_data :: JSON Object
+}
+```
+
+If ``action_type`` is:
+ - ``PRINT_LABEL`` then ``action_data`` is ``{pegQ :: float, avg_time :: float}``

@@ -19,6 +19,8 @@ document.addEventListener("DOMContentLoaded", (e) => {
     const REQ_START_TRIAL = 2;
     const REQ_TRIAL_FINISHED = 3;
     const REQ_DISPLAY_READ = 4;
+    const REQ_EXPERIMENT_DONE = 5;
+    const REQ_GAME_RESET = 6;
 
     // The number of tablets we will wait for to connect before we allow
     // the game state to progress further.
@@ -84,6 +86,15 @@ document.addEventListener("DOMContentLoaded", (e) => {
             players[data.sender_id].game.finish_trial(data.action_data);
             break;
 
+        case REQ_EXPERIMENT_DONE:
+            players[data.sender_id].game.show_results();
+            break;
+
+        case REQ_GAME_RESET:
+            players[data.sender_id].game.reset();
+            players[data.sender_id].game = 0;
+            break;
+
         default: console.log("Unknown request: " + data.action_type);
         }
 
@@ -133,42 +144,11 @@ document.addEventListener("DOMContentLoaded", (e) => {
         // Add the player to the game
         players[player.id] = player;
 
-        // Update the visuals
-        player["assets"]["cover"].select(".cover_info")
-            .html("<span style='display:block;margin:200px auto;font-weight:bold;font-size:60px;text-align:center'>Come and try yourself at our experiment!</span>");
+        // Reset the cover for the player
+        reset_cover(player);
 
         console.log("Assigned Player ", player_index + 1);
         console.log(players);
-
-        player["assets"]["cover"].select(".cover_info")
-            .append("p")
-            .style("float", "bottom")
-            .style("padding-top", "20px")
-            .style("text-align", "center")
-            //.style("border-top", "2px solid white")
-            .html("Did you know?");
-
-        var fact_box = player["assets"]["cover"].select(".cover_info")
-            .append("p")
-            .style("float", "bottom")
-            .style("text-align", "center")
-            .style("font-weight", "bold")
-            .style("line-height", "50px")
-            .html(fun_facts[0]);
-
-        // Switch the fun facts at regular intervals
-        fun_fact_interval = setInterval(() => {
-            fact_box.transition().duration(500)
-                .style("opacity", 0)
-                .on("end", () => {
-                    if(fun_fact_index == fun_facts.length) fun_fact_index = 0;
-
-                    fact_box.html(fun_facts[fun_fact_index++]);
-
-                    fact_box.transition().duration(500)
-                        .style("opacity", 1);
-                });
-        }, 3000);
     }
 
     function initialise_single_player_game(player_id){
@@ -182,22 +162,22 @@ document.addEventListener("DOMContentLoaded", (e) => {
         function game(){
             console.log("Starting single player game!");
 
-            reset();
-
             display_information();
         }
-
-        var reset = function(){
-            player["assets"]["cover"].transition().duration(1000)
-                .style("height", "100%");
-        };
 
         var display_information = function(){
             player["assets"]["cover"].select(".cover_info")
                 .html('<iframe width="560" height="315" src="https://www.youtube.com/embed/NPvMUpcxPSA?rel=0&amp;controls=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>');
         };
 
-        var show_results = function(){
+        game.reset = function(){
+            player["assets"]["cover"].transition().duration(1000)
+                .style("height", "100%");
+
+            reset_cover(player);
+        };
+
+        game.show_results = function(){
             player["assets"]["cover"].select(".cover_info").html("");
 
             player["assets"]["cover"].transition().duration(1000)
@@ -222,10 +202,13 @@ document.addEventListener("DOMContentLoaded", (e) => {
         };
 
         game.run_trial = function(){
-            player["assets"]["chart"].clear();
+            if(num_trials_finished % 2 == 0){
+                num_trials_finished = 0;
+                player["assets"]["chart"].clear();
+            }
         };
 
-        game.finish_trial = function(data){
+        game.finish_trial = function(data, player_id){
             player["assets"]["chart"].update(data);
 
             num_trials_finished++;
@@ -233,10 +216,6 @@ document.addEventListener("DOMContentLoaded", (e) => {
             // Record the data so that we can use it for the visualisation at the end and for printing
             study_data.push(data);
 
-            // If the player has finished every trial, show the results after 2 seconds.
-            if (num_trials_finished == NUM_PLAYER_TRIALS){
-                setTimeout(show_results, 2000);
-            }
         };
 
         return game;
@@ -247,13 +226,122 @@ document.addEventListener("DOMContentLoaded", (e) => {
 
     function initialise_multi_player_game(){
 
+        var study_data = [[], []];
+
+        var semaphore_counter = 0;
+
+        var semaphore_max = players.length - 1;
+
         function multi_player_game(){
             console.log("Starting multiplayer game!");
         }
+
+        var display_information = function(){
+            player["assets"]["cover"].select(".cover_info")
+                .html('<iframe width="560" height="315" src="https://www.youtube.com/embed/NPvMUpcxPSA?rel=0&amp;controls=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>');
+        };
+
+        game.reset = function(player_id){
+            Object.keys(players).forEach(k => {
+                let player = players[k];
+
+                player["assets"]["cover"].transition().duration(1000)
+                    .style("height", "100%");
+
+                reset_cover(player);
+            });
+        };
+
+        game.show_results = function(player_id){
+
+            // If this is the first time this function is called withing the current setting, set up the semaphore so that the
+            // function only runs if we have confirmation that everyone has called it.
+            semaphore_counter = semaphore_counter == 0 ? semaphore_max : semaphore_counter - 1;
+
+            // If everyone has called this function, the counter will be 0 after the line above.
+            if(semaphore_counter == 0){
+
+                Object.keys(players).forEach(k => {
+                    let player = players[k];
+
+                    player["assets"]["cover"].select(".cover_info").html("");
+
+                    player["assets"]["cover"].transition().duration(1000)
+                        .style("height", "100%")
+                        .on("end", () => {
+                            player["assets"]["vis_base"].select("svg").html("");
+                            player["assets"]["vis_base"].select("svg").style("background-color", "#27567b");
+                            player["assets"]["results"](player["assets"]["vis_id"] + " .chart",
+                                                        study_data[player["index"]]);
+
+                            player["assets"]["cover"].transition().duration(1000)
+                                .style("height", "0%");
+                        });
+                });
+            }
+        };
+
+        game.begin_study = function(player_id){
+            player["assets"]["cover"].select(".cover_info").html("");
+            player["assets"]["chart"](player["assets"]["vis_id"] + " .chart");
+
+            player["assets"]["cover"].transition().duration(1000)
+                .style("height", "2%");
+        };
+
+        game.run_trial = function(player_id){
+            player["assets"]["chart"].clear();
+        };
+
+        game.finish_trial = function(data, player_id){
+            player["assets"]["chart"].update(data);
+
+            num_trials_finished++;
+
+            // Record the data so that we can use it for the visualisation at the end and for printing
+            study_data.push(data);
+
+        };
+
 
         // Check if the singleton instance is present already or not
         return typeof current_multi_player_game == 'undefined' ?
             multi_player_game :
             current_multi_player_game;
+    }
+
+    function reset_cover(player){
+
+        // Update the visuals
+        player["assets"]["cover"].select(".cover_info")
+            .html("")
+            .append("span")
+            .html("Come and try yourself at our experiment!");
+
+        player["assets"]["cover"].select(".cover_info")
+            .append("p")
+            .style("padding-top", "20px")
+            //.style("border-top", "2px solid white")
+            .html("Did you know?");
+
+        var fact_box = player["assets"]["cover"].select(".cover_info")
+            .append("p")
+            .style("font-weight", "bold")
+            .style("line-height", "50px")
+            .html(fun_facts[0]);
+
+        // Switch the fun facts at regular intervals
+        fun_fact_interval = setInterval(() => {
+            fact_box.transition().duration(500)
+                .style("opacity", 0)
+                .on("end", () => {
+                    if(fun_fact_index == fun_facts.length) fun_fact_index = 0;
+
+                    fact_box.html(fun_facts[fun_fact_index++]);
+
+                    fact_box.transition().duration(500)
+                        .style("opacity", 1);
+                });
+        }, 10000);
     }
 });

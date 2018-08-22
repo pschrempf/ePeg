@@ -1,14 +1,21 @@
 package com.epeg.Study;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
+import com.epeg.MainActivity;
 import com.epeg.R;
+import com.epeg.SocketIOHandler;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Fragment that is called at the end of a study.
@@ -19,6 +26,7 @@ public class ResultFragment extends Fragment {
 
     private static final String TAG = ResultFragment.class.getSimpleName();
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,7 +36,26 @@ public class ResultFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_result, container, false);
+        View view = inflater.inflate(R.layout.fragment_result, container, false);
+
+        Button resultsViewedButton = (Button) view.findViewById(R.id.end_study_button);
+
+        resultsViewedButton.setOnClickListener(v -> {
+
+            // This is needed so that the server doesn't think that we just randomly disconnected.
+            JSONObject extra = new JSONObject();
+            try {
+                extra.put("reason", "finished");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            SocketIOHandler.sendMessage(StudyActivity.STUDY_REQ.GAME_RESET, extra);
+
+            startActivity(new Intent(getActivity(), MainActivity.class));
+        });
+
+        return view;
     }
 
 }
