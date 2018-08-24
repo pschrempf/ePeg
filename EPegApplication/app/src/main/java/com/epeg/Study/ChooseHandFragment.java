@@ -35,7 +35,11 @@ public class ChooseHandFragment extends Fragment {
 
             Study.getParticipant().setIsRightHanded(false);
 
-            parent.setStudyFragment(StudyActivity.STUDY_FRAG_TAG.LANDING_SCREEN);
+            if (parent.isSinglePlayer())
+                parent.setStudyFragment(StudyActivity.STUDY_FRAG_TAG.LANDING_SCREEN);
+            else
+                parent.waitForOtherPlayer(StudyActivity.STUDY_FRAG_TAG.LANDING_SCREEN);
+
             SocketIOHandler.sendMessage(StudyActivity.STUDY_REQ.DISPLAY_READ, null);
         });
 
@@ -44,7 +48,11 @@ public class ChooseHandFragment extends Fragment {
 
             Study.getParticipant().setIsRightHanded(true);
 
-            parent.setStudyFragment(StudyActivity.STUDY_FRAG_TAG.LANDING_SCREEN);
+            if (parent.isSinglePlayer())
+                parent.setStudyFragment(StudyActivity.STUDY_FRAG_TAG.LANDING_SCREEN);
+            else
+                parent.waitForOtherPlayer(StudyActivity.STUDY_FRAG_TAG.LANDING_SCREEN);
+
             SocketIOHandler.sendMessage(StudyActivity.STUDY_REQ.DISPLAY_READ, null);
         });
 

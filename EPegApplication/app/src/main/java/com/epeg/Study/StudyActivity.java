@@ -17,6 +17,7 @@ import com.epeg.MainActivity;
 import com.epeg.R;
 import com.epeg.SocketIOHandler;
 import com.epeg.StudyFragmentPagerAdapter;
+import com.epeg.WaitingForOtherPlayerFragment;
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Manager;
 import com.github.nkzawa.socketio.client.Socket;
@@ -40,7 +41,8 @@ public class StudyActivity extends AppCompatActivity {
         LANDING_SCREEN(2),
         SETUP(3),
         TRIAL(4),
-        RESULTS(5);
+        RESULTS(5),
+        WAITING_FOR_OTHER_PLAYER(6);
 
         int fragmentIndex;
 
@@ -78,6 +80,8 @@ public class StudyActivity extends AppCompatActivity {
     private ViewPager studyFragmentContainer;
 
     private boolean leftToRight = false;
+
+
     private boolean isSinglePlayer;
 
     Participant participant;
@@ -121,10 +125,12 @@ public class StudyActivity extends AppCompatActivity {
 
         Log.i(TAG, "IS SINGLE? " + isSinglePlayer);
 
-        if(isSinglePlayer)
+        if (isSinglePlayer) {
             SocketIOHandler.sendMessage(STUDY_REQ.NEW_SINGLE_GAME, null);
-        else
+        } else {
             SocketIOHandler.sendMessage(STUDY_REQ.NEW_MULTI_GAME, null);
+            waitForOtherPlayer(STUDY_FRAG_TAG.PARTICIPANT_CODE);
+        }
 
 
         // set view to update UI flags after change
@@ -158,12 +164,26 @@ public class StudyActivity extends AppCompatActivity {
         adapter.addFragment(new SetupFragment(), "setup");
         adapter.addFragment(new TrialFragment(), "trial");
         adapter.addFragment(new ResultFragment(), "results");
+        adapter.addFragment(new WaitingForOtherPlayerFragment(), "waiting for other player");
 
         viewPager.setAdapter(adapter);
     }
 
+    public void setStudyFragment(STUDY_FRAG_TAG tag, boolean smoothScroll){
+        studyFragmentContainer.setCurrentItem(tag.index(), smoothScroll);
+    }
+
     public void setStudyFragment(STUDY_FRAG_TAG tag){
-        studyFragmentContainer.setCurrentItem(tag.index(), true);
+        setStudyFragment(tag, true);
+    }
+
+    public void waitForOtherPlayer(STUDY_FRAG_TAG moveToAfterResponse){
+        // Move to the waiting screen
+        setStudyFragment(STUDY_FRAG_TAG.WAITING_FOR_OTHER_PLAYER, false);
+
+        // When both players are ready, move back
+        SocketIOHandler.setResponseFunction(() -> setStudyFragment(moveToAfterResponse, false));
+
     }
 
     @Override
@@ -208,9 +228,11 @@ public class StudyActivity extends AppCompatActivity {
      */
     public void cancelStudy() {
         // start intent to go back to MainActivity
+
         Study.cancel();
-        //fm.beginTransaction().remove(caller).commit();
         startActivity(new Intent(this, MainActivity.class));
+
+        SocketIOHandler.sendMessage(STUDY_REQ.GAME_RESET, null);
     }
 
     /**
@@ -236,9 +258,7 @@ public class StudyActivity extends AppCompatActivity {
 
         try {
             SocketIOHandler.sendMessage(STUDY_REQ.TRIAL_FINISHED, trial.jsonify());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        } catch (TrialFailureException e) {
+        } catch (JSONException | TrialFailureException e) {
             e.printStackTrace();
         }
 
@@ -279,7 +299,10 @@ public class StudyActivity extends AppCompatActivity {
             Log.d(TAG, e.getMessage());
         }
 
-        setStudyFragment(STUDY_FRAG_TAG.LANDING_SCREEN);
+        if(isSinglePlayer)
+            setStudyFragment(STUDY_FRAG_TAG.LANDING_SCREEN);
+        else
+            waitForOtherPlayer(STUDY_FRAG_TAG.LANDING_SCREEN);
     }
 
     /**
@@ -355,6 +378,10 @@ public class StudyActivity extends AppCompatActivity {
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         getWindow().getDecorView().setSystemUiVisibility(systemUiVisibilitySetting);
 
+    }
+
+    public boolean isSinglePlayer() {
+        return isSinglePlayer;
     }
 
 

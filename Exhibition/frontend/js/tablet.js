@@ -56,14 +56,21 @@ document.addEventListener("DOMContentLoaded", (e) => {
                       '2018-06-19 15:15:41.107' ],
                     pegDeltas: [ 287, 344, 304, 403, 359, 311, 534 ] } };
 
+    function getRandomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+
     // Player action constants;
     const REQ_NEW_SINGLE_GAME = 0;
     const REQ_NEW_MULTI_GAME = 1;
     const REQ_START_TRIAL = 2;
     const REQ_TRIAL_FINISHED = 3;
     const REQ_DISPLAY_READ = 4;
+    const REQ_EXPERIMENT_DONE = 5;
+    const REQ_GAME_RESET = 6;
 
-    const TABLET_ID = "DUMMY_TABLET_ID";
+    const TABLET_ID = "DUMMY_TABLET_ID_" + getRandomInt(1000, 9999);
     // Make connection to the server
     // We also advertise the fact that this is a tablet connection.
     // This can be accessed on the server by referring to
@@ -76,6 +83,14 @@ document.addEventListener("DOMContentLoaded", (e) => {
             "action_type": REQ_NEW_SINGLE_GAME
         });
     });
+
+    d3.select("#start_multi_game").on("click", () => {
+        socket.emit("player_action", {
+            "sender_id": TABLET_ID,
+            "action_type": REQ_NEW_MULTI_GAME
+        });
+    });
+
 
     d3.select("#display_read").on("click", () => {
         socket.emit("player_action", {
@@ -127,6 +142,20 @@ document.addEventListener("DOMContentLoaded", (e) => {
             "sender_id": TABLET_ID,
             "action_type": REQ_PEG_PLACED,
             "action_data": rightTest
+        });
+    });
+
+    d3.select("#experiment_done").on("click", () => {
+        socket.emit("player_action", {
+            "sender_id": TABLET_ID,
+            "action_type": REQ_EXPERIMENT_DONE
+        });
+    });
+
+    d3.select("#game_reset").on("click", () => {
+        socket.emit("player_action", {
+            "sender_id": TABLET_ID,
+            "action_type": REQ_GAME_RESET
         });
     });
 

@@ -24,6 +24,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
 
     // Frontend action constants;
     const RES_PRINT_LABEL = 0;
+    const RES_MULTIPLAYER_PROGRESS = 1;
 
     // The number of tablets we will wait for to connect before we allow
     // the game state to progress further.
@@ -61,8 +62,9 @@ document.addEventListener("DOMContentLoaded", (e) => {
 
     socket.on('player_action', function(data){
 
-        switch(data.action_type){
+        console.log(data);
 
+        switch(data.action_type){
         case REQ_NEW_SINGLE_GAME:
             players[data.sender_id].game = initialise_single_player_game(data.sender_id);
 
@@ -86,7 +88,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
             break;
 
         case REQ_TRIAL_FINISHED:
-            players[data.sender_id].game.finish_trial(data.action_data);
+            players[data.sender_id].game.finish_trial(data.action_data, data.sender_id);
             break;
 
         case REQ_EXPERIMENT_DONE:
@@ -99,9 +101,9 @@ document.addEventListener("DOMContentLoaded", (e) => {
             // now we should print a reward label.
             if (typeof data.action_data != 'undefined' && data.action_data.reason == "finished"){
                 socket.emit('frontend_action', {
-			"action_type": RES_PRINT_LABEL,			
-			"action_data": players[data.sender_id].game.get_stats()
-		});
+			              "action_type": RES_PRINT_LABEL,
+			              "action_data": players[data.sender_id].game.get_stats()
+		            });
             }
 
             players[data.sender_id].game.reset();
@@ -251,18 +253,32 @@ document.addEventListener("DOMContentLoaded", (e) => {
 
         var semaphore_counter = 0;
 
-        var semaphore_max = players.length - 1;
+        var semaphore_max = MAX_PLAYERS - 1;
 
         function multi_player_game(){
             console.log("Starting multiplayer game!");
+            console.log(semaphore_counter);
+
+            // If this is the first time this function is called withing the current setting, set up the semaphore so that the
+            // function only runs if we have confirmation that everyone has called it.
+            semaphore_counter = semaphore_counter == 0 ? semaphore_max : semaphore_counter - 1;
+            console.log(semaphore_counter);
+
+            // If everyone has called this function, the counter will be 0 after the line above.
+            if(semaphore_counter == 0){
+                socket.emit("frontend_action", {action_type: RES_MULTIPLAYER_PROGRESS, action_data:"move"});
+                display_information();
+            }
         }
 
         var display_information = function(){
-            player["assets"]["cover"].select(".cover_info")
-                .html('<iframe width="560" height="315" src="https://www.youtube.com/embed/NPvMUpcxPSA?rel=0&amp;controls=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>');
+            Object.keys(players).forEach(k => {
+                players[k]["assets"]["cover"].select(".cover_info")
+                    .html('<iframe width="560" height="315" src="https://www.youtube.com/embed/NPvMUpcxPSA?rel=0&amp;controls=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>');
+            });
         };
 
-        game.reset = function(player_id){
+        multi_player_game.reset = function(){
             Object.keys(players).forEach(k => {
                 let player = players[k];
 
@@ -273,7 +289,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
             });
         };
 
-        game.show_results = function(player_id){
+        multi_player_game.show_results = function(){
 
             // If this is the first time this function is called withing the current setting, set up the semaphore so that the
             // function only runs if we have confirmation that everyone has called it.
@@ -281,6 +297,8 @@ document.addEventListener("DOMContentLoaded", (e) => {
 
             // If everyone has called this function, the counter will be 0 after the line above.
             if(semaphore_counter == 0){
+
+                socket.emit("frontend_action", {action_type: RES_MULTIPLAYER_PROGRESS, action_data:"move"});
 
                 Object.keys(players).forEach(k => {
                     let player = players[k];
@@ -302,33 +320,49 @@ document.addEventListener("DOMContentLoaded", (e) => {
             }
         };
 
-        game.begin_study = function(player_id){
-            player["assets"]["cover"].select(".cover_info").html("");
-            player["assets"]["chart"](player["assets"]["vis_id"] + " .chart");
+        multi_player_game.begin_study = function(){
 
-            player["assets"]["cover"].transition().duration(1000)
-                .style("height", "2%");
+            // If this is the first time this function is called withing the current setting, set up the semaphore so that the
+            // function only runs if we have confirmation that everyone has called it.
+            semaphore_counter = semaphore_counter == 0 ? semaphore_max : semaphore_counter - 1;
+
+            // If everyone has called this function, the counter will be 0 after the line above.
+            if(semaphore_counter == 0){
+                socket.emit("frontend_action", {action_type: RES_MULTIPLAYER_PROGRESS, action_data:"move"});
+
+                Object.keys(players).forEach(k => {
+                    let player = players[k];
+
+                    player["assets"]["cover"].select(".cover_info").html("");
+                    player["assets"]["chart"](player["assets"]["vis_id"] + " .chart");
+
+                    player["assets"]["cover"].transition().duration(1000)
+                        .style("height", "2%");
+                });
+            }
         };
 
-        game.run_trial = function(player_id){
-            player["assets"]["chart"].clear();
+        multi_player_game.run_trial = function(){
+            Object.keys(players).forEach(k => players[k]["assets"]["chart"].clear());
         };
 
-        game.finish_trial = function(data, player_id){
-            player["assets"]["chart"].update(data);
-
-            num_trials_finished++;
+        multi_player_game.finish_trial = function(data, player_id){
+            players[player_id]["assets"]["chart"].update(data);
 
             // Record the data so that we can use it for the visualisation at the end and for printing
-            study_data.push(data);
+            study_data[players[player_id]["index"]].push(data);
 
         };
 
-
         // Check if the singleton instance is present already or not
-        return typeof current_multi_player_game == 'undefined' ?
-            multi_player_game :
-            current_multi_player_game;
+        if (typeof current_multi_player_game == 'undefined'){
+            current_multi_player_game = multi_player_game;
+
+            return multi_player_game;
+        }
+        else{
+            return current_multi_player_game;
+        }
     }
 
     function reset_cover(player){

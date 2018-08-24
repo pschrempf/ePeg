@@ -3,6 +3,7 @@ package com.epeg;
 import android.util.Log;
 
 import com.epeg.Study.StudyActivity;
+import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
 
@@ -20,6 +21,10 @@ public class SocketIOHandler {
     private static Socket socket;
 
     private static String UUID = null;
+
+    // responseFunction can be set by the app so that whenever we want to react to a server action
+    // we perform some UI action.
+    private static Runnable responseFunction = () -> {};
 
     public static synchronized Socket getSocket(){
         return getSocket(DEFAULT_UUID);
@@ -45,11 +50,18 @@ public class SocketIOHandler {
             extras.query = "client_type=tablet&tablet_id=" + UUID;
 
             socket = IO.socket(EXHIBITION_URL, extras);
+
+            socket.on("server_action", args -> responseFunction.run());
+
         } catch (URISyntaxException e) {
             Log.e(TAG, "Couldn't establish socket connection: " + e.getMessage());
         }
 
         return socket;
+    }
+
+    public static void setResponseFunction(Runnable r){
+        responseFunction = r;
     }
 
     public static void sendMessage(final StudyActivity.STUDY_REQ actionType, final JSONObject actionData){

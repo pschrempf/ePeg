@@ -26,7 +26,7 @@ public class StudyLandingScreenFragment extends Fragment {
 
         startTrialButton.setOnClickListener((v) -> {
             StudyActivity parent = ((StudyActivity)getActivity());
- 
+
             parent.setStudyFragment(StudyActivity.STUDY_FRAG_TAG.SETUP);
             SocketIOHandler.sendMessage(StudyActivity.STUDY_REQ.START_TRIAL, null);
         });

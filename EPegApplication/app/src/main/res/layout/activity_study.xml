@@ -14,7 +14,7 @@
     tools:context="com.epeg.Study.StudyActivity">
 <!-- android:fitsSystemWindows="false", due to https://stackoverflow.com/questions/39563447/hidden-navigation-bar-still-occupies-space -->
 
-    <android.support.v4.view.ViewPager
+    <com.epeg.EPegViewPager
         android:id="@+id/study_fragment_pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

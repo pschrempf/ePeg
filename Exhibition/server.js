@@ -79,6 +79,7 @@ const STATUS_CONNECTED = 0;
 const STATUS_DISCONNECTED = 1;
 
 const PRINT_LABEL = 0;
+const MULTIPLAYER_PROGRESS = 1;
 
 //Parse application/json
 app.use(bodyParser.json());
@@ -138,12 +139,19 @@ io.on('connection', function(socket){
 
         // Handle the frontend_action requests
         socket.on("frontend_action", (s) => {
-		console.log("frontend_action: ");
-		console.log(s);
+		        console.log("frontend_action: ");
+		        console.log(s);
+
+            // Printing
             if (s.action_type == PRINT_LABEL && should_print){
-                
                 print_label(s.action_data.pegQ, s.action_data.avg_time)
             }
+
+            // Pass on frontend information to the tablets
+            if (s.action_type == MULTIPLAYER_PROGRESS){
+                tablets.forEach((s) => socket.emit("server_action", s.action_data))
+            }
+
         })
 
         // If a frontend connects, we update it with the list of tablets
