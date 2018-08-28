@@ -84,7 +84,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
             break;
 
         case REQ_START_TRIAL:
-            players[data.sender_id].game.run_trial();
+            players[data.sender_id].game.run_trial(data.sender_id);
             break;
 
         case REQ_TRIAL_FINISHED:
@@ -102,11 +102,11 @@ document.addEventListener("DOMContentLoaded", (e) => {
             if (typeof data.action_data != 'undefined' && data.action_data.reason == "finished"){
                 socket.emit('frontend_action', {
 			              "action_type": RES_PRINT_LABEL,
-			              "action_data": players[data.sender_id].game.get_stats()
+			              "action_data": players[data.sender_id].game.get_stats(data.sender_id)
 		            });
             }
 
-            players[data.sender_id].game.reset();
+            players[data.sender_id].game.reset(data.sender_id);
             players[data.sender_id].game = 0;
             break;
 
@@ -249,6 +249,9 @@ document.addEventListener("DOMContentLoaded", (e) => {
 
     function initialise_multi_player_game(){
 
+var num_trials_finished = 0;
+	var stats = {};
+
         var study_data = [[], []];
 
         var semaphore_counter = 0;
@@ -278,19 +281,23 @@ document.addEventListener("DOMContentLoaded", (e) => {
             });
         };
 
-        multi_player_game.reset = function(){
-            Object.keys(players).forEach(k => {
-                let player = players[k];
+        multi_player_game.get_stats = function (player_id) {
+            return stats[player_id];
+        };
 
-                player["assets"]["cover"].transition().duration(1000)
-                    .style("height", "100%");
+        multi_player_game.reset = function(player_id){
+console.log("Resetting!");
+            let player = players[player_id];
 
-                reset_cover(player);
-            });
+            player["assets"]["cover"].transition().duration(1000)
+                .style("height", "100%");
+
+            reset_cover(player);
         };
 
         multi_player_game.show_results = function(){
 
+console.log("semaphore is: ", semaphore_counter);
             // If this is the first time this function is called withing the current setting, set up the semaphore so that the
             // function only runs if we have confirmation that everyone has called it.
             semaphore_counter = semaphore_counter == 0 ? semaphore_max : semaphore_counter - 1;
@@ -310,7 +317,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
                         .on("end", () => {
                             player["assets"]["vis_base"].select("svg").html("");
                             player["assets"]["vis_base"].select("svg").style("background-color", "#27567b");
-                            player["assets"]["results"](player["assets"]["vis_id"] + " .chart",
+                            stats[k] = player["assets"]["results"](player["assets"]["vis_id"] + " .chart",
                                                         study_data[player["index"]]);
 
                             player["assets"]["cover"].transition().duration(1000)
@@ -342,24 +349,35 @@ document.addEventListener("DOMContentLoaded", (e) => {
             }
         };
 
-        multi_player_game.run_trial = function(){
-            Object.keys(players).forEach(k => players[k]["assets"]["chart"].clear());
+        multi_player_game.run_trial = function(player_id){
+            if(num_trials_finished % 2 == 0){
+                num_trials_finished = 0;
+
+            players[player_id]["assets"]["chart"].clear();
+}
         };
 
         multi_player_game.finish_trial = function(data, player_id){
+        
+
             // If this is the first time this function is called withing the current setting, set up the semaphore so that the
             // function only runs if we have confirmation that everyone has called it.
             semaphore_counter = semaphore_counter == 0 ? semaphore_max : semaphore_counter - 1;
 
-// Report that both players have now finished the trial
-if(semaphore_counter == 0){
-socket.emit("frontend_action", {action_type: RES_MULTIPLAYER_PROGRESS, action_data:"trial finished"});
+            // If everyone has called this function, the counter will be 0 after the line above.
+            if(semaphore_counter == 0){
+	// Report that both players have now finished the trial
+	socket.emit("frontend_action", {action_type: RES_MULTIPLAYER_PROGRESS, action_data:"trial finished"});
 
-}
-            players[player_id]["assets"]["chart"].update(data);
 
-            // Record the data so that we can use it for the visualisation at the end and for printing
-            study_data[players[player_id]["index"]].push(data);
+                            }
+players[player_id]["assets"]["chart"].update(data);
+
+                // Record the data so that we can use it for the visualisation at the end and for printing
+                study_data[players[player_id]["index"]].push(data);
+
+		num_trials_finished++;
+
 
         };
 

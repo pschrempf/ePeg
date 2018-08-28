@@ -149,7 +149,7 @@ io.on('connection', function(socket){
 
             // Pass on frontend information to the tablets
             if (s.action_type == MULTIPLAYER_PROGRESS){
-console.log("PROGRESS");
+		console.log("PROGRESS");
                 tablets.forEach((s) => s.emit("server_action", {action_data: s.action_data}))
             }
 

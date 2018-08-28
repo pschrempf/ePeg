@@ -57,6 +57,10 @@ public class TrialFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // This check is needed, because at the end it might be the case that the Study is concluded,
+        // so it is null, but the ViewPager still wants to load this fragment
+        if (!Study.isStudyUnderway()) return;
+
         // Add status text
         status = (TextView) trialLayout.findViewById(R.id.trial_status);
         status.setText(Study.getParticipant().getLabel() + ": " + getResources().getString(R.string.start));

@@ -2,6 +2,8 @@ package com.epeg.Study;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.Settings;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -35,7 +37,7 @@ import java.net.URISyntaxException;
 public class StudyActivity extends AppCompatActivity {
 
 
-    public enum STUDY_FRAG_TAG{
+    public enum STUDY_FRAG_TAG {
         PARTICIPANT_CODE(0),
         CHOOSE_HAND(1),
         LANDING_SCREEN(2),
@@ -46,16 +48,16 @@ public class StudyActivity extends AppCompatActivity {
 
         int fragmentIndex;
 
-        STUDY_FRAG_TAG(int fragmentIndex){
+        STUDY_FRAG_TAG(int fragmentIndex) {
             this.fragmentIndex = fragmentIndex;
         }
 
-        public int index(){
+        public int index() {
             return fragmentIndex;
         }
     }
 
-    public enum STUDY_REQ{
+    public enum STUDY_REQ {
         NEW_SINGLE_GAME(0),
         NEW_MULTI_GAME(1),
         START_TRIAL(2),
@@ -66,11 +68,11 @@ public class StudyActivity extends AppCompatActivity {
 
         int requestIndex;
 
-        STUDY_REQ(int fragmentIndex){
+        STUDY_REQ(int fragmentIndex) {
             this.requestIndex = fragmentIndex;
         }
 
-        public int index(){
+        public int index() {
             return requestIndex;
         }
     }
@@ -80,10 +82,7 @@ public class StudyActivity extends AppCompatActivity {
     private ViewPager studyFragmentContainer;
 
     private boolean leftToRight = false;
-
-
     private boolean isSinglePlayer;
-
     Participant participant;
 
     private int systemUiVisibilitySetting;
@@ -95,6 +94,8 @@ public class StudyActivity extends AppCompatActivity {
 
         // Lock the orientation of the device and disable various physical controls
         initSettings();
+
+        SocketIOHandler.setUiHandler(new Handler(Looper.getMainLooper()));
 
         try {
 
@@ -150,7 +151,7 @@ public class StudyActivity extends AppCompatActivity {
 
     }
 
-    private void setupStudyFragments(ViewPager viewPager){
+    private void setupStudyFragments(ViewPager viewPager) {
         StudyFragmentPagerAdapter adapter = new StudyFragmentPagerAdapter(getSupportFragmentManager());
 
         ParticipantCodeFragment pcf = new ParticipantCodeFragment();
@@ -169,21 +170,20 @@ public class StudyActivity extends AppCompatActivity {
         viewPager.setAdapter(adapter);
     }
 
-    public void setStudyFragment(STUDY_FRAG_TAG tag, boolean smoothScroll){
+    public void setStudyFragment(STUDY_FRAG_TAG tag, boolean smoothScroll) {
         studyFragmentContainer.setCurrentItem(tag.index(), smoothScroll);
     }
 
-    public void setStudyFragment(STUDY_FRAG_TAG tag){
+    public void setStudyFragment(STUDY_FRAG_TAG tag) {
         setStudyFragment(tag, true);
     }
 
-    public void waitForOtherPlayer(STUDY_FRAG_TAG moveToAfterResponse){
+    public void waitForOtherPlayer(STUDY_FRAG_TAG moveToAfterResponse) {
         // Move to the waiting screen
         setStudyFragment(STUDY_FRAG_TAG.WAITING_FOR_OTHER_PLAYER, false);
 
         // When both players are ready, move back
         SocketIOHandler.setResponseFunction(() -> setStudyFragment(moveToAfterResponse, false));
-
     }
 
     @Override
@@ -200,7 +200,6 @@ public class StudyActivity extends AppCompatActivity {
 
         // When the app is in the foreground, reconnect to the server
         SocketIOHandler.getSocket().connect();
-
     }
 
     @Override
@@ -237,10 +236,11 @@ public class StudyActivity extends AppCompatActivity {
 
     /**
      * Cancels the current trial - flips orientation and shows study activity.
+     *
      * @param view - caller
      */
     public void cancelTrial(View view) {
-        switch(view.getId()) {
+        switch (view.getId()) {
             case R.id.cancel_trial:
                 flipOrientation();
                 setStudyFragment(STUDY_FRAG_TAG.LANDING_SCREEN);
@@ -275,16 +275,18 @@ public class StudyActivity extends AppCompatActivity {
             if (Study.isFinished()) {
                 Log.d(TAG, "Study finished!");
 
+                SocketIOHandler.sendMessage(STUDY_REQ.EXPERIMENT_DONE, null);
+
                 // show result fragment
-                setStudyFragment(STUDY_FRAG_TAG.RESULTS);
+                if (isSinglePlayer)
+                    setStudyFragment(STUDY_FRAG_TAG.RESULTS);
+                else
+                    waitForOtherPlayer(STUDY_FRAG_TAG.RESULTS);
 
                 // Conclude study if possible
                 try {
                     Study.conclude();
                     Log.d(TAG, "Study concluded!");
-
-                    SocketIOHandler.sendMessage(STUDY_REQ.EXPERIMENT_DONE, null);
-
                 } catch (StudyException e) {
                     Log.e(TAG, "Could not conclude study! Error: " + e.getMessage());
                     Study.cancel();
@@ -299,7 +301,7 @@ public class StudyActivity extends AppCompatActivity {
             Log.d(TAG, e.getMessage());
         }
 
-        if(isSinglePlayer)
+        if (isSinglePlayer)
             setStudyFragment(STUDY_FRAG_TAG.LANDING_SCREEN);
         else
             waitForOtherPlayer(STUDY_FRAG_TAG.LANDING_SCREEN);
@@ -326,7 +328,7 @@ public class StudyActivity extends AppCompatActivity {
 
     /**
      * Returns if the current trial is going from left to right.
-
+     *
      * @return if trial is going from left to right
      */
     public boolean isLeftToRight() {
@@ -339,14 +341,14 @@ public class StudyActivity extends AppCompatActivity {
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
         boolean result;
-        switch( event.getKeyCode() ) {
+        switch (event.getKeyCode()) {
             case KeyEvent.KEYCODE_VOLUME_UP:
             case KeyEvent.KEYCODE_VOLUME_DOWN:
                 result = true;
                 break;
 
             default:
-                result= super.dispatchKeyEvent(event);
+                result = super.dispatchKeyEvent(event);
                 break;
         }
 
