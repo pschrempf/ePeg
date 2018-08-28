@@ -347,6 +347,15 @@ document.addEventListener("DOMContentLoaded", (e) => {
         };
 
         multi_player_game.finish_trial = function(data, player_id){
+            // If this is the first time this function is called withing the current setting, set up the semaphore so that the
+            // function only runs if we have confirmation that everyone has called it.
+            semaphore_counter = semaphore_counter == 0 ? semaphore_max : semaphore_counter - 1;
+
+// Report that both players have now finished the trial
+if(semaphore_counter == 0){
+socket.emit("frontend_action", {action_type: RES_MULTIPLAYER_PROGRESS, action_data:"trial finished"});
+
+}
             players[player_id]["assets"]["chart"].update(data);
 
             // Record the data so that we can use it for the visualisation at the end and for printing
