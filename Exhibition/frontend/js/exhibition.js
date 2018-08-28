@@ -249,8 +249,9 @@ document.addEventListener("DOMContentLoaded", (e) => {
 
     function initialise_multi_player_game(){
 
-var num_trials_finished = 0;
-	var stats = {};
+        var num_trials_finished = 0;
+
+	      var stats = {};
 
         var study_data = [[], []];
 
@@ -286,7 +287,8 @@ var num_trials_finished = 0;
         };
 
         multi_player_game.reset = function(player_id){
-console.log("Resetting!");
+            console.log("Resetting!");
+
             let player = players[player_id];
 
             player["assets"]["cover"].transition().duration(1000)
@@ -297,7 +299,8 @@ console.log("Resetting!");
 
         multi_player_game.show_results = function(){
 
-console.log("semaphore is: ", semaphore_counter);
+            console.log("semaphore is: ", semaphore_counter);
+
             // If this is the first time this function is called withing the current setting, set up the semaphore so that the
             // function only runs if we have confirmation that everyone has called it.
             semaphore_counter = semaphore_counter == 0 ? semaphore_max : semaphore_counter - 1;
@@ -353,12 +356,11 @@ console.log("semaphore is: ", semaphore_counter);
             if(num_trials_finished % 2 == 0){
                 num_trials_finished = 0;
 
-            players[player_id]["assets"]["chart"].clear();
-}
+                players[player_id]["assets"]["chart"].clear();
+            }
         };
 
         multi_player_game.finish_trial = function(data, player_id){
-        
 
             // If this is the first time this function is called withing the current setting, set up the semaphore so that the
             // function only runs if we have confirmation that everyone has called it.
@@ -366,18 +368,16 @@ console.log("semaphore is: ", semaphore_counter);
 
             // If everyone has called this function, the counter will be 0 after the line above.
             if(semaphore_counter == 0){
-	// Report that both players have now finished the trial
-	socket.emit("frontend_action", {action_type: RES_MULTIPLAYER_PROGRESS, action_data:"trial finished"});
+	              // Report that both players have now finished the trial
+	              socket.emit("frontend_action", {action_type: RES_MULTIPLAYER_PROGRESS, action_data:"trial finished"});
 
+		            num_trials_finished++;
+            }
 
-                            }
-players[player_id]["assets"]["chart"].update(data);
+            players[player_id]["assets"]["chart"].update(data);
 
-                // Record the data so that we can use it for the visualisation at the end and for printing
-                study_data[players[player_id]["index"]].push(data);
-
-		num_trials_finished++;
-
+            // Record the data so that we can use it for the visualisation at the end and for printing
+            study_data[players[player_id]["index"]].push(data);
 
         };
 

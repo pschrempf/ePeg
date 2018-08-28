@@ -275,7 +275,7 @@ public class StudyActivity extends AppCompatActivity {
             if (Study.isFinished()) {
                 Log.d(TAG, "Study finished!");
 
-                SocketIOHandler.sendMessage(STUDY_REQ.EXPERIMENT_DONE, null);
+
 
                 // show result fragment
                 if (isSinglePlayer)
