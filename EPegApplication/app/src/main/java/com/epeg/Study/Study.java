@@ -211,6 +211,10 @@ public class Study {
     // Getters & Setters
     //====================================================================================================
 
+    public static boolean isStudyUnderway(){
+        return currentStudy != null;
+    }
+
     public static boolean isFinished() {
         return getCurrentTrialIndex() >= numTrials*2;
     }
@@ -220,6 +224,7 @@ public class Study {
     }
 
     public static int getCurrentTrialIndex() {
+        if(currentStudy == null) return 0;
         return currentStudy.currentTrialIndex;
     }
 
@@ -232,6 +237,7 @@ public class Study {
     }
 
     public static Participant getParticipant() {
+        if(currentStudy == null) return null;
         return currentStudy.participant;
     }
 

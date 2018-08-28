@@ -3,7 +3,6 @@ package com.epeg;
 import android.util.Log;
 
 import com.epeg.Study.StudyActivity;
-import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
 
@@ -11,6 +10,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URISyntaxException;
+import android.os.Handler;
 
 public class SocketIOHandler {
 
@@ -25,6 +25,8 @@ public class SocketIOHandler {
     // responseFunction can be set by the app so that whenever we want to react to a server action
     // we perform some UI action.
     private static Runnable responseFunction = () -> {};
+
+    private static Handler uiHandler;
 
     public static synchronized Socket getSocket(){
         return getSocket(DEFAULT_UUID);
@@ -51,7 +53,11 @@ public class SocketIOHandler {
 
             socket = IO.socket(EXHIBITION_URL, extras);
 
-            socket.on("server_action", args -> responseFunction.run());
+            socket.on("server_action", (args) -> {
+                Log.d(TAG, "Received server action!");
+
+                uiHandler.postDelayed(responseFunction, 500);
+            });
 
         } catch (URISyntaxException e) {
             Log.e(TAG, "Couldn't establish socket connection: " + e.getMessage());
@@ -62,6 +68,10 @@ public class SocketIOHandler {
 
     public static void setResponseFunction(Runnable r){
         responseFunction = r;
+    }
+
+    public static void setUiHandler(Handler handler){
+        uiHandler = handler;
     }
 
     public static void sendMessage(final StudyActivity.STUDY_REQ actionType, final JSONObject actionData){

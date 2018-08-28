@@ -328,12 +328,27 @@ Then, enable it, so that it runs on startup:
 > sudo systemctl enable epeg_exhibit
 ```
 
+```
+sudo vi /home/pi/.config/lxsession/LXDE-pi/autostart
+```
+
+```
+@xset s noblank
+
+@xset s off
+
+@xset –dpms
+
+@chromium-browser --kiosk http://localhost:18216/epegExhibition
+```
+
 Useful links
 ---------------
 https://thepi.io/how-to-use-your-raspberry-pi-as-a-wireless-access-point/
 https://github.com/socketio/socket.io-website/blob/master/source/_posts/20150120-native-socket-io-and-android.md
 https://community.ubnt.com/t5/UniFi-Wireless/RPI-Dashbutton-Turn-RaspberryPI-with-Dymo-LabelWriter-into-a/td-p/1667513
 https://ubuntuforums.org/showthread.php?t=2376862&styleid=118
+https://stackoverflow.com/questions/40481575/start-chromium-automatically-on-booting-the-pi3-with-raspbian-jessie
 
 Socket Communications
 --------------------------------------------------------------------------------
