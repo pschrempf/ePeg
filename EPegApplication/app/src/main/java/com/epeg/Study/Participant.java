@@ -27,6 +27,11 @@ public class Participant {
     public static final String JSON_GENDER_TAG = "gender";
     public static final String JSON_MALE_TAG = "male";
     public static final String JSON_FEMALE_TAG = "female";
+    public static final String JSON_NO_GENDER_TAG = "prefer not to say";
+
+    enum Gender{
+        MALE, FEMALE, NO_INFO
+    }
 
     private long id;
 
@@ -35,8 +40,7 @@ public class Participant {
     // Age of the participant
     private int age;
 
-    // #feminism
-    private boolean isFemale;
+    private String gender;
 
     private boolean isRightHanded;
 
@@ -44,7 +48,7 @@ public class Participant {
         setLabel(label);
         id = 0;
         age = 0;
-        isFemale = true;
+        gender = "not recorded yet!";
         isRightHanded = true;
     }
 
@@ -72,11 +76,26 @@ public class Participant {
         this.isRightHanded = isRightHanded;
     }
 
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public void setGender(Gender gender) {
+
+        switch (gender){
+            case MALE: this.gender = JSON_MALE_TAG; break;
+            case FEMALE: this.gender = JSON_FEMALE_TAG; break;
+            case NO_INFO: this.gender = JSON_NO_GENDER_TAG; break;
+        }
+    }
+
     public JSONObject jsonify() throws JSONException {
 
         return new JSONObject()
                 .put( JSON_PARTICIPANT_ID_TAG, getId() )
                 .put( JSON_LABEL_TAG, getLabel() )
+                .put( JSON_AGE_TAG, age )
+                .put( JSON_GENDER_TAG, gender )
                 .put( JSON_DOM_HAND_TAG, isRightHanded() ?
                                     JSON_HAND_RIGHT_TAG : JSON_HAND_LEFT_TAG );
     }

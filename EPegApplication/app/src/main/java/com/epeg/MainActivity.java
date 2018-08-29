@@ -19,18 +19,16 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.NumberPicker;
 import android.widget.PopupWindow;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.epeg.Study.Study;
 import com.epeg.Study.StudyActivity;
-import com.github.nkzawa.socketio.client.IO;
+import com.github.nkzawa.socketio.client.Socket;
 
 import java.io.IOException;
-import java.net.Socket;
-import java.net.URISyntaxException;
 import java.util.List;
 
 /**
@@ -42,6 +40,9 @@ public class MainActivity extends Activity {
 
 
     private static final String TAG = MainActivity.class.getSimpleName();
+
+    // This variable is used to track whether the settings page should be shown at all or not.
+    private static boolean isTabletConfigured = false;
 
     private SettingsManager sm;
 
@@ -60,7 +61,9 @@ public class MainActivity extends Activity {
         initSettings();
 
         sm = new SettingsManager(this.getApplicationContext());
-        researcherSettings(getApplicationContext());
+
+        // only display the settings window if it is the first time us running the app.
+        if(!isTabletConfigured) researcherSettings(getApplicationContext());
 
         // set view to update UI flags after change
         View decorView = getWindow().getDecorView();
@@ -72,7 +75,9 @@ public class MainActivity extends Activity {
         String uuid = sm.getActiveResearcher() + "-" + sm.getActiveClinic();
 
         // Create socket and connect it to the server with the above UUID
-        SocketIOHandler.getSocket(uuid).connect();
+        Socket s = SocketIOHandler.getSocket(uuid);
+        if (!s.connected()) s.connect();
+
     }
 
     @Override
@@ -92,6 +97,12 @@ public class MainActivity extends Activity {
     private void researcherSettings(final Context context) {
         setContentView(R.layout.fragment_researcher);
 
+        Switch sw = (Switch) findViewById(R.id.tablet_rotation_toggle);
+
+        sw.setOnCheckedChangeListener((v, checked) -> {
+            Log.d(TAG, "Toggle: " + checked);
+        });
+
         // initialise researcher spinner
         loadResearchers(context);
 
@@ -104,6 +115,7 @@ public class MainActivity extends Activity {
         Button newClinicButton = (Button) findViewById(R.id.add_new_clinic_code);
         newClinicButton.setOnClickListener(v -> addNewClinicCode(context, v));
 
+        isTabletConfigured = true;
     }
 
     private void loadResearchers(Context context) {
@@ -429,4 +441,5 @@ public class MainActivity extends Activity {
         getWindow().getDecorView().setSystemUiVisibility(systemUiVisibilitySetting);
 
     }
+
 }

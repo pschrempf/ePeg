@@ -12,22 +12,14 @@ import android.view.KeyEvent;
 import android.view.Surface;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.TextView;
 
 import com.epeg.MainActivity;
 import com.epeg.R;
 import com.epeg.SocketIOHandler;
 import com.epeg.StudyFragmentPagerAdapter;
 import com.epeg.WaitingForOtherPlayerFragment;
-import com.github.nkzawa.socketio.client.IO;
-import com.github.nkzawa.socketio.client.Manager;
-import com.github.nkzawa.socketio.client.Socket;
 
 import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.net.URISyntaxException;
 
 /**
  * Class that controls the main flow of a study.
@@ -38,13 +30,15 @@ public class StudyActivity extends AppCompatActivity {
 
 
     public enum STUDY_FRAG_TAG {
-        PARTICIPANT_CODE(0),
-        CHOOSE_HAND(1),
-        LANDING_SCREEN(2),
-        SETUP(3),
-        TRIAL(4),
-        RESULTS(5),
-        WAITING_FOR_OTHER_PLAYER(6);
+        CHOOSE_AGE(0),
+        CHOOSE_GENDER(1),
+        CHOOSE_HAND(2),
+        LANDING_SCREEN(3),
+        SETUP(4),
+        TRIAL(5),
+        PRE_RESULTS(6),
+        RESULTS(7),
+        WAITING_FOR_OTHER_PLAYER(8);
 
         int fragmentIndex;
 
@@ -119,7 +113,7 @@ public class StudyActivity extends AppCompatActivity {
 
         setupStudyFragments(studyFragmentContainer);
 
-        setStudyFragment(STUDY_FRAG_TAG.PARTICIPANT_CODE);
+        setStudyFragment(STUDY_FRAG_TAG.CHOOSE_AGE);
 
         // Once we successfully established the connection to the ePeg server, send what type of study we want to start
         isSinglePlayer = getIntent().getExtras().getBoolean("isSinglePlayer");
@@ -130,8 +124,9 @@ public class StudyActivity extends AppCompatActivity {
             SocketIOHandler.sendMessage(STUDY_REQ.NEW_SINGLE_GAME, null);
         } else {
             SocketIOHandler.sendMessage(STUDY_REQ.NEW_MULTI_GAME, null);
-            waitForOtherPlayer(STUDY_FRAG_TAG.PARTICIPANT_CODE);
+            waitForOtherPlayer(STUDY_FRAG_TAG.CHOOSE_AGE);
         }
+
 
 
         // set view to update UI flags after change
@@ -154,16 +149,20 @@ public class StudyActivity extends AppCompatActivity {
     private void setupStudyFragments(ViewPager viewPager) {
         StudyFragmentPagerAdapter adapter = new StudyFragmentPagerAdapter(getSupportFragmentManager());
 
-        ParticipantCodeFragment pcf = new ParticipantCodeFragment();
-        Bundle labelArg = new Bundle();
-        labelArg.putString("label", participant.getLabel());
-        pcf.setArguments(labelArg);
+//        ParticipantCodeFragment pcf = new ParticipantCodeFragment();
+//        Bundle labelArg = new Bundle();
+//        labelArg.putString("label", participant.getLabel());
+//        pcf.setArguments(labelArg);
+//
+//        adapter.addFragment(pcf, "participant code");
 
-        adapter.addFragment(pcf, "participant code");
+        adapter.addFragment(new AgeSelectionFragment(), "choose age");
+        adapter.addFragment(new GenderSelectionFragment(), "choose gender");
         adapter.addFragment(new ChooseHandFragment(), "choose hand");
         adapter.addFragment(new StudyLandingScreenFragment(), "landing screen");
         adapter.addFragment(new SetupFragment(), "setup");
         adapter.addFragment(new TrialFragment(), "trial");
+        adapter.addFragment(new PreResultFragment(), "pre results");
         adapter.addFragment(new ResultFragment(), "results");
         adapter.addFragment(new WaitingForOtherPlayerFragment(), "waiting for other player");
 
@@ -279,9 +278,9 @@ public class StudyActivity extends AppCompatActivity {
 
                 // show result fragment
                 if (isSinglePlayer)
-                    setStudyFragment(STUDY_FRAG_TAG.RESULTS);
+                    setStudyFragment(STUDY_FRAG_TAG.PRE_RESULTS);
                 else
-                    waitForOtherPlayer(STUDY_FRAG_TAG.RESULTS);
+                    waitForOtherPlayer(STUDY_FRAG_TAG.PRE_RESULTS);
 
                 // Conclude study if possible
                 try {

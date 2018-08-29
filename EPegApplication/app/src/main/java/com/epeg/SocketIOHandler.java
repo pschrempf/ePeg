@@ -56,7 +56,11 @@ public class SocketIOHandler {
             socket.on("server_action", (args) -> {
                 Log.d(TAG, "Received server action!");
 
-                uiHandler.postDelayed(responseFunction, 500);
+
+                if (uiHandler != null)
+                    uiHandler.postDelayed(responseFunction, 500);
+                else
+                    Log.e(TAG, "Could not handle server action!");
             });
 
         } catch (URISyntaxException e) {
@@ -90,5 +94,9 @@ public class SocketIOHandler {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void connect() {
+        if (socket == null && !socket.connected()) socket.connect();
     }
 }

@@ -2,6 +2,10 @@ import argparse
 from PIL import Image, ImageFont, ImageDraw
 
 def run(pegQ, avg_time):
+
+    # W x H
+    image_size = (336, 192)
+
     # This is the level at which the indicator arrow will be placed
     score_indicator_y = 50
 
@@ -48,13 +52,19 @@ def run(pegQ, avg_time):
 
     # Draw the scores
     hand = "right" if pegQ >=0 else "left"
-    pegQ_str = hand + " {0:.2f}"
-    draw.text(pegQ_score_coords, pegQ_str.format(abs(pegQ)), font=score_font, fill="black")
+    pegQ_str = hand + ",  {0:.2f}"
+    draw.text(pegQ_score_coords, pegQ_str.format(pegQ), font=score_font, fill="black")
 
-    draw.text(avg_time_score_coords, "{0:.0f} ms".format(abs(avg_time)), font=score_font, fill="black")
+    draw.text(avg_time_score_coords, "{0:.0f} ms".format(avg_time), font=score_font, fill="black")
 
     # Draw the complementary text
-    draw.text(extra_text_coords, extra_texts[0], font=extra_font, fill="black")
+    extra_text = "For more information, visit:"
+    w, h = draw.textsize(extra_text, font=extra_font)
+    draw.text(((image_size[0]-w)/2, extra_text_coords[1]), extra_text, font=extra_font, fill="black")
+
+    extra_text = "https://neurogenetics.st-andrews.ac.uk"
+    w, h = draw.textsize(extra_text, font=extra_font)
+    draw.text(((image_size[0]-w)/2, extra_text_coords[1] + 21), extra_text, font=extra_font, fill="black")
 
     # Save the image
     im.save("printer/customLabel.png", "PNG")

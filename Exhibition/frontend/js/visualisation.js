@@ -316,7 +316,7 @@ var results_vis = function(width, height){
             .style("font-size", "30px")
             .style("fill", "white")
             .attr("text-anchor", "middle")
-            .text("Right Affinity");
+            .text("Right");
 
 
         scale_container.append("svg:image")
@@ -332,7 +332,7 @@ var results_vis = function(width, height){
             .style("font-weight", "bold")
             .style("font-size", "30px")
             .attr("y", 110)
-            .text("Left Affinity");
+            .text("Left");
 
         // =====================================================================
         // Draw the indicators

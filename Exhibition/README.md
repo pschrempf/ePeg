@@ -339,7 +339,7 @@ sudo vi /home/pi/.config/lxsession/LXDE-pi/autostart
 
 @xset –dpms
 
-@chromium-browser --kiosk http://localhost:18216/epegExhibition
+@chromium-browser --incognito --kiosk http://localhost:18216/epegExhibition
 ```
 
 Useful links

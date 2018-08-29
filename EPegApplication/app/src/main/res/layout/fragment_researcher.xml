@@ -94,13 +94,33 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_toEndOf="@+id/clinic_code_selection"
+        android:orientation="vertical">
+
+        <Switch
+            android:id="@+id/tablet_rotation_toggle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:theme="@style/NumberPickerText"
+            android:text="@string/tablet_rotation_toggle_info"
+            />
+
+    </LinearLayout>
+
     <Button
         android:id="@+id/research_settings_complete"
         android:layout_width="@dimen/button_width"
         android:layout_height="@dimen/button_height"
-        android:layout_centerVertical="true"
-        android:text="@string/done"
+        android:layout_below="@+id/researcher_selection"
+        android:layout_centerHorizontal="true"
         android:onClick="researchSettingsComplete"
-        android:layout_alignParentEnd="true" />
+        android:text="@string/done" />
+
+
 
 </RelativeLayout>

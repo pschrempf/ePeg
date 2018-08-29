@@ -38,8 +38,6 @@ public class ResultFragment extends Fragment {
 
         Button resultsViewedButton = (Button) view.findViewById(R.id.end_study_button);
 
-        SocketIOHandler.sendMessage(StudyActivity.STUDY_REQ.EXPERIMENT_DONE, null);
-
         resultsViewedButton.setOnClickListener(v -> {
 
             // This is needed so that the server doesn't think that we just randomly disconnected.

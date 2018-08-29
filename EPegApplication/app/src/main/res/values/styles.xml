@@ -29,4 +29,8 @@
 
     </style>
 
+    <style name="NumberPickerText">
+        <item name="android:textSize">@dimen/info_text_size</item>
+    </style>
+
 </resources>

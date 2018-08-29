@@ -1,0 +1,38 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.epeg.Study.AgeSelectionFragment"
+    android:orientation="vertical"
+    android:gravity="center"
+    >
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Please tell us how old you are:"
+            android:textAlignment="center"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="@dimen/info_text_size" />
+
+        <NumberPicker
+            android:id="@+id/age_picker"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:descendantFocusability="blocksDescendants"
+            android:theme="@style/NumberPickerText">
+
+            <!-- android:descendantFocusability="blocksDescendants": disables keyboard on the picker
+            https://stackoverflow.com/questions/8854781/disable-soft-keyboard-on-numberpicker
+            -->
+
+        </NumberPicker>
+
+        <Button
+            android:id="@+id/age_selected_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Next Step" />
+
+</LinearLayout>
