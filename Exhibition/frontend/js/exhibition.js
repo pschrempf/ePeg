@@ -92,7 +92,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
             break;
 
         case REQ_EXPERIMENT_DONE:
-            players[data.sender_id].game.show_results();
+            players[data.sender_id].game.show_results(data.sender_id);
             break;
 
         case REQ_GAME_RESET:
@@ -297,37 +297,23 @@ document.addEventListener("DOMContentLoaded", (e) => {
             reset_cover(player);
         };
 
-        multi_player_game.show_results = function(){
+        multi_player_game.show_results = function(player_id){
 
-            console.log("semaphore is: ", semaphore_counter);
+	    let player = players[player_id];
 
-            // If this is the first time this function is called withing the current setting, set up the semaphore so that the
-            // function only runs if we have confirmation that everyone has called it.
-            semaphore_counter = semaphore_counter == 0 ? semaphore_max : semaphore_counter - 1;
+	    player["assets"]["cover"].select(".cover_info").html("");
 
-            // If everyone has called this function, the counter will be 0 after the line above.
-            if(semaphore_counter == 0){
+	    player["assets"]["cover"].transition().duration(1000)
+		.style("height", "100%")
+		.on("end", () => {
+		    player["assets"]["vis_base"].select("svg").html("");
+		    player["assets"]["vis_base"].select("svg").style("background-color", "#27567b");
+		    stats[player_id] = player["assets"]["results"](player["assets"]["vis_id"] + " .chart",
+						study_data[player["index"]]);
 
-                socket.emit("frontend_action", {action_type: RES_MULTIPLAYER_PROGRESS, action_data:"move"});
-
-                Object.keys(players).forEach(k => {
-                    let player = players[k];
-
-                    player["assets"]["cover"].select(".cover_info").html("");
-
-                    player["assets"]["cover"].transition().duration(1000)
-                        .style("height", "100%")
-                        .on("end", () => {
-                            player["assets"]["vis_base"].select("svg").html("");
-                            player["assets"]["vis_base"].select("svg").style("background-color", "#27567b");
-                            stats[k] = player["assets"]["results"](player["assets"]["vis_id"] + " .chart",
-                                                        study_data[player["index"]]);
-
-                            player["assets"]["cover"].transition().duration(1000)
-                                .style("height", "0%");
-                        });
-                });
-            }
+		    player["assets"]["cover"].transition().duration(1000)
+			.style("height", "0%");
+		});
         };
 
         multi_player_game.begin_study = function(){
