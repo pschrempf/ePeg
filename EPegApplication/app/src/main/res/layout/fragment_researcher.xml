@@ -106,9 +106,9 @@
             android:id="@+id/tablet_rotation_toggle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:theme="@style/NumberPickerText"
+            android:checked="true"
             android:text="@string/tablet_rotation_toggle_info"
-            />
+            android:theme="@style/NumberPickerText" />
 
     </LinearLayout>
 

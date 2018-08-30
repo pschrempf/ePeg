@@ -11,8 +11,10 @@
     android:fitsSystemWindows="false"
     android:orientation="horizontal"
     android:weightSum="1"
+    android:keepScreenOn="true"
     tools:context="com.epeg.Study.StudyActivity">
-<!-- android:fitsSystemWindows="false", due to https://stackoverflow.com/questions/39563447/hidden-navigation-bar-still-occupies-space -->
+    <!-- android:fitsSystemWindows="false", due to https://stackoverflow.com/questions/39563447/hidden-navigation-bar-still-occupies-space -->
+    <!-- android:keepScreenOn="true", due to https://developer.android.com/reference/android/view/View#setKeepScreenOn%28boolean%29 -->
 
     <com.epeg.EPegViewPager
         android:id="@+id/study_fragment_pager"

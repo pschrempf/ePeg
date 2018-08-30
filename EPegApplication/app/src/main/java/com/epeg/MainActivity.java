@@ -43,6 +43,7 @@ public class MainActivity extends Activity {
 
     // This variable is used to track whether the settings page should be shown at all or not.
     private static boolean isTabletConfigured = false;
+    private static boolean shouldTurnScreen = true;
 
     private SettingsManager sm;
 
@@ -51,6 +52,8 @@ public class MainActivity extends Activity {
     private int screenBrightnessModeSetting;
     private int screenBrightnessSetting;
     private int systemUiVisibilitySetting;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +67,7 @@ public class MainActivity extends Activity {
 
         // only display the settings window if it is the first time us running the app.
         if(!isTabletConfigured) researcherSettings(getApplicationContext());
+        else setContentView(R.layout.activity_main);
 
         // set view to update UI flags after change
         View decorView = getWindow().getDecorView();
@@ -97,12 +101,6 @@ public class MainActivity extends Activity {
     private void researcherSettings(final Context context) {
         setContentView(R.layout.fragment_researcher);
 
-        Switch sw = (Switch) findViewById(R.id.tablet_rotation_toggle);
-
-        sw.setOnCheckedChangeListener((v, checked) -> {
-            Log.d(TAG, "Toggle: " + checked);
-        });
-
         // initialise researcher spinner
         loadResearchers(context);
 
@@ -114,6 +112,14 @@ public class MainActivity extends Activity {
 
         Button newClinicButton = (Button) findViewById(R.id.add_new_clinic_code);
         newClinicButton.setOnClickListener(v -> addNewClinicCode(context, v));
+
+        Switch sw = (Switch) findViewById(R.id.tablet_rotation_toggle);
+
+        sw.setOnCheckedChangeListener((v, checked) -> {
+            Log.i(TAG, "Toggle: " + checked);
+
+            shouldTurnScreen = checked;
+        });
 
         isTabletConfigured = true;
     }
@@ -312,6 +318,7 @@ public class MainActivity extends Activity {
     public void startSingleStudy(View view) {
         Intent studyIntent = new Intent(MainActivity.this, StudyActivity.class);
         studyIntent.putExtra("isSinglePlayer", true);
+        studyIntent.putExtra("shouldTurnScreen", shouldTurnScreen);
         sm.close();
         MainActivity.this.startActivity(studyIntent);
     }
@@ -399,12 +406,12 @@ public class MainActivity extends Activity {
      */
     public void setDefaultOperationFlags() {
         // set fixed rotation of tablet
-        Settings.System.putInt(this.getContentResolver(), Settings.System.ACCELEROMETER_ROTATION, 0);
-        if (getResources().getInteger(R.integer.rotation) == 0) {
-            Settings.System.putInt(this.getContentResolver(), Settings.System.USER_ROTATION, Surface.ROTATION_0);
-        } else {
-            Settings.System.putInt(this.getContentResolver(), Settings.System.USER_ROTATION, Surface.ROTATION_90);
-        }
+//        Settings.System.putInt(this.getContentResolver(), Settings.System.ACCELEROMETER_ROTATION, 0);
+//        if (getResources().getInteger(R.integer.rotation) == 0) {
+//            Settings.System.putInt(this.getContentResolver(), Settings.System.USER_ROTATION, Surface.ROTATION_0);
+//        } else {
+//            Settings.System.putInt(this.getContentResolver(), Settings.System.USER_ROTATION, Surface.ROTATION_90);
+//        }
 
         // set fixed brightness of screen
         Settings.System.putInt(getApplicationContext().getContentResolver(), Settings.System.SCREEN_BRIGHTNESS_MODE, Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL);
@@ -433,9 +440,6 @@ public class MainActivity extends Activity {
         // set fixed brightness of screen
         Settings.System.putInt(getApplicationContext().getContentResolver(), Settings.System.SCREEN_BRIGHTNESS_MODE, screenBrightnessModeSetting);
         Settings.System.putInt(getApplicationContext().getContentResolver(), Settings.System.SCREEN_BRIGHTNESS, screenBrightnessSetting);
-
-        // set to keep screen on
-        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         // set full screen immersive mode
         getWindow().getDecorView().setSystemUiVisibility(systemUiVisibilitySetting);

@@ -37,7 +37,11 @@
         <activity
             android:name="com.epeg.Study.StudyActivity"
             android:label="@string/title_activity_study"
-            android:theme="@style/Theme.ePeg"/>
+            android:theme="@style/Theme.ePeg"
+            android:screenOrientation="nosensor"
+            android:configChanges = "orientation|screenSize"
+            />
+        <!-- https://developer.android.com/guide/topics/resources/runtime-changes#HandlingTheChange -->
 
     </application>
 

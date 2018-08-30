@@ -1,17 +1,15 @@
 package com.epeg.Study;
 
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.provider.Settings;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.Surface;
 import android.view.View;
-import android.view.WindowManager;
 
 import com.epeg.MainActivity;
 import com.epeg.R;
@@ -21,6 +19,9 @@ import com.epeg.WaitingForOtherPlayerFragment;
 
 import org.json.JSONException;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 /**
  * Class that controls the main flow of a study.
  *
@@ -28,6 +29,10 @@ import org.json.JSONException;
  */
 public class StudyActivity extends AppCompatActivity {
 
+
+    // App should reset after 2 mins = 120000 ms
+    private static final long WATCHDOG_TIMEOUT = 120000;
+    private static final String TAG = StudyActivity.class.getSimpleName();
 
     public enum STUDY_FRAG_TAG {
         CHOOSE_AGE(0),
@@ -71,12 +76,12 @@ public class StudyActivity extends AppCompatActivity {
         }
     }
 
-    private static final String TAG = StudyActivity.class.getSimpleName();
-
     private ViewPager studyFragmentContainer;
 
     private boolean leftToRight = false;
     private boolean isSinglePlayer;
+    private boolean shouldTurnScreen;
+
     Participant participant;
 
     private int systemUiVisibilitySetting;
@@ -117,8 +122,10 @@ public class StudyActivity extends AppCompatActivity {
 
         // Once we successfully established the connection to the ePeg server, send what type of study we want to start
         isSinglePlayer = getIntent().getExtras().getBoolean("isSinglePlayer");
+        shouldTurnScreen = getIntent().getExtras().getBoolean("shouldTurnScreen");
 
         Log.i(TAG, "IS SINGLE? " + isSinglePlayer);
+        Log.i(TAG, "SHOULD ROTATE? "+ shouldTurnScreen);
 
         if (isSinglePlayer) {
             SocketIOHandler.sendMessage(STUDY_REQ.NEW_SINGLE_GAME, null);
@@ -143,6 +150,8 @@ public class StudyActivity extends AppCompatActivity {
 
         });
 
+        // Start watchdog
+        setupLongTimeout();
 
     }
 
@@ -219,6 +228,37 @@ public class StudyActivity extends AppCompatActivity {
     public void onStop() {
         super.onStop();
         restoreSettings();
+    }
+
+    // =============================================================================================
+    // Watchdog for the app
+    // =============================================================================================
+    Timer longTimer;
+
+    synchronized void setupLongTimeout() {
+        if(longTimer != null) {
+            longTimer.cancel();
+            longTimer = null;
+        }
+
+        longTimer = new Timer();
+        longTimer.schedule(new TimerTask() {
+            public void run() {
+                longTimer.cancel();
+                longTimer = null;
+
+                // If we timeout, we cancel the study.
+                cancelStudy();
+            }
+        }, WATCHDOG_TIMEOUT);
+    }
+
+    // We reset the watchdog if the user does something
+    @Override
+    public void onUserInteraction() {
+        super.onUserInteraction();
+
+        setupLongTimeout(); // 2
     }
 
     /**
@@ -310,19 +350,16 @@ public class StudyActivity extends AppCompatActivity {
      * Changes the orientation of the screen by 180 degrees.
      */
     private void flipOrientation() {
-        try {
-            if (Settings.System.getInt(getContentResolver(), Settings.System.USER_ROTATION) == Surface.ROTATION_0) {
-                Settings.System.putInt(getContentResolver(), Settings.System.USER_ROTATION, Surface.ROTATION_180);
-            } else if (Settings.System.getInt(getContentResolver(), Settings.System.USER_ROTATION) == Surface.ROTATION_90) {
-                Settings.System.putInt(getContentResolver(), Settings.System.USER_ROTATION, Surface.ROTATION_270);
-            } else if (Settings.System.getInt(getContentResolver(), Settings.System.USER_ROTATION) == Surface.ROTATION_180) {
-                Settings.System.putInt(getContentResolver(), Settings.System.USER_ROTATION, Surface.ROTATION_0);
-            } else {
-                Settings.System.putInt(getContentResolver(), Settings.System.USER_ROTATION, Surface.ROTATION_90);
-            }
-        } catch (Settings.SettingNotFoundException e) {
-            Log.e(TAG, e.getMessage());
-        }
+        if (!shouldTurnScreen) return;
+
+        Log.i(TAG, "orientation: " + getRequestedOrientation() + ", landscape:" + ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+
+        if(getRequestedOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
+        else
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+
+        Log.i(TAG, "orientation: " + getRequestedOrientation() + ",reverse landscape:" + ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
     }
 
     /**
@@ -360,8 +397,6 @@ public class StudyActivity extends AppCompatActivity {
     private void initSettings() {
         systemUiVisibilitySetting = getWindow().getDecorView().getSystemUiVisibility();
 
-        // set to keep screen on
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         // set full screen immersive mode
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
@@ -376,7 +411,6 @@ public class StudyActivity extends AppCompatActivity {
      * Restores setting to same as before the activity.
      */
     private void restoreSettings() {
-        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         getWindow().getDecorView().setSystemUiVisibility(systemUiVisibilitySetting);
 
     }
