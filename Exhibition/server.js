@@ -4,68 +4,11 @@ var express = require('express');
 var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
-var execSync = require('child_process').execSync;
+var exec = require('child_process').exec;
 
 var bodyParser = require('body-parser');
 
 var fs = require('fs');
-
-var test1 = { id: 1,
-  handUsed: 'right',
-  success: 'success',
-  extras: '',
-  measurements: 
-   { startTime: 1529421219151,
-     endTime: 1529421222510,
-     totalTime: 3359,
-     sumTime: 3358,
-     actualTime: 3359,
-     pegsLifted: 
-     [ '2018-06-19 15:13:41.799',
-       '2018-06-19 15:13:41.295',
-       '2018-06-19 15:13:40.924',
-       '2018-06-19 15:13:40.526',
-       '2018-06-19 15:13:39.982',
-       '2018-06-19 15:13:39.583',
-       '2018-06-19 15:13:39.151' ],
-     pegsReleased: 
-     [ '2018-06-19 15:13:42.51',
-       '2018-06-19 15:13:41.799',
-       '2018-06-19 15:13:41.295',
-       '2018-06-19 15:13:40.924',
-       '2018-06-19 15:13:40.526',
-       '2018-06-19 15:13:39.982',
-       '2018-06-19 15:13:39.582' ],
-     pegDeltas: [ 711, 504, 371, 398, 544, 399, 431 ] }
-            };
-
-var test2 = { id: 2,
-  handUsed: 'left',
-  success: 'success',
-  extras: '',
-  measurements: 
-              { startTime: 1529421338565,
-     endTime: 1529421341107,
-     totalTime: 2542,
-     sumTime: 2542,
-     actualTime: 2542,
-     pegsLifted: 
-      [ '2018-06-19 15:15:38.565',
-        '2018-06-19 15:15:38.852',
-        '2018-06-19 15:15:39.196',
-        '2018-06-19 15:15:39.5',
-        '2018-06-19 15:15:39.903',
-        '2018-06-19 15:15:40.262',
-        '2018-06-19 15:15:40.573' ],
-     pegsReleased: 
-      [ '2018-06-19 15:15:38.852',
-        '2018-06-19 15:15:39.196',
-        '2018-06-19 15:15:39.5',
-        '2018-06-19 15:15:39.903',
-        '2018-06-19 15:15:40.262',
-        '2018-06-19 15:15:40.573',
-        '2018-06-19 15:15:41.107' ],
-     pegDeltas: [ 287, 344, 304, 403, 359, 311, 534 ] } };
 
 // This is a debug flag, should set to false if we want to temporarily turn of printing
 const should_print = true;
@@ -94,6 +37,7 @@ if (!fs.existsSync(DYNAMIC_PEGQ_DATA)){
         console.log("Wrote header for the dynamic peg data!");
     });
 }
+
 function save_data(data){
     console.log(data);
 
@@ -112,9 +56,11 @@ function save_data(data){
 }
 
 function print_label(pegQ, avg_time){
-    execSync("printer/venv/bin/python3 printer/imageGen.py " + pegQ + " " + avg_time, (err, stdout, stderr) => console.log(stdout));
-    execSync("./printer/labelPrinter printer/customLabel.png", (err, stdout, stderr) => console.log(stdout));
-    execSync("rm printer/customLabel.png", (err, stdout, stderr) => console.log(stdout));
+    exec("printer/venv/bin/python3 printer/imageGen.py " + pegQ + " " + avg_time, (err, stdout, stderr) => {
+        exec("./printer/labelPrinter printer/customLabel.png", (err, stdout, stderr) => {
+            exec("rm printer/customLabel.png", (err, stdout, stderr) => console.log(stdout));
+        });
+    });
 }
 
 // =============================================================================

@@ -252,6 +252,8 @@ public class StudyActivity extends AppCompatActivity {
                 longTimer.cancel();
                 longTimer = null;
 
+                Log.i(TAG, "Study timed out!");
+
                 // If we timeout, we cancel the study.
                 cancelStudy();
             }
