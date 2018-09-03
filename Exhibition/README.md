@@ -387,6 +387,7 @@ action_data :: JSON Object               // Contains additional data about the a
 ```
 
 If ``action_type`` is:
+ - ``DISPLAY_READ`` then ``action_data`` contains the information in JSON of the participant
  - ``TRIAL_FINISHED`` then ``action_data`` contains the trial JSON packet that was defined for the original ePeg project
  - ``GAME_RESET`` then ``action_data`` can be ``null`` if it is unclear why we disconnected, or ``{reason: finished}`` if we are resetting at the end of the game.
 
@@ -394,8 +395,9 @@ The frontend can also communicate with the server, through ``frontend_action`` m
 
 ```javascript
 {
-action_type :: [ PRINT_LABEL = 0 // This is sent from the frontend once we receive the final message withing a game from a tablet
-               | 
+action_type :: [ PRINT_LABEL = 0          // This is sent from the frontend once we receive the final message withing a game from a tablet
+               | MULTIPLAYER_PROGRESS = 1 // Sent only in a multiplayer setting, it means that the frontend acknowledged the synchronisation
+               | SAVE_DATA = 2            // At the end of an experiment we send this to the server to save all the collected data.
                ]
                
 action_data :: JSON Object
@@ -404,3 +406,4 @@ action_data :: JSON Object
 
 If ``action_type`` is:
  - ``PRINT_LABEL`` then ``action_data`` is ``{pegQ :: float, avg_time :: float}``
+ - ``SAVE_DATA`` then ``action_data`` is ``{backup :: JSON, same format as the encrypted backup on the tablet, pegQ :: float}``

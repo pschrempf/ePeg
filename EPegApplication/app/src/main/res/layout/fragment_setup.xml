@@ -8,11 +8,8 @@
         android:id="@+id/info_center_row"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="false"
-        android:layout_alignParentStart="false"
-        android:layout_alignParentEnd="false"
-        android:layout_alignParentTop="false"
-        android:layout_centerInParent="true"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
         android:orientation="horizontal"
         android:weightSum="1">
 
@@ -27,10 +24,10 @@
 
         <Button
             android:id="@+id/setup_complete"
-            android:layout_width="wrap_content"
+            android:layout_width="421dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_margin="@dimen/fab_margin"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
             android:width="@dimen/button_width"
             android:height="@dimen/button_height"
             android:text="@string/setup_complete_button" />
@@ -59,5 +56,13 @@
             com.epeg:up="true" />
 
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/setup_participant_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/info_center_row"
+        android:text="TextView" />
 
 </RelativeLayout>

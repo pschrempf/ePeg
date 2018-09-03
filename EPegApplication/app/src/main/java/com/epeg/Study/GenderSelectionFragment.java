@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.epeg.R;
 
@@ -25,6 +26,10 @@ public class GenderSelectionFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_gender_selection, container, false);
+
+        // Add the participant id label
+        TextView participantCodeTextView = (TextView) view.findViewById(R.id.gender_selection_participant_id);
+        participantCodeTextView.setText(getResources().getString(R.string.participant_code, getArguments().getString("label")));
 
         Button maleBtn = (Button) view.findViewById(R.id.male_selected_btn);
 

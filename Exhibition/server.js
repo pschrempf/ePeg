@@ -8,6 +8,8 @@ var execSync = require('child_process').execSync;
 
 var bodyParser = require('body-parser');
 
+var fs = require('fs');
+
 var test1 = { id: 1,
   handUsed: 'right',
   success: 'success',
@@ -65,13 +67,6 @@ var test2 = { id: 2,
         '2018-06-19 15:15:41.107' ],
      pegDeltas: [ 287, 344, 304, 403, 359, 311, 534 ] } };
 
-
-function print_label(pegQ, avg_time){
-    execSync("printer/venv/bin/python3 printer/imageGen.py " + pegQ + " " + avg_time, (err, stdout, stderr) => console.log(stdout));
-    execSync("./printer/labelPrinter printer/customLabel.png", (err, stdout, stderr) => console.log(stdout));
-    execSync("rm printer/customLabel.png", (err, stdout, stderr) => console.log(stdout));
-}
-
 // This is a debug flag, should set to false if we want to temporarily turn of printing
 const should_print = true;
 
@@ -80,6 +75,51 @@ const STATUS_DISCONNECTED = 1;
 
 const PRINT_LABEL = 0;
 const MULTIPLAYER_PROGRESS = 1;
+const SAVE_DATA = 2;
+
+const DYNAMIC_PEGQ_DATA = "frontend/resources/exhibition_data.csv";
+const DYNAMIC_PEGQ_BACKUP = "frontend/resources/exhibition_backup.csv";
+
+// =============================================================================
+// Helper functions
+// =============================================================================
+
+// Create resources file if it doesn't exist already
+if (!fs.existsSync(DYNAMIC_PEGQ_DATA)){
+    // Write the header
+    fs.writeFile(DYNAMIC_PEGQ_DATA, "pegs.ndx, avg_time\n", (err) => {
+
+        if (err) throw err;
+
+        console.log("Wrote header for the dynamic peg data!");
+    });
+}
+function save_data(data){
+    console.log(data);
+
+    fs.appendFile(DYNAMIC_PEGQ_DATA, data.stats.pegQ + ", " + data.stats.avg_time + "\n", (err) => {
+
+        if (err) throw err;
+
+        console.log("Recorded: " + data.stats.pegQ + ", " + data.stats.avg_time);
+    });
+
+    fs.appendFile(DYNAMIC_PEGQ_BACKUP, JSON.stringify(data.backup) + "\n", (err) => {
+        if (err) throw err;
+
+        console.log("Recorded backup data!");
+    });
+}
+
+function print_label(pegQ, avg_time){
+    execSync("printer/venv/bin/python3 printer/imageGen.py " + pegQ + " " + avg_time, (err, stdout, stderr) => console.log(stdout));
+    execSync("./printer/labelPrinter printer/customLabel.png", (err, stdout, stderr) => console.log(stdout));
+    execSync("rm printer/customLabel.png", (err, stdout, stderr) => console.log(stdout));
+}
+
+// =============================================================================
+// App setup
+// =============================================================================
 
 //Parse application/json
 app.use(bodyParser.json());
@@ -97,11 +137,16 @@ server.listen(LISTEN_PORT, function(){
 // Load in static files
 app.use("/epegExhibition", express.static('frontend'));
 
+// =============================================================================
+// Socket setup
+// =============================================================================
+
 // List of frontends connected to the server
 var frontends = [];
 
 // List of tablets connected to the server
 var tablets = [];
+
 
 io.on('connection', function(socket){
     console.log('Made socket connection', socket.id);
@@ -149,8 +194,13 @@ io.on('connection', function(socket){
 
             // Pass on frontend information to the tablets
             if (s.action_type == MULTIPLAYER_PROGRESS){
-		console.log("PROGRESS");
+
                 tablets.forEach((s) => s.emit("server_action", {action_data: s.action_data}))
+            }
+
+            // Save the trial data
+            if (s.action_type == SAVE_DATA){
+                save_data(s.action_data);
             }
 
         })

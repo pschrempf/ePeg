@@ -206,7 +206,9 @@ public class EPegCryptoDataManager {
             values.put(EPegSQLiteHelper.FIELD_EXP_CONDUCTOR, conductor);
             values.put(EPegSQLiteHelper.FIELD_DEVICE_ID, deviceID);
 
-            String[] backupData = {firstStage.getCypherText(), firstStage.getSecretKey(), firstStage.getInitVector()};
+            String[] backupData = {studyData, firstStage.getSecretKey(), firstStage.getInitVector()};
+
+            // String[] backupData = {firstStage.getCypherText(), firstStage.getSecretKey(), firstStage.getInitVector()};
 
             writeBackUp(FILE_DATA_BACKUP, backupData, false);
 
@@ -246,6 +248,8 @@ public class EPegCryptoDataManager {
                 outputBuilder.append(data[i]);
                 outputBuilder.append((i == data.length - 1) ? "\n" : "," );
             }
+
+            Log.d(TAG, "OUTPUT: " + outputBuilder.toString());
 
             fileOutputStream.write(outputBuilder.toString().getBytes());
             fileOutputStream.flush();

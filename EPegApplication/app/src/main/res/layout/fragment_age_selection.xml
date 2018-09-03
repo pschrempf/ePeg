@@ -7,32 +7,40 @@
     android:gravity="center"
     >
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Please tell us how old you are:"
-            android:textAlignment="center"
-            android:textColor="@color/colorPrimaryDark"
-            android:textSize="@dimen/info_text_size" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="50dp"
+        android:text="Please tell us how old you are:"
+        android:textAlignment="center"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="@dimen/info_text_size" />
 
-        <NumberPicker
-            android:id="@+id/age_picker"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:descendantFocusability="blocksDescendants"
-            android:theme="@style/NumberPickerText">
+    <NumberPicker
+        android:id="@+id/age_picker"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="50dp"
+        android:descendantFocusability="blocksDescendants"
+        android:theme="@style/NumberPickerText">
 
-            <!-- android:descendantFocusability="blocksDescendants": disables keyboard on the picker
+        <!-- android:descendantFocusability="blocksDescendants": disables keyboard on the picker
             https://stackoverflow.com/questions/8854781/disable-soft-keyboard-on-numberpicker
             -->
 
-        </NumberPicker>
+    </NumberPicker>
 
-        <Button
-            android:id="@+id/age_selected_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="Next Step" />
+    <Button
+        android:id="@+id/age_selected_button"
+        android:layout_width="395dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Next Step" />
+
+    <TextView
+        android:id="@+id/age_selection_participant_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="TextView" />
 
 </LinearLayout>

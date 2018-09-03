@@ -25,6 +25,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
     // Frontend action constants;
     const RES_PRINT_LABEL = 0;
     const RES_MULTIPLAYER_PROGRESS = 1;
+    const RES_SAVE_DATA = 2;
 
     // The number of tablets we will wait for to connect before we allow
     // the game state to progress further.
@@ -80,7 +81,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
             break;
 
         case REQ_DISPLAY_READ:
-            players[data.sender_id].game.begin_study();
+            players[data.sender_id].game.begin_study(data.action_data);
             break;
 
         case REQ_START_TRIAL:
@@ -170,6 +171,8 @@ document.addEventListener("DOMContentLoaded", (e) => {
 
         var player = players[player_id];
 
+        var participant_data = {};
+
         var study_data = [];
 
         var stats;
@@ -213,15 +216,30 @@ document.addEventListener("DOMContentLoaded", (e) => {
 
                     player["assets"]["cover"].transition().duration(1000)
                         .style("height", "0%");
+
+                    // Have the study data saved
+                    socket.emit("frontend_action", {
+                        action_type: RES_SAVE_DATA,
+                        action_data: {
+                            backup: {
+                                participant: participant_data,
+                                trials: study_data
+                            },
+                            stats: stats
+                        }
+                    });
+
                 });
         };
 
-        game.begin_study = function(){
+        game.begin_study = function(participant){
             player["assets"]["cover"].select(".cover_info").html("");
             player["assets"]["chart"](player["assets"]["vis_id"] + " .chart");
 
             player["assets"]["cover"].transition().duration(1000)
                 .style("height", "2%");
+
+            participant_data = participant;
         };
 
         game.run_trial = function(){
@@ -299,21 +317,21 @@ document.addEventListener("DOMContentLoaded", (e) => {
 
         multi_player_game.show_results = function(player_id){
 
-	    let player = players[player_id];
+	          let player = players[player_id];
 
-	    player["assets"]["cover"].select(".cover_info").html("");
+	          player["assets"]["cover"].select(".cover_info").html("");
 
-	    player["assets"]["cover"].transition().duration(1000)
-		.style("height", "100%")
-		.on("end", () => {
-		    player["assets"]["vis_base"].select("svg").html("");
-		    player["assets"]["vis_base"].select("svg").style("background-color", "#27567b");
-		    stats[player_id] = player["assets"]["results"](player["assets"]["vis_id"] + " .chart",
-						study_data[player["index"]]);
+	          player["assets"]["cover"].transition().duration(1000)
+                .style("height", "100%")
+                .on("end", () => {
+                    player["assets"]["vis_base"].select("svg").html("");
+                    player["assets"]["vis_base"].select("svg").style("background-color", "#27567b");
+                    stats[player_id] = player["assets"]["results"](player["assets"]["vis_id"] + " .chart",
+                        study_data[player["index"]]);
 
-		    player["assets"]["cover"].transition().duration(1000)
-			.style("height", "0%");
-		});
+                    player["assets"]["cover"].transition().duration(1000)
+                .style("height", "0%");
+                });
         };
 
         multi_player_game.begin_study = function(){

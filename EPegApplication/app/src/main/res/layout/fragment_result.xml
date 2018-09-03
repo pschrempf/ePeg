@@ -26,5 +26,11 @@
         android:layout_height="wrap_content"
         android:text="@string/end_study_button" />
 
+    <TextView
+        android:id="@+id/result_participant_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="TextView" />
+
 
 </LinearLayout>

@@ -204,6 +204,9 @@ var results_vis = function(width, height){
 
     // Constants
 
+    const STATIC_PEGQ_DATA = "resources/alspac_pegboard_20180711.csv";
+    const DYNAMIC_PEGQ_DATA = "resources/exhibition_data.csv";
+
     const NUM_HIST_BINS = 50;
 
     const handedness_scale_width = width * .7;
@@ -219,7 +222,8 @@ var results_vis = function(width, height){
 
     var scene;
     var handedness_scale;
-    var histogram_group;
+    var static_histogram_group;
+    var dynamic_histogram_group;
 
     var histogram;
     var peg_index_scale;
@@ -238,15 +242,20 @@ var results_vis = function(width, height){
             .attr("class", "handedness_scale")
             .attr("transform", "translate(" + width * .1 + "," + (100 + histogram_height) + ")");
 
-        histogram_group = scene.append("g")
+        static_histogram_group = scene.append("g")
             .attr("class", "histogram_group")
             .attr("transform", "translate(" + (width * .1 + 60 ) + "," + 150 + ")");
+
+        dynamic_histogram_group = scene.append("g")
+            .attr("class", "histogram_group")
+            .attr("transform", "translate(" + (width * .1 + 60 ) + "," + 150 + ")");
+
 
         stats = calculate_statistics(peg_data);
 
         make_handedness_scale(handedness_scale);
 
-        make_histogram(histogram_group);
+        make_histogram(static_histogram_group, dynamic_histogram_group);
 
         return stats;
     }
@@ -265,9 +274,14 @@ var results_vis = function(width, height){
         // The peg quotient formula is 2(R-L)/(R+L)
         var pegQ = 2 * (right_avg - left_avg) / (right_avg + left_avg);
 
+        var avg_time =
+            peg_data.map(data => data.measurements.sumTime)
+            .reduce((x, y) => x + y) / peg_data.length / 7; // Divide the total time by the total number of pegs, which is 7.
+
+        console.log(peg_data);
         return {
             pegQ: pegQ,
-            avg_time: 539
+            avg_time: avg_time
         };
     };
 
@@ -368,7 +382,7 @@ var results_vis = function(width, height){
         // Arrow: #8593
     };
 
-    var make_histogram = function(histogram_container){
+    var make_histogram = function(static_histogram_container, dynamic_histogram_container){
 
         var y_scale = d3.scaleLinear()
             .range([0, histogram_height]);
@@ -382,13 +396,13 @@ var results_vis = function(width, height){
             .domain(peg_index_scale.domain())
             .thresholds(peg_index_scale.ticks([NUM_HIST_BINS]));
 
-        d3.csv("resources/alspac_pegboard_20180711.csv").then( (data) => {
+        // Create the histogram from the static data
+        d3.csv(STATIC_PEGQ_DATA).then( (data) => {
             var bins = histogram(data);
-
 
             y_scale.domain([0, d3.max(bins, (d) => d.length)]);
 
-            histogram_container.selectAll("rect")
+            static_histogram_container.selectAll("rect")
                 .data(bins).enter().append("rect")
                 .attr("class", "bar")
                 .attr("x", 1)
@@ -398,6 +412,27 @@ var results_vis = function(width, height){
                 .attr("width", (d) =>
                       peg_index_scale(d.x1) - peg_index_scale(d.x0))
                 //.attr("height", 0).transition().duration(4000)
+                .attr("height", (d)=>y_scale(d.length));
+        });
+
+        // Create the histogram form the data collected from the people who
+        // Performed the experiment at the exhibition.
+        d3.csv(DYNAMIC_PEGQ_DATA).then( (data) => {
+            var bins = histogram(data);
+
+            y_scale.domain([0, d3.max(bins, (d) => d.length)]);
+
+            dynamic_histogram_container.selectAll("rect")
+                .data(bins).enter().append("rect")
+                .attr("class", "bar")
+                .attr("x", 1)
+                .style("fill", "red")
+                .attr("opacity", 0.5)
+                .attr("transform", (d) =>
+                      "translate(" + peg_index_scale(d.x0) + "," + (histogram_height - y_scale(d.length)) + ")")
+                .attr("width", (d) =>
+                      peg_index_scale(d.x1) - peg_index_scale(d.x0))
+            //.attr("height", 0).transition().duration(4000)
                 .attr("height", (d)=>y_scale(d.length));
         });
     };

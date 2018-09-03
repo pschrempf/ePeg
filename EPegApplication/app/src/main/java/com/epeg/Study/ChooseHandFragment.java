@@ -7,9 +7,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.epeg.R;
 import com.epeg.SocketIOHandler;
+
+import org.json.JSONException;
 
 /**
  * Fragment that lets a user choose left or right handed.
@@ -26,6 +29,10 @@ public class ChooseHandFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_choose_hand, container, false);
 
+        // Add the participant id label
+        TextView participantCodeTextView = (TextView) view.findViewById(R.id.choose_hand_participant_id);
+        participantCodeTextView.setText(getResources().getString(R.string.participant_code, getArguments().getString("label")));
+
         leftHandButton = (Button) view.findViewById(R.id.left_hand_button);
         rightHandButton = (Button) view.findViewById(R.id.right_hand_button);
 
@@ -40,7 +47,12 @@ public class ChooseHandFragment extends Fragment {
             else
                 parent.waitForOtherPlayer(StudyActivity.STUDY_FRAG_TAG.LANDING_SCREEN);
 
-            SocketIOHandler.sendMessage(StudyActivity.STUDY_REQ.DISPLAY_READ, null);
+
+            try {
+                SocketIOHandler.sendMessage(StudyActivity.STUDY_REQ.DISPLAY_READ, Study.getParticipant().jsonify());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         });
 
         rightHandButton.setOnClickListener(v -> {
@@ -53,7 +65,11 @@ public class ChooseHandFragment extends Fragment {
             else
                 parent.waitForOtherPlayer(StudyActivity.STUDY_FRAG_TAG.LANDING_SCREEN);
 
-            SocketIOHandler.sendMessage(StudyActivity.STUDY_REQ.DISPLAY_READ, null);
+            try {
+                SocketIOHandler.sendMessage(StudyActivity.STUDY_REQ.DISPLAY_READ, Study.getParticipant().jsonify());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         });
 
         return view;

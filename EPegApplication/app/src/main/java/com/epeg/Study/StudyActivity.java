@@ -5,6 +5,7 @@ import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -19,6 +20,7 @@ import com.epeg.WaitingForOtherPlayerFragment;
 
 import org.json.JSONException;
 
+import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -158,22 +160,25 @@ public class StudyActivity extends AppCompatActivity {
     private void setupStudyFragments(ViewPager viewPager) {
         StudyFragmentPagerAdapter adapter = new StudyFragmentPagerAdapter(getSupportFragmentManager());
 
-//        ParticipantCodeFragment pcf = new ParticipantCodeFragment();
-//        Bundle labelArg = new Bundle();
-//        labelArg.putString("label", participant.getLabel());
-//        pcf.setArguments(labelArg);
-//
-//        adapter.addFragment(pcf, "participant code");
+        Bundle labelArg = new Bundle();
+        labelArg.putString("label", participant.getLabel());
 
-        adapter.addFragment(new AgeSelectionFragment(), "choose age");
-        adapter.addFragment(new GenderSelectionFragment(), "choose gender");
-        adapter.addFragment(new ChooseHandFragment(), "choose hand");
-        adapter.addFragment(new StudyLandingScreenFragment(), "landing screen");
-        adapter.addFragment(new SetupFragment(), "setup");
-        adapter.addFragment(new TrialFragment(), "trial");
-        adapter.addFragment(new PreResultFragment(), "pre results");
-        adapter.addFragment(new ResultFragment(), "results");
-        adapter.addFragment(new WaitingForOtherPlayerFragment(), "waiting for other player");
+        ArrayList<Fragment> studyFragments = new ArrayList<>();
+
+        studyFragments.add(new AgeSelectionFragment());
+        studyFragments.add(new GenderSelectionFragment());
+        studyFragments.add(new ChooseHandFragment());
+        studyFragments.add(new StudyLandingScreenFragment());
+        studyFragments.add(new SetupFragment());
+        studyFragments.add(new TrialFragment());
+        studyFragments.add(new PreResultFragment());
+        studyFragments.add(new ResultFragment());
+        studyFragments.add(new WaitingForOtherPlayerFragment());
+
+        for(Fragment studyFragment : studyFragments){
+            studyFragment.setArguments(labelArg);
+            adapter.addFragment(studyFragment, studyFragment.getClass().getName());
+        }
 
         viewPager.setAdapter(adapter);
     }
@@ -278,14 +283,14 @@ public class StudyActivity extends AppCompatActivity {
      *
      * @param view - caller
      */
-    public void cancelTrial(View view) {
-        switch (view.getId()) {
-            case R.id.cancel_trial:
-                flipOrientation();
-                setStudyFragment(STUDY_FRAG_TAG.LANDING_SCREEN);
-                break;
-        }
-    }
+//    public void cancelTrial(View view) {
+//        switch (view.getId()) {
+//            case R.id.cancel_trial:
+//                flipOrientation();
+//                setStudyFragment(STUDY_FRAG_TAG.LANDING_SCREEN);
+//                break;
+//        }
+//    }
 
     /**
      * Callback that ends the current trial, whether it succeeded or failed.

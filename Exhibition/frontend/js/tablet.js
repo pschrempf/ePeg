@@ -95,7 +95,8 @@ document.addEventListener("DOMContentLoaded", (e) => {
     d3.select("#display_read").on("click", () => {
         socket.emit("player_action", {
             "sender_id": TABLET_ID,
-            "action_type": REQ_DISPLAY_READ
+            "action_type": REQ_DISPLAY_READ,
+            "action_data": {age:22, gender:"male", dominant_hand:"right"}
         });
     });
 

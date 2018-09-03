@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.NumberPicker;
+import android.widget.TextView;
 
 import com.epeg.R;
 
@@ -27,6 +28,10 @@ public class AgeSelectionFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_age_selection, container, false);
+
+        // Add the participant id label
+        TextView participantCodeTextView = (TextView) view.findViewById(R.id.age_selection_participant_id);
+        participantCodeTextView.setText(getResources().getString(R.string.participant_code, getArguments().getString("label")));
 
         NumberPicker np = (NumberPicker) view.findViewById(R.id.age_picker);
 

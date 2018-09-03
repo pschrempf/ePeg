@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.epeg.MainActivity;
 import com.epeg.R;
@@ -35,6 +36,10 @@ public class ResultFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_result, container, false);
+
+        // Add the participant id label
+        TextView participantCodeTextView = (TextView) view.findViewById(R.id.result_participant_id);
+        participantCodeTextView.setText(getResources().getString(R.string.participant_code, getArguments().getString("label")));
 
         Button resultsViewedButton = (Button) view.findViewById(R.id.end_study_button);
 

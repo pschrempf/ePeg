@@ -14,6 +14,7 @@ import com.epeg.SocketIOHandler;
 public class StudyLandingScreenFragment extends Fragment {
 
     Button startTrialButton;
+    TextView info;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -21,8 +22,13 @@ public class StudyLandingScreenFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_study_landing_screen, container, false);
 
+        // Add the participant id label
+        TextView participantCodeTextView = (TextView) view.findViewById(R.id.landing_screen_participant_id);
+        participantCodeTextView.setText(getResources().getString(R.string.participant_code, getArguments().getString("label")));
+
         // Add the click listeners
         startTrialButton = (Button) view.findViewById(R.id.start_trial);
+        info = (TextView) view.findViewById(R.id.trial_status);
 
         startTrialButton.setOnClickListener((v) -> {
             StudyActivity parent = ((StudyActivity)getActivity());
@@ -38,7 +44,10 @@ public class StudyLandingScreenFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
-        TextView info = (TextView) getActivity().findViewById(R.id.trial_status);
         info.setText(getResources().getString(R.string.trial_status, Study.getCurrentTrialIndex(), Study.numTrials * 2));
+    }
+
+    public void setTrialStatusText(){
+
     }
 }

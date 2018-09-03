@@ -10,10 +10,10 @@
 
     <Button
         android:id="@+id/show_settings"
-        android:layout_width="wrap_content"
+        android:layout_width="474dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true"
+        android:layout_centerInParent="true"
+        android:layout_margin="50dp"
         android:onClick="startSingleStudy"
         android:text="@string/start_single_player_button" />
 
@@ -21,20 +21,19 @@
         android:id="@+id/study_info"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toStartOf="@id/show_settings"
-        android:layout_centerVertical="true"
-        android:layout_margin="@dimen/fab_margin"
+        android:layout_above="@+id/show_settings"
+        android:layout_centerHorizontal="true"
         android:padding="@dimen/info_padding"
         android:text="@string/study_info"
-        android:textSize="@dimen/info_text_size"
+        android:textAlignment="center"
         android:textColor="@color/colorPrimaryDark"
-        android:textAlignment="center" />
+        android:textSize="@dimen/info_text_size" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
+        android:layout_below="@+id/show_settings"
         android:text="@string/ethical_consent_text"
         android:textAlignment="center"
         android:textColor="@color/colorPrimaryDark"
