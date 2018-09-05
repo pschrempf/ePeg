@@ -213,6 +213,9 @@ public class StudyActivity extends AppCompatActivity {
                 | View.SYSTEM_UI_FLAG_FULLSCREEN
                 | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
 
+        // Turn on the timer
+        setupLongTimeout();
+
         // When the app is in the foreground, reconnect to the server
         SocketIOHandler.getSocket().connect();
     }
@@ -220,6 +223,12 @@ public class StudyActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+
+        // Turn off the timer
+        if(longTimer != null) {
+            longTimer.cancel();
+            longTimer = null;
+        }
 
         // When the app is moved to the background, we disconnect from the server.
         SocketIOHandler.getSocket().disconnect();

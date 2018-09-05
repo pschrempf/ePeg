@@ -398,6 +398,10 @@ document.addEventListener("DOMContentLoaded", (e) => {
 
     function reset_cover(player){
 
+        player["assets"]["vis_base"].select("svg")
+            .style("background-color", "white")
+            .html("");
+
         // Update the visuals
         player["assets"]["cover"].select(".cover_info")
             .html("")
