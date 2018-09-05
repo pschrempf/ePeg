@@ -406,12 +406,12 @@ public class MainActivity extends Activity {
      */
     public void setDefaultOperationFlags() {
         // set fixed rotation of tablet
-//        Settings.System.putInt(this.getContentResolver(), Settings.System.ACCELEROMETER_ROTATION, 0);
-//        if (getResources().getInteger(R.integer.rotation) == 0) {
-//            Settings.System.putInt(this.getContentResolver(), Settings.System.USER_ROTATION, Surface.ROTATION_0);
-//        } else {
-//            Settings.System.putInt(this.getContentResolver(), Settings.System.USER_ROTATION, Surface.ROTATION_90);
-//        }
+        Settings.System.putInt(this.getContentResolver(), Settings.System.ACCELEROMETER_ROTATION, 0);
+        if (getResources().getInteger(R.integer.rotation) == 0) {
+            Settings.System.putInt(this.getContentResolver(), Settings.System.USER_ROTATION, Surface.ROTATION_0);
+        } else {
+            Settings.System.putInt(this.getContentResolver(), Settings.System.USER_ROTATION, Surface.ROTATION_90);
+        }
 
         // set fixed brightness of screen
         Settings.System.putInt(getApplicationContext().getContentResolver(), Settings.System.SCREEN_BRIGHTNESS_MODE, Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL);

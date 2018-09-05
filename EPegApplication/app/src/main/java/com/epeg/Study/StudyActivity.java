@@ -5,11 +5,13 @@ import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Surface;
 import android.view.View;
 
 import com.epeg.MainActivity;
@@ -359,14 +361,27 @@ public class StudyActivity extends AppCompatActivity {
     private void flipOrientation() {
         if (!shouldTurnScreen) return;
 
-        Log.i(TAG, "orientation: " + getRequestedOrientation() + ", landscape:" + ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-
-        if(getRequestedOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
-        else
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-
-        Log.i(TAG, "orientation: " + getRequestedOrientation() + ",reverse landscape:" + ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
+//        Log.i(TAG, "orientation: " + getRequestedOrientation() + ", landscape:" + ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+//
+//        if(getRequestedOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
+//            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
+//        else
+//            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+//
+//        Log.i(TAG, "orientation: " + getRequestedOrientation() + ",reverse landscape:" + ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
+        try {
+            if (Settings.System.getInt(getContentResolver(), Settings.System.USER_ROTATION) == Surface.ROTATION_0) {
+                Settings.System.putInt(getContentResolver(), Settings.System.USER_ROTATION, Surface.ROTATION_180);
+            } else if (Settings.System.getInt(getContentResolver(), Settings.System.USER_ROTATION) == Surface.ROTATION_90) {
+                Settings.System.putInt(getContentResolver(), Settings.System.USER_ROTATION, Surface.ROTATION_270);
+            } else if (Settings.System.getInt(getContentResolver(), Settings.System.USER_ROTATION) == Surface.ROTATION_180) {
+                Settings.System.putInt(getContentResolver(), Settings.System.USER_ROTATION, Surface.ROTATION_0);
+            } else {
+                Settings.System.putInt(getContentResolver(), Settings.System.USER_ROTATION, Surface.ROTATION_90);
+            }
+        } catch (Settings.SettingNotFoundException e) {
+            Log.e(TAG, e.getMessage());
+        }
     }
 
     /**

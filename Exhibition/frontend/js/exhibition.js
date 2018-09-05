@@ -187,7 +187,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
 
         var display_information = function(){
             player["assets"]["cover"].select(".cover_info")
-                .html('<iframe width="560" height="315" src="https://www.youtube.com/embed/NPvMUpcxPSA?rel=0&amp;controls=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>');
+                .html('<video width=800 height=450 autoplay><source src="resources/tutorial.mp4" /></video>');
         };
 
         game.reset = function(){
