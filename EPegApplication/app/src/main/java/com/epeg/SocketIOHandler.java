@@ -76,7 +76,7 @@ public class SocketIOHandler {
                 Log.d(TAG, data.toString());
 
                 try {
-                    if (mainUiHandler != null)
+                    if (mainUiHandler == null)
                         Log.e(TAG, "Could not handle server action in MainActivity!");
 
                     switch (data.getInt("action_type")) {

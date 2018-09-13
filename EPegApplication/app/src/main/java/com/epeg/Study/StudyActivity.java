@@ -83,6 +83,9 @@ public class StudyActivity extends AppCompatActivity {
     private ViewPager studyFragmentContainer;
 
     private boolean leftToRight = false;
+
+
+
     private boolean isSinglePlayer;
     private boolean shouldTurnScreen;
 
@@ -99,6 +102,9 @@ public class StudyActivity extends AppCompatActivity {
         initSettings();
 
         SocketIOHandler.setStudyUiHandler(new Handler(Looper.getMainLooper()));
+
+        // The next time the response is set is when we choose the hand, so until then we have the chance to turn this into a multiplayer game.
+        SocketIOHandler.setResponseFunction(() -> setSinglePlayer(true));
 
         try {
 
@@ -134,11 +140,8 @@ public class StudyActivity extends AppCompatActivity {
         if (isSinglePlayer) {
             SocketIOHandler.sendMessage(STUDY_REQ.NEW_GAME, null);
         } else {
-            SocketIOHandler.sendMessage(STUDY_REQ.NEW_GAME, null);
-            waitForOtherPlayer(STUDY_FRAG_TAG.CHOOSE_AGE);
+            SocketIOHandler.sendMessage(STUDY_REQ.JOIN_GAME, null);
         }
-
-
 
         // set view to update UI flags after change
         View decorView = getWindow().getDecorView();
@@ -452,5 +455,8 @@ public class StudyActivity extends AppCompatActivity {
         return isSinglePlayer;
     }
 
+    public void setSinglePlayer(boolean singlePlayer) {
+        isSinglePlayer = singlePlayer;
+    }
 
 }

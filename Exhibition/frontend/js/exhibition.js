@@ -39,6 +39,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
     const RES_GAME_STARTED = 3;
     const RES_GAME_LOCKED = 4;
     const RES_GAME_UNLOCKED = 5;
+    const RES_GAME_JOINED = 6;
 
     // The number of tablets we will wait for to connect before we allow
     // the game state to progress further.
@@ -101,6 +102,8 @@ document.addEventListener("DOMContentLoaded", (e) => {
                 return;
             }
             current_game.join_player(data.sender_id);
+
+            socket.emit('frontend_action', {action_type: RES_GAME_JOINED, action_data: {}});
             break;
 
         case DISPLAY_READ:
@@ -143,7 +146,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
                 current_game = undefined;
             }
 
-            socket.emit('fronend_action', {action_type: RES_GAME_UNLOCKED, action_data: {}});
+            socket.emit('frontend_action', {action_type: RES_GAME_UNLOCKED, action_data: {}});
             break;
 
         default: console.log("Unknown request: " + data.action_type);

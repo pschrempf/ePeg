@@ -22,6 +22,7 @@ const SAVE_DATA = 2;
 const GAME_STARTED = 3;
 const GAME_LOCKED = 4;
 const GAME_UNLOCKED = 5;
+const GAME_JOINED = 6;
 
 const DYNAMIC_PEGQ_DATA = "frontend/resources/exhibition_data.csv";
 const DYNAMIC_PEGQ_BACKUP = "frontend/resources/exhibition_backup.csv";
@@ -148,6 +149,7 @@ io.on('connection', function(socket){
             case GAME_STARTED:
             case GAME_LOCKED:
             case GAME_UNLOCKED:
+            case GAME_JOINED:
                 tablets.forEach((s) => s.emit("server_action", d));
                 break;
             default:
