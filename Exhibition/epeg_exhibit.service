@@ -7,7 +7,7 @@ Description=Node.js server daemon for the ePeg Exhibition project.
 [Service]
 ExecStart=/var/www/html/ePeg/Exhibition/server.js
 Restart=always
-User=nobody
+User=pi
 Group=nogroup
 Environment=PATH=/usr/bin:/usr/local/bin
 Environment=NODE_ENV=production
