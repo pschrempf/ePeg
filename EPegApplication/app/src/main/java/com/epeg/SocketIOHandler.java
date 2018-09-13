@@ -38,10 +38,14 @@ public class SocketIOHandler {
     private static Handler mainUiHandler;
     private static Handler studyUiHandler;
 
+    private static int responseTrigger = -1;
+
     // Constants for the server messages
-    private static final int GAME_STARTED = 3;
-    private static final int GAME_LOCKED = 4;
-    private static final int GAME_UNLOCKED = 5;
+    public static final int MULTIPLAYER_PROGRESS = 1;
+    public static final int GAME_STARTED = 3;
+    public static final int GAME_LOCKED = 4;
+    public static final int GAME_UNLOCKED = 5;
+    public static final int GAME_JOINED = 6;
 
     public static synchronized Socket getSocket() {
         return getSocket(DEFAULT_UUID);
@@ -96,7 +100,8 @@ public class SocketIOHandler {
 
                     // Check if we have an Activity where we can run this
                     if (studyUiHandler != null)
-                        studyUiHandler.postDelayed(responseFunction, 500);
+                        if(data.getInt("action_type") == responseTrigger)
+                            studyUiHandler.postDelayed(responseFunction, 500);
                     else
                         Log.e(TAG, "Could not handle server action in StudyActivity!");
 
@@ -112,8 +117,10 @@ public class SocketIOHandler {
         return socket;
     }
 
-    public static void setResponseFunction(Runnable r) {
+    public static void setResponseFunction(Runnable r, int responseT) {
         responseFunction = r;
+
+        responseTrigger = responseT;
     }
 
     public static void setUpMain(Handler handler, Runnable joinF, Runnable lockF, Runnable unlockF) {

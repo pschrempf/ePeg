@@ -32,7 +32,7 @@ public class PreResultFragment extends Fragment {
 
         getResultsButton.setOnClickListener(l -> {
             SocketIOHandler.sendMessage(StudyActivity.STUDY_REQ.EXPERIMENT_DONE, null);
-            SocketIOHandler.setResponseFunction(() -> {});
+            SocketIOHandler.setResponseFunction(() -> {}, -1);
 
             StudyActivity parent = (StudyActivity) getActivity();
 

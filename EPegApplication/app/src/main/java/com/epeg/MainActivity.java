@@ -3,6 +3,7 @@ package com.epeg;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
@@ -56,6 +57,8 @@ public class MainActivity extends Activity {
     private int screenBrightnessSetting;
     private int systemUiVisibilitySetting;
 
+    private static boolean defaultOrientationIsLandscape = true;
+    private static boolean hasDeterminedOrientation = false;
 
 
     @Override
@@ -112,8 +115,15 @@ public class MainActivity extends Activity {
                     startGameBtn.setEnabled(true);
                     startGameBtn.setTextColor(Color.WHITE);
                     startGameBtn.setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
+                    startGameBtn.setOnClickListener(this::startStudy);
                 });
 
+        if(!hasDeterminedOrientation) {
+            Configuration config = getResources().getConfiguration();
+            defaultOrientationIsLandscape = config.orientation == Configuration.ORIENTATION_LANDSCAPE;
+
+            hasDeterminedOrientation = true;
+        }
     }
 
     @Override
@@ -388,11 +398,15 @@ public class MainActivity extends Activity {
 
                 }
             }
+
+
             accelerometerSetting = Settings.System.getInt(this.getContentResolver(), Settings.System.ACCELEROMETER_ROTATION);
             userSetting = Settings.System.getInt(this.getContentResolver(), Settings.System.USER_ROTATION);
             screenBrightnessModeSetting = Settings.System.getInt(this.getContentResolver(), Settings.System.SCREEN_BRIGHTNESS_MODE);
             screenBrightnessSetting = Settings.System.getInt(this.getContentResolver(), Settings.System.SCREEN_BRIGHTNESS);
             systemUiVisibilitySetting = getWindow().getDecorView().getSystemUiVisibility();
+
+            Log.d(TAG, "Rotation: " + userSetting);
         } catch (Settings.SettingNotFoundException e) {
             Log.e(TAG, e.getMessage());
         }
@@ -426,7 +440,7 @@ public class MainActivity extends Activity {
     public void setDefaultOperationFlags() {
         // set fixed rotation of tablet
         Settings.System.putInt(this.getContentResolver(), Settings.System.ACCELEROMETER_ROTATION, 0);
-        if (getResources().getInteger(R.integer.rotation) == 0) {
+        if (defaultOrientationIsLandscape) {
             Settings.System.putInt(this.getContentResolver(), Settings.System.USER_ROTATION, Surface.ROTATION_0);
         } else {
             Settings.System.putInt(this.getContentResolver(), Settings.System.USER_ROTATION, Surface.ROTATION_90);
@@ -454,7 +468,7 @@ public class MainActivity extends Activity {
     private void restoreSettings() {
         // set fixed rotation of tablet
         Settings.System.putInt(this.getContentResolver(), Settings.System.ACCELEROMETER_ROTATION, accelerometerSetting);
-        Settings.System.putInt(this.getContentResolver(), Settings.System.USER_ROTATION, userSetting);
+        Settings.System.putInt(this.getContentResolver(), Settings.System.USER_ROTATION, defaultOrientationIsLandscape ? Surface.ROTATION_0 : Surface.ROTATION_90);
 
         // set fixed brightness of screen
         Settings.System.putInt(getApplicationContext().getContentResolver(), Settings.System.SCREEN_BRIGHTNESS_MODE, screenBrightnessModeSetting);

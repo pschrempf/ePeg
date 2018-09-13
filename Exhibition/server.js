@@ -140,12 +140,10 @@ io.on('connection', function(socket){
             switch(d.action_type){
             case PRINT_LABEL: if (should_print) print_label(d.action_data.pegQ, d.action_data.avg_time);
                 break;
-            case MULTIPLAYER_PROGRESS:
-                tablets.forEach((s) => s.emit("server_action", {action_data: d.action_data}));
-                break;
             case SAVE_DATA:
                 save_data(d.action_data);
                 break;
+            case MULTIPLAYER_PROGRESS:
             case GAME_STARTED:
             case GAME_LOCKED:
             case GAME_UNLOCKED:

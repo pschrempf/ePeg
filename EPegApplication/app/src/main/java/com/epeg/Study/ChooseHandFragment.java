@@ -3,6 +3,7 @@ package com.epeg.Study;
 import android.app.Activity;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,7 @@ import org.json.JSONException;
  */
 public class ChooseHandFragment extends Fragment {
 
+    private static final String TAG = ChooseHandFragment.class.getName();
     Button leftHandButton;
     Button rightHandButton;
 
@@ -44,9 +46,9 @@ public class ChooseHandFragment extends Fragment {
 
             if (parent.isSinglePlayer())
                 parent.setStudyFragment(StudyActivity.STUDY_FRAG_TAG.LANDING_SCREEN);
-            else
+            else {
                 parent.waitForOtherPlayer(StudyActivity.STUDY_FRAG_TAG.LANDING_SCREEN);
-
+            }
 
             try {
                 SocketIOHandler.sendMessage(StudyActivity.STUDY_REQ.DISPLAY_READ, Study.getParticipant().jsonify());

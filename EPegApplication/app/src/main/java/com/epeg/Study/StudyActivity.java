@@ -84,8 +84,6 @@ public class StudyActivity extends AppCompatActivity {
 
     private boolean leftToRight = false;
 
-
-
     private boolean isSinglePlayer;
     private boolean shouldTurnScreen;
 
@@ -104,7 +102,10 @@ public class StudyActivity extends AppCompatActivity {
         SocketIOHandler.setStudyUiHandler(new Handler(Looper.getMainLooper()));
 
         // The next time the response is set is when we choose the hand, so until then we have the chance to turn this into a multiplayer game.
-        SocketIOHandler.setResponseFunction(() -> setSinglePlayer(true));
+        SocketIOHandler.setResponseFunction(() -> {
+            setSinglePlayer(false);
+            Log.d(TAG, "Set to multiplayer mode!");
+        }, SocketIOHandler.GAME_JOINED);
 
         try {
 
@@ -201,7 +202,7 @@ public class StudyActivity extends AppCompatActivity {
         setStudyFragment(STUDY_FRAG_TAG.WAITING_FOR_OTHER_PLAYER, false);
 
         // When both players are ready, move back
-        SocketIOHandler.setResponseFunction(() -> setStudyFragment(moveToAfterResponse, false));
+        SocketIOHandler.setResponseFunction(() -> setStudyFragment(moveToAfterResponse, false), SocketIOHandler.MULTIPLAYER_PROGRESS);
     }
 
     @Override
@@ -361,6 +362,7 @@ public class StudyActivity extends AppCompatActivity {
             Log.d(TAG, e.getMessage());
         }
 
+        Log.d(TAG, "Is Single now? " + isSinglePlayer);
         if (isSinglePlayer)
             setStudyFragment(STUDY_FRAG_TAG.LANDING_SCREEN);
         else
