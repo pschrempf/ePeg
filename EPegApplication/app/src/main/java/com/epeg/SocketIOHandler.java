@@ -10,6 +10,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URISyntaxException;
+
 import android.os.Handler;
 
 public class SocketIOHandler {
@@ -24,19 +25,25 @@ public class SocketIOHandler {
 
     // responseFunction can be set by the app so that whenever we want to react to a server action
     // we perform some UI action.
-    private static Runnable responseFunction = () -> {};
+    private static Runnable responseFunction = () -> {
+    };
 
-    private static Runnable joinFunction = () -> {};
-    private static Runnable lockFunction = () -> {};
+    private static Runnable joinFunction = () -> {
+    };
+    private static Runnable lockFunction = () -> {
+    };
+    private static Runnable unlockFunction = () -> {
+    };
 
     private static Handler mainUiHandler;
     private static Handler studyUiHandler;
 
     // Constants for the server messages
-    private static int JOINABLE_GAME_STARTED = 0;
-    private static int JOINABLE_GAME_LOCKED = 1;
+    private static final int GAME_STARTED = 3;
+    private static final int GAME_LOCKED = 4;
+    private static final int GAME_UNLOCKED = 5;
 
-    public static synchronized Socket getSocket(){
+    public static synchronized Socket getSocket() {
         return getSocket(DEFAULT_UUID);
     }
 
@@ -46,15 +53,16 @@ public class SocketIOHandler {
      *
      * @return
      */
-    public static synchronized Socket getSocket(String uuid){
-        if(socket != null) return socket;
+    public static synchronized Socket getSocket(String uuid) {
+        if (socket != null) return socket;
 
-        if(uuid == null) throw new NullPointerException("The UUID of the ePeg WebSocket cannot be null!");
+        if (uuid == null)
+            throw new NullPointerException("The UUID of the ePeg WebSocket cannot be null!");
 
         if (UUID == null) UUID = uuid;
 
         // Attempt to establish the socket connection to the server.
-        try{
+        try {
             IO.Options extras = new IO.Options();
 
             extras.query = "client_type=tablet&tablet_id=" + UUID;
@@ -65,30 +73,33 @@ public class SocketIOHandler {
                 Log.d(TAG, "Received server action!");
 
                 JSONObject data = (JSONObject) args[0];
+                Log.d(TAG, data.toString());
 
                 try {
-                    if (data.getInt("action_type") == JOINABLE_GAME_STARTED)
-                    {
-                        if (mainUiHandler != null){
+                    if (mainUiHandler != null)
+                        Log.e(TAG, "Could not handle server action in MainActivity!");
+
+                    switch (data.getInt("action_type")) {
+                        case GAME_STARTED:
                             mainUiHandler.post(joinFunction);
-                        }
-                        else
-                            Log.e(TAG, "Could not handle server action in MainActivity!");
-                    }
-                    else if (data.getInt("action_type") == JOINABLE_GAME_LOCKED){
-                        if (mainUiHandler != null){
+                            return;
+                        case GAME_LOCKED:
                             mainUiHandler.post(lockFunction);
-                        }
-                        else
-                            Log.e(TAG, "Could not handle server action in MainActivity!");
+                            return;
+                        case GAME_UNLOCKED:
+                            mainUiHandler.post(unlockFunction);
+                            return;
+                        default:
+                            Log.i(TAG, "Unrecognised server action in MainActivity!");
                     }
-                    else{
-                        // Check if we have an Activity where we can run this
-                        if (studyUiHandler != null)
-                            studyUiHandler.postDelayed(responseFunction, 500);
-                        else
-                            Log.e(TAG, "Could not handle server action in StudyActivity!");
-                    }
+
+
+                    // Check if we have an Activity where we can run this
+                    if (studyUiHandler != null)
+                        studyUiHandler.postDelayed(responseFunction, 500);
+                    else
+                        Log.e(TAG, "Could not handle server action in StudyActivity!");
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -101,22 +112,23 @@ public class SocketIOHandler {
         return socket;
     }
 
-    public static void setResponseFunction(Runnable r){
+    public static void setResponseFunction(Runnable r) {
         responseFunction = r;
     }
 
-    public static void setUpMain(Handler handler, Runnable joinF, Runnable lockF){
+    public static void setUpMain(Handler handler, Runnable joinF, Runnable lockF, Runnable unlockF) {
         mainUiHandler = handler;
         joinFunction = joinF;
         lockFunction = lockF;
+        unlockFunction = unlockF;
     }
 
-    public static void setStudyUiHandler(Handler handler){
+    public static void setStudyUiHandler(Handler handler) {
         studyUiHandler = handler;
     }
 
-    public static void sendMessage(final StudyActivity.STUDY_REQ actionType, final JSONObject actionData){
-        if(socket == null){
+    public static void sendMessage(final StudyActivity.STUDY_REQ actionType, final JSONObject actionData) {
+        if (socket == null) {
             Log.e(TAG, "NO SOCKET SET TO SEND WITH!");
         }
         try {

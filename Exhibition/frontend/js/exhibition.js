@@ -36,8 +36,9 @@ document.addEventListener("DOMContentLoaded", (e) => {
     const RES_PRINT_LABEL = 0;
     const RES_MULTIPLAYER_PROGRESS = 1;
     const RES_SAVE_DATA = 2;
-    const RES_JOINABLE_GAME_STARTED = 3;
-    const RES_JOINABLE_GAME_LOCKED = 4;
+    const RES_GAME_STARTED = 3;
+    const RES_GAME_LOCKED = 4;
+    const RES_GAME_UNLOCKED = 5;
 
     // The number of tablets we will wait for to connect before we allow
     // the game state to progress further.
@@ -53,7 +54,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
     // Register the items on the frontend
     var cover = d3.select(".cover");
 
-    var vis_bases = d3.select("#vis");
+    var vis_base = d3.select("#vis");
 
     var fun_fact_interval;
     var fun_fact_index = 0;
@@ -141,6 +142,8 @@ document.addEventListener("DOMContentLoaded", (e) => {
             if(current_game.reset(data.sender_id)){
                 current_game = undefined;
             }
+
+            socket.emit('fronend_action', {action_type: RES_GAME_UNLOCKED, action_data: {}});
             break;
 
         default: console.log("Unknown request: " + data.action_type);
@@ -228,7 +231,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
             console.log("Starting new game!");
 
             socket.emit("frontend_action", {
-                action_type: RES_JOINABLE_GAME_STARTED,
+                action_type: RES_GAME_STARTED,
                 action_data: {}
             });
 
@@ -363,7 +366,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
             }
             // If we are beginning the study in single player mode, we will lock the other tablet
             else{
-                socket.emit("frontend_action", {action_type: RES_JOINABLE_GAME_LOCKED, action_data: {}});
+                socket.emit("frontend_action", {action_type: RES_GAME_LOCKED, action_data: {}});
             }
 
             d3.select(".cover_info").html("");

@@ -3,6 +3,7 @@ package com.epeg;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -84,21 +85,34 @@ public class MainActivity extends Activity {
         Socket s = SocketIOHandler.getSocket(uuid);
         if (!s.connected()) s.connect();
 
-        Button startGameBtn = (Button) findViewById(R.id.start_game);
+
 
         SocketIOHandler.setUpMain(new Handler(Looper.getMainLooper()),
-                () -> startGameBtn.setText("Join Game"),
                 () -> {
-            startGameBtn.setText("Wait for other player to finish");
-            startGameBtn.setEnabled(false);
-            startGameBtn.setOnClickListener((v) -> {
-                Intent studyIntent = new Intent(MainActivity.this, StudyActivity.class);
-                studyIntent.putExtra("isSinglePlayer", false);
-                studyIntent.putExtra("shouldTurnScreen", shouldTurnScreen);
-                sm.close();
-                MainActivity.this.startActivity(studyIntent);
-            });
-        });
+                    Button startGameBtn =(Button) findViewById(R.id.start_game);
+                    startGameBtn.setText("Join Game");
+                    startGameBtn.setOnClickListener((v) -> {
+                                Intent studyIntent = new Intent(MainActivity.this, StudyActivity.class);
+                                studyIntent.putExtra("isSinglePlayer", false);
+                                studyIntent.putExtra("shouldTurnScreen", shouldTurnScreen);
+                                sm.close();
+                                MainActivity.this.startActivity(studyIntent);
+                    });
+                },
+                () -> {
+                    Button startGameBtn = (Button) findViewById(R.id.start_game);
+                    startGameBtn.setText("Wait for other player to finish");
+                    startGameBtn.setEnabled(false);
+                    startGameBtn.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
+                    startGameBtn.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                },
+                () -> {
+                    Button startGameBtn = (Button) findViewById(R.id.start_game);
+                    startGameBtn.setText(getResources().getText(R.string.start_single_player_button));
+                    startGameBtn.setEnabled(true);
+                    startGameBtn.setTextColor(Color.WHITE);
+                    startGameBtn.setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
+                });
 
     }
 

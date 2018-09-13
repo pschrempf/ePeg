@@ -19,8 +19,9 @@ const STATUS_DISCONNECTED = 1;
 const PRINT_LABEL = 0;
 const MULTIPLAYER_PROGRESS = 1;
 const SAVE_DATA = 2;
-const JOINABLE_GAME_STARTED = 3;
-const JOINABLE_GAME_LOCKED = 4;
+const GAME_STARTED = 3;
+const GAME_LOCKED = 4;
+const GAME_UNLOCKED = 5;
 
 const DYNAMIC_PEGQ_DATA = "frontend/resources/exhibition_data.csv";
 const DYNAMIC_PEGQ_BACKUP = "frontend/resources/exhibition_backup.csv";
@@ -144,8 +145,9 @@ io.on('connection', function(socket){
             case SAVE_DATA:
                 save_data(d.action_data);
                 break;
-            case JOINABLE_GAME_STARTED:
-            case JOINABLE_GAME_LOCKED:
+            case GAME_STARTED:
+            case GAME_LOCKED:
+            case GAME_UNLOCKED:
                 tablets.forEach((s) => s.emit("server_action", d));
                 break;
             default:
