@@ -70,7 +70,14 @@ public class SocketIOHandler {
                     if (data.getInt("action_type") == JOINABLE_GAME_STARTED)
                     {
                         if (mainUiHandler != null){
-                            mainUiHandler.postDelayed(responseFunction, 500);
+                            mainUiHandler.post(joinFunction);
+                        }
+                        else
+                            Log.e(TAG, "Could not handle server action in MainActivity!");
+                    }
+                    else if (data.getInt("action_type") == JOINABLE_GAME_LOCKED){
+                        if (mainUiHandler != null){
+                            mainUiHandler.post(lockFunction);
                         }
                         else
                             Log.e(TAG, "Could not handle server action in MainActivity!");

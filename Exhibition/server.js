@@ -19,6 +19,8 @@ const STATUS_DISCONNECTED = 1;
 const PRINT_LABEL = 0;
 const MULTIPLAYER_PROGRESS = 1;
 const SAVE_DATA = 2;
+const JOINABLE_GAME_STARTED = 3;
+const JOINABLE_GAME_LOCKED = 4;
 
 const DYNAMIC_PEGQ_DATA = "frontend/resources/exhibition_data.csv";
 const DYNAMIC_PEGQ_BACKUP = "frontend/resources/exhibition_backup.csv";
@@ -129,27 +131,27 @@ io.on('connection', function(socket){
         frontends.push(socket);
 
         // Handle the frontend_action requests
-        socket.on("frontend_action", (s) => {
+        socket.on("frontend_action", (d) => {
 		        console.log("frontend_action: ");
-		        console.log(s);
+		        console.log(d);
 
-            // Printing
-            if (s.action_type == PRINT_LABEL && should_print){
-                print_label(s.action_data.pegQ, s.action_data.avg_time)
+            switch(d.action_type){
+            case PRINT_LABEL: if (should_print) print_label(d.action_data.pegQ, d.action_data.avg_time);
+                break;
+            case MULTIPLAYER_PROGRESS:
+                tablets.forEach((s) => s.emit("server_action", {action_data: d.action_data}));
+                break;
+            case SAVE_DATA:
+                save_data(d.action_data);
+                break;
+            case JOINABLE_GAME_STARTED:
+            case JOINABLE_GAME_LOCKED:
+                tablets.forEach((s) => s.emit("server_action", d));
+                break;
+            default:
+                console.log("Unknown frontend action:" + JSON.stringify(d));
             }
-
-            // Pass on frontend information to the tablets
-            if (s.action_type == MULTIPLAYER_PROGRESS){
-
-                tablets.forEach((s) => s.emit("server_action", {action_data: s.action_data}))
-            }
-
-            // Save the trial data
-            if (s.action_type == SAVE_DATA){
-                save_data(s.action_data);
-            }
-
-        })
+        });
 
         // If a frontend connects, we update it with the list of tablets
         tablets.forEach((s) => socket.emit("player_status", {

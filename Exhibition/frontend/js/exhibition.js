@@ -280,6 +280,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
         };
 
         game.get_stats = function (id) {
+            console.log("STATS:", stats);
             return stats[id];
         };
 
@@ -323,22 +324,23 @@ document.addEventListener("DOMContentLoaded", (e) => {
                         stats[idx] = p["assets"]["results"]("#vis_chart",
                                                             study_data[id_to_index(idx)]);
 
+                        // Have the study data saved
+                        socket.emit("frontend_action", {
+                            action_type: RES_SAVE_DATA,
+                            action_data: {
+                                backup: {
+                                    participant: participant_data[idx],
+                                    trials: study_data[id_to_index(idx)]
+                                },
+                                stats: stats[idx]
+                            }
+                        });
+
                     });
 
                     d3.select(".cover").transition().duration(1000)
                         .style("height", "0%");
 
-                    // Have the study data saved
-                    socket.emit("frontend_action", {
-                        action_type: RES_SAVE_DATA,
-                        action_data: {
-                            backup: {
-                                participant: participant_data,
-                                trials: study_data
-                            },
-                            stats: stats
-                        }
-                    });
 
                 });
         };

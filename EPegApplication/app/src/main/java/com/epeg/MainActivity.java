@@ -85,7 +85,7 @@ public class MainActivity extends Activity {
         if (!s.connected()) s.connect();
 
         Button startGameBtn = (Button) findViewById(R.id.start_game);
-        
+
         SocketIOHandler.setUpMain(new Handler(Looper.getMainLooper()),
                 () -> startGameBtn.setText("Join Game"),
                 () -> {

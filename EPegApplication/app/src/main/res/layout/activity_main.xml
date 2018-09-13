@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:layout_margin="50dp"
-        android:onClick="startSingleStudy"
+        android:onClick="startStudy"
         android:text="@string/start_single_player_button" />
 
     <TextView
