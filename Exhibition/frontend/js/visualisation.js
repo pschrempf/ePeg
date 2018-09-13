@@ -23,6 +23,8 @@
 // Closure that when called will create a barchart object
 function barchart(width, height, num_bars, palette){
 
+    console.log(width, height, num_bars, palette);
+
     // References we will hold on to so that internal functions can use them
     var vis;
     var bars;
@@ -41,10 +43,12 @@ function barchart(width, height, num_bars, palette){
 
     const separator_height = height * .6;
 
-    const separator_offset = {
+    let separator_offset = {
         x: width * .5 - hsw,
         y: height * .2
     };
+
+    let offsetX = 0;
 
     const bar_width = height * .4 / num_bars;
 
@@ -71,14 +75,14 @@ function barchart(width, height, num_bars, palette){
             .attr("width", separator_width)
             .attr("height", separator_height)
             .attr("y", separator_offset.y)
-            .attr("x", separator_offset.x)
+            .attr("x", offsetX + separator_offset.x)
             .style("fill", "black")
             .style("stroke", "none");
 
         // Create a group for the bars
         bars = vis.append("g")
             .attr("class", "bar_group")
-            .attr("transform", "translate(" + (separator_offset.x + hsw) + ", " + separator_offset.y + ")");
+            .attr("transform", "translate(" + (offsetX + separator_offset.x + hsw) + ", " + separator_offset.y + ")");
 
         //create_legend();
 
@@ -184,13 +188,21 @@ function barchart(width, height, num_bars, palette){
     chart.width = function(value){
         if(!arguments.length) return width;
         width = value;
+        separator_offset.x = width * .5 - hsw;
         return chart;
     };
 
     chart.height = function(value){
         if(!arguments.length) return height;
         height = value;
-        return height;
+        return chart;
+    };
+
+    chart.offsetX = function(value){
+        if(!arguments.length) return offsetX;
+        offsetX = value;
+        console.log(value);
+        return chart;
     };
 
     return chart;
@@ -209,7 +221,7 @@ var results_vis = function(width, height){
 
     const NUM_HIST_BINS = 50;
 
-    const handedness_scale_width = width * .7;
+    var handedness_scale_width = width * .7;
     const handedness_scale_height = 20;
 
     const handedness_scale_margin = 20;
@@ -219,6 +231,8 @@ var results_vis = function(width, height){
     };
 
     const histogram_height = height * .5;
+
+    var offsetX = 0;
 
     var scene;
     var handedness_scale;
@@ -240,15 +254,15 @@ var results_vis = function(width, height){
 
         handedness_scale = scene.append("g")
             .attr("class", "handedness_scale")
-            .attr("transform", "translate(" + width * .1 + "," + (100 + histogram_height) + ")");
+            .attr("transform", "translate(" + (offsetX + width * .1) + "," + (100 + histogram_height) + ")");
 
         static_histogram_group = scene.append("g")
             .attr("class", "histogram_group")
-            .attr("transform", "translate(" + (width * .1 + 60 ) + "," + 150 + ")");
+            .attr("transform", "translate(" + (offsetX + width * .1 + 60 ) + "," + 150 + ")");
 
         dynamic_histogram_group = scene.append("g")
             .attr("class", "histogram_group")
-            .attr("transform", "translate(" + (width * .1 + 60 ) + "," + 150 + ")");
+            .attr("transform", "translate(" + (offsetX + width * .1 + 60 ) + "," + 150 + ")");
 
 
         stats = calculate_statistics(peg_data);
@@ -261,6 +275,7 @@ var results_vis = function(width, height){
     }
 
     var calculate_statistics = function(peg_data){
+        console.log(peg_data);
         var left_avg =
             peg_data.filter(data => data.handUsed == "left")
             .map(data => data.measurements.sumTime)
@@ -440,14 +455,22 @@ var results_vis = function(width, height){
     results.width = function(value){
         if(!arguments.length) return width;
         width = value;
-        return chart;
+        handedness_scale_width = width * .7;
+        return results;
     };
 
     results.height = function(value){
         if(!arguments.length) return height;
         height = value;
-        return height;
+        return results;
     };
+
+    results.offsetX = function(value){
+        if(!arguments.length) return offsetX;
+        offsetX = value;
+        return results;
+    };
+
 
     return results;
 };

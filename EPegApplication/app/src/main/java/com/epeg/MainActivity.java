@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.Gravity;
@@ -81,6 +83,22 @@ public class MainActivity extends Activity {
         // Create socket and connect it to the server with the above UUID
         Socket s = SocketIOHandler.getSocket(uuid);
         if (!s.connected()) s.connect();
+
+        Button startGameBtn = (Button) findViewById(R.id.start_game);
+        
+        SocketIOHandler.setUpMain(new Handler(Looper.getMainLooper()),
+                () -> startGameBtn.setText("Join Game"),
+                () -> {
+            startGameBtn.setText("Wait for other player to finish");
+            startGameBtn.setEnabled(false);
+            startGameBtn.setOnClickListener((v) -> {
+                Intent studyIntent = new Intent(MainActivity.this, StudyActivity.class);
+                studyIntent.putExtra("isSinglePlayer", false);
+                studyIntent.putExtra("shouldTurnScreen", shouldTurnScreen);
+                sm.close();
+                MainActivity.this.startActivity(studyIntent);
+            });
+        });
 
     }
 
@@ -315,26 +333,13 @@ public class MainActivity extends Activity {
      *
      * @param view - caller
      */
-    public void startSingleStudy(View view) {
+    public void startStudy(View view) {
         Intent studyIntent = new Intent(MainActivity.this, StudyActivity.class);
         studyIntent.putExtra("isSinglePlayer", true);
         studyIntent.putExtra("shouldTurnScreen", shouldTurnScreen);
         sm.close();
         MainActivity.this.startActivity(studyIntent);
     }
-
-    /**
-     * Starts study and syncs with network.
-     *
-     * @param view - caller
-     */
-    public void startMultiStudy(View view) {
-        Intent studyIntent = new Intent(MainActivity.this, StudyActivity.class);
-        studyIntent.putExtra("isSinglePlayer", false);
-        sm.close();
-        MainActivity.this.startActivity(studyIntent);
-    }
-
 
     /**
      * Hides settings fragment.

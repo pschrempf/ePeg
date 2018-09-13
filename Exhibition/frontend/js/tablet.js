@@ -62,13 +62,13 @@ document.addEventListener("DOMContentLoaded", (e) => {
 
 
     // Player action constants;
-    const REQ_NEW_SINGLE_GAME = 0;
-    const REQ_NEW_MULTI_GAME = 1;
-    const REQ_START_TRIAL = 2;
-    const REQ_TRIAL_FINISHED = 3;
-    const REQ_DISPLAY_READ = 4;
-    const REQ_EXPERIMENT_DONE = 5;
-    const REQ_GAME_RESET = 6;
+    const NEW_GAME = 0;
+    const JOIN_GAME = 1;
+    const START_TRIAL = 2;
+    const TRIAL_FINISHED = 3;
+    const DISPLAY_READ = 4;
+    const EXPERIMENT_DONE = 5;
+    const GAME_RESET = 6;
 
     const TABLET_ID = "DUMMY_TABLET_ID_" + getRandomInt(1000, 9999);
     // Make connection to the server
@@ -80,14 +80,14 @@ document.addEventListener("DOMContentLoaded", (e) => {
     d3.select("#start_single_game").on("click", () => {
         socket.emit("player_action", {
             "sender_id": TABLET_ID,
-            "action_type": REQ_NEW_SINGLE_GAME
+            "action_type": NEW_GAME
         });
     });
 
     d3.select("#start_multi_game").on("click", () => {
         socket.emit("player_action", {
             "sender_id": TABLET_ID,
-            "action_type": REQ_NEW_MULTI_GAME
+            "action_type": JOIN_GAME
         });
     });
 
@@ -95,7 +95,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
     d3.select("#display_read").on("click", () => {
         socket.emit("player_action", {
             "sender_id": TABLET_ID,
-            "action_type": REQ_DISPLAY_READ,
+            "action_type": DISPLAY_READ,
             "action_data": {age:22, gender:"male", dominant_hand:"right"}
         });
     });
@@ -103,21 +103,21 @@ document.addEventListener("DOMContentLoaded", (e) => {
     d3.select("#start_trial").on("click", () => {
         socket.emit("player_action", {
             "sender_id": TABLET_ID,
-            "action_type": REQ_DISPLAY_READ
+            "action_type": DISPLAY_READ
         });
     });
 
     d3.select("#start_trial").on("click", () => {
         socket.emit("player_action", {
             "sender_id": TABLET_ID,
-            "action_type": REQ_START_TRIAL
+            "action_type": START_TRIAL
         });
     });
 
     d3.select("#stop_left_trial").on("click", () => {
         socket.emit("player_action", {
             "sender_id": TABLET_ID,
-            "action_type": REQ_TRIAL_FINISHED,
+            "action_type": TRIAL_FINISHED,
             "action_data": leftTest
         });
     });
@@ -125,7 +125,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
     d3.select("#stop_right_trial").on("click", () => {
         socket.emit("player_action", {
             "sender_id": TABLET_ID,
-            "action_type": REQ_TRIAL_FINISHED,
+            "action_type": TRIAL_FINISHED,
             "action_data": rightTest
         });
     });
@@ -133,7 +133,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
     d3.select("#right_peg").on("click", () => {
         socket.emit("player_action", {
             "sender_id": TABLET_ID,
-            "action_type": REQ_PEG_PLACED,
+            "action_type": PEG_PLACED,
             "action_data": rightTest
         });
     });
@@ -141,7 +141,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
     d3.select("#left_peg").on("click", () => {
         socket.emit("player_action", {
             "sender_id": TABLET_ID,
-            "action_type": REQ_PEG_PLACED,
+            "action_type": PEG_PLACED,
             "action_data": rightTest
         });
     });
@@ -149,14 +149,14 @@ document.addEventListener("DOMContentLoaded", (e) => {
     d3.select("#experiment_done").on("click", () => {
         socket.emit("player_action", {
             "sender_id": TABLET_ID,
-            "action_type": REQ_EXPERIMENT_DONE
+            "action_type": EXPERIMENT_DONE
         });
     });
 
     d3.select("#game_reset").on("click", () => {
         socket.emit("player_action", {
             "sender_id": TABLET_ID,
-            "action_type": REQ_GAME_RESET
+            "action_type": GAME_RESET
         });
     });
 

@@ -61,8 +61,8 @@ public class StudyActivity extends AppCompatActivity {
     }
 
     public enum STUDY_REQ {
-        NEW_SINGLE_GAME(0),
-        NEW_MULTI_GAME(1),
+        NEW_GAME(0),
+        JOIN_GAME(1),
         START_TRIAL(2),
         TRIAL_FINISHED(3),
         DISPLAY_READ(4),
@@ -98,7 +98,7 @@ public class StudyActivity extends AppCompatActivity {
         // Lock the orientation of the device and disable various physical controls
         initSettings();
 
-        SocketIOHandler.setUiHandler(new Handler(Looper.getMainLooper()));
+        SocketIOHandler.setStudyUiHandler(new Handler(Looper.getMainLooper()));
 
         try {
 
@@ -132,9 +132,9 @@ public class StudyActivity extends AppCompatActivity {
         Log.i(TAG, "SHOULD ROTATE? "+ shouldTurnScreen);
 
         if (isSinglePlayer) {
-            SocketIOHandler.sendMessage(STUDY_REQ.NEW_SINGLE_GAME, null);
+            SocketIOHandler.sendMessage(STUDY_REQ.NEW_GAME, null);
         } else {
-            SocketIOHandler.sendMessage(STUDY_REQ.NEW_MULTI_GAME, null);
+            SocketIOHandler.sendMessage(STUDY_REQ.NEW_GAME, null);
             waitForOtherPlayer(STUDY_FRAG_TAG.CHOOSE_AGE);
         }
 
@@ -378,16 +378,18 @@ public class StudyActivity extends AppCompatActivity {
 //            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 //
 //        Log.i(TAG, "orientation: " + getRequestedOrientation() + ",reverse landscape:" + ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
+
+        int rotation;
+
         try {
-            if (Settings.System.getInt(getContentResolver(), Settings.System.USER_ROTATION) == Surface.ROTATION_0) {
-                Settings.System.putInt(getContentResolver(), Settings.System.USER_ROTATION, Surface.ROTATION_180);
-            } else if (Settings.System.getInt(getContentResolver(), Settings.System.USER_ROTATION) == Surface.ROTATION_90) {
-                Settings.System.putInt(getContentResolver(), Settings.System.USER_ROTATION, Surface.ROTATION_270);
-            } else if (Settings.System.getInt(getContentResolver(), Settings.System.USER_ROTATION) == Surface.ROTATION_180) {
-                Settings.System.putInt(getContentResolver(), Settings.System.USER_ROTATION, Surface.ROTATION_0);
-            } else {
-                Settings.System.putInt(getContentResolver(), Settings.System.USER_ROTATION, Surface.ROTATION_90);
+            switch (Settings.System.getInt(getContentResolver(), Settings.System.USER_ROTATION)) {
+                case Surface.ROTATION_0: rotation = Surface.ROTATION_180; break;
+                case Surface.ROTATION_90: rotation = Surface.ROTATION_270; break;
+                case Surface.ROTATION_180: rotation = Surface.ROTATION_0; break;
+                case Surface.ROTATION_270: rotation = Surface.ROTATION_90; break;
+                default: rotation = Surface.ROTATION_0;
             }
+            Settings.System.putInt(getContentResolver(), Settings.System.USER_ROTATION, rotation);
         } catch (Settings.SettingNotFoundException e) {
             Log.e(TAG, e.getMessage());
         }

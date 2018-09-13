@@ -374,8 +374,8 @@ The other set of messages are called ``player_action`` and they are __always__ r
 ```javascript
 {
 sender_id :: string                      // same uid as the 'id' field in the 'player_status' messages
-action_type :: [ NEW_SINGLE_GAME  = 0    // Request a new single player game
-               | NEW_MULTI_GAME   = 1    // Request a new multi player game
+action_type :: [ NEW_GAME  = 0    // Request a new single player game
+               | JOIN_GAME   = 1    // Request a new multi player game
                | START_NEXT_TRIAL = 2    // Request that the tablet start a new trial
                | TRIAL_FINISHED   = 3    // Let us know that 
                | DISPLAY_READ     = 4    // This is the message sent when the tablet is ready to begin the first trial.

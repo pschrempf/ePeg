@@ -26,7 +26,15 @@ public class SocketIOHandler {
     // we perform some UI action.
     private static Runnable responseFunction = () -> {};
 
-    private static Handler uiHandler;
+    private static Runnable joinFunction = () -> {};
+    private static Runnable lockFunction = () -> {};
+
+    private static Handler mainUiHandler;
+    private static Handler studyUiHandler;
+
+    // Constants for the server messages
+    private static int JOINABLE_GAME_STARTED = 0;
+    private static int JOINABLE_GAME_LOCKED = 1;
 
     public static synchronized Socket getSocket(){
         return getSocket(DEFAULT_UUID);
@@ -56,11 +64,27 @@ public class SocketIOHandler {
             socket.on("server_action", (args) -> {
                 Log.d(TAG, "Received server action!");
 
+                JSONObject data = (JSONObject) args[0];
 
-                if (uiHandler != null)
-                    uiHandler.postDelayed(responseFunction, 500);
-                else
-                    Log.e(TAG, "Could not handle server action!");
+                try {
+                    if (data.getInt("action_type") == JOINABLE_GAME_STARTED)
+                    {
+                        if (mainUiHandler != null){
+                            mainUiHandler.postDelayed(responseFunction, 500);
+                        }
+                        else
+                            Log.e(TAG, "Could not handle server action in MainActivity!");
+                    }
+                    else{
+                        // Check if we have an Activity where we can run this
+                        if (studyUiHandler != null)
+                            studyUiHandler.postDelayed(responseFunction, 500);
+                        else
+                            Log.e(TAG, "Could not handle server action in StudyActivity!");
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             });
 
         } catch (URISyntaxException e) {
@@ -74,8 +98,14 @@ public class SocketIOHandler {
         responseFunction = r;
     }
 
-    public static void setUiHandler(Handler handler){
-        uiHandler = handler;
+    public static void setUpMain(Handler handler, Runnable joinF, Runnable lockF){
+        mainUiHandler = handler;
+        joinFunction = joinF;
+        lockFunction = lockF;
+    }
+
+    public static void setStudyUiHandler(Handler handler){
+        studyUiHandler = handler;
     }
 
     public static void sendMessage(final StudyActivity.STUDY_REQ actionType, final JSONObject actionData){
