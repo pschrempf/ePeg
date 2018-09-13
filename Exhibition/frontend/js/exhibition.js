@@ -244,7 +244,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
 
         var display_information = function(){
             d3.select(".cover_info")
-                .html('<video width=1600 height=900 autoplay><source src="resources/tutorial.mp4" /></video>');
+                .html('<video width=1200 height=675 autoplay><source src="resources/tutorial.mp4" /></video>');
         };
 
         game.reset = function(){

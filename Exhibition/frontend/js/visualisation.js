@@ -153,6 +153,12 @@ function barchart(width, height, num_bars, palette){
         console.log(deltas);
         console.log(hand_used);
 
+        // Always rescale to the domain
+        let max = d3.max(deltas);
+
+        x_scale.domain([0, max])
+            .range([0, width/4]);
+
         var bar_selection = bars.selectAll("g." + hand_used)
             .data(deltas);
 
