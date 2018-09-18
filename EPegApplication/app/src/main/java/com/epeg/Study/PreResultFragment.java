@@ -36,7 +36,10 @@ public class PreResultFragment extends Fragment {
 
             StudyActivity parent = (StudyActivity) getActivity();
 
-            parent.setStudyFragment(StudyActivity.STUDY_FRAG_TAG.RESULTS);
+            if (parent.isSinglePlayer())
+                parent.setStudyFragment(StudyActivity.STUDY_FRAG_TAG.RESULTS);
+            else
+                parent.waitForOtherPlayer(StudyActivity.STUDY_FRAG_TAG.RESULTS);
         });
 
         return view;

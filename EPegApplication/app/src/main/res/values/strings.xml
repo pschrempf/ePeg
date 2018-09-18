@@ -45,6 +45,6 @@
     <string name="start_button">Setup next trial!</string>
     <string name="waiting_for_other_player">Waiting for other player…</string>
     <string name="see_results">Experiment completed! Click here for your results to appear on the big screen!</string>
-    <string name="ethical_consent_text">Disclaimer: By proceeding you consent to your data being anonymously collected for research purposes. This project has been approved by the University of St Andrews Ethics Committee. For inquiries, visit: http://www.st-andrews.ac.uk/utrec/guidelinespolicies/complaints/</string>
+    <string name="ethical_consent_text">By proceeding you consent to your data being anonymously collected for research purposes. This project has been approved by the University of St Andrews Ethics Committee. For inquiries, visit: http://www.st-andrews.ac.uk/utrec/guidelinespolicies/complaints/</string>
     <string name="tablet_rotation_toggle_info">Should the tablet rotate?</string>
 </resources>

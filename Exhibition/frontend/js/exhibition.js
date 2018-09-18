@@ -55,6 +55,8 @@ document.addEventListener("DOMContentLoaded", (e) => {
     // Register the items on the frontend
     var cover = d3.select(".cover");
 
+    var cover_info = d3.select(".cover_info");
+
     var vis_base = d3.select("#vis");
 
     var fun_fact_interval;
@@ -189,7 +191,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
             return;
         }
 
-        d3.select(".cover_info").html("Connected tablet " + (player_index + 1) + "/" + MAX_PLAYERS);
+        cover_info.html("Connected tablet " + (player_index + 1) + "/" + MAX_PLAYERS);
 
         player["index"] = player_index;
         player["assets"] = player_assets[player_index];
@@ -207,7 +209,11 @@ document.addEventListener("DOMContentLoaded", (e) => {
     }
 
     function pause_player(player){
-        console.log("pausing " + player);
+        console.log("Removed player: " + player.id);
+
+        delete players[player.id];
+
+        reset_cover();
     }
 
     function initialise_game(player_id){
@@ -246,7 +252,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
         };
 
         var display_information = function(){
-            d3.select(".cover_info")
+            cover_info
                 .html('<video width=1200 height=675 autoplay><source src="resources/tutorial.mp4" /></video>');
         };
 
@@ -265,7 +271,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
                 }
             }
 
-            d3.select(".cover").transition().duration(1000)
+            cover.transition().duration(1000)
                 .style("height", "100%")
                 .on("end", () => {reset_cover();});
 
@@ -308,9 +314,9 @@ document.addEventListener("DOMContentLoaded", (e) => {
             let index = id_to_index(id);
             let player = current_players[index];
 
-            d3.select(".cover_info").html("");
+            cover_info.html("");
 
-            d3.select(".cover").transition().duration(1000)
+            cover.transition().duration(1000)
                 .style("height", "100%")
                 .on("end", () => {
                     d3.select("#vis_chart")
@@ -344,7 +350,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
 
                     });
 
-                    d3.select(".cover").transition().duration(1000)
+                    cover.transition().duration(1000)
                         .style("height", "0%");
 
 
@@ -372,7 +378,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
                 socket.emit("frontend_action", {action_type: RES_GAME_LOCKED, action_data: {}});
             }
 
-            d3.select(".cover_info").html("");
+            cover_info.html("");
             console.log(current_players);
             current_players.forEach(player => {
                 let offsetWidth = document.getElementById("vis").offsetWidth;
@@ -381,7 +387,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
                 player["assets"]["chart"]("#vis_chart");
             });
 
-            d3.select(".cover").transition().duration(1000)
+            cover.transition().duration(1000)
                 .style("height", "2%");
 
         };
@@ -424,162 +430,25 @@ document.addEventListener("DOMContentLoaded", (e) => {
         return game;
     }
 
-    // Singleton instance of a multiplayer game.
-    var current_multi_player_game = undefined;
-
-    function initialise_multi_player_game(){
-
-        var num_trials_finished = 0;
-
-	      var stats = {};
-
-        var study_data = [[], []];
-
-        var semaphore_counter = 0;
-
-        var semaphore_max = MAX_PLAYERS - 1;
-
-        function multi_player_game(){
-            console.log("Starting multiplayer game!");
-            console.log(semaphore_counter);
-
-            // If this is the first time this function is called withing the current setting, set up the semaphore so that the
-            // function only runs if we have confirmation that everyone has called it.
-            semaphore_counter = semaphore_counter == 0 ? semaphore_max : semaphore_counter - 1;
-            console.log(semaphore_counter);
-
-            // If everyone has called this function, the counter will be 0 after the line above.
-            if(semaphore_counter == 0){
-                socket.emit("frontend_action", {action_type: RES_MULTIPLAYER_PROGRESS, action_data:"move"});
-                display_information();
-            }
-        }
-
-        var display_information = function(){
-            Object.keys(players).forEach(k => {
-                players[k]["assets"]["cover"].select(".cover_info")
-                    .html('<iframe width="560" height="315" src="https://www.youtube.com/embed/NPvMUpcxPSA?rel=0&amp;controls=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>');
-            });
-        };
-
-        multi_player_game.get_stats = function (player_id) {
-            return stats[player_id];
-        };
-
-        multi_player_game.reset = function(player_id){
-            console.log("Resetting!");
-
-            let player = players[player_id];
-
-            player["assets"]["cover"].transition().duration(1000)
-                .style("height", "100%");
-
-            reset_cover(player);
-        };
-
-        multi_player_game.show_results = function(player_id){
-
-	          let player = players[player_id];
-
-	          player["assets"]["cover"].select(".cover_info").html("");
-
-	          player["assets"]["cover"].transition().duration(1000)
-                .style("height", "100%")
-                .on("end", () => {
-                    player["assets"]["vis_base"].select("svg").html("");
-                    player["assets"]["vis_base"].select("svg").style("background-color", "#27567b");
-                    stats[player_id] = player["assets"]["results"](player["assets"]["vis_id"] + " .chart",
-                        study_data[player["index"]]);
-
-                    player["assets"]["cover"].transition().duration(1000)
-                .style("height", "0%");
-                });
-        };
-
-        multi_player_game.begin_study = function(){
-
-            // If this is the first time this function is called withing the current setting, set up the semaphore so that the
-            // function only runs if we have confirmation that everyone has called it.
-            semaphore_counter = semaphore_counter == 0 ? semaphore_max : semaphore_counter - 1;
-
-            // If everyone has called this function, the counter will be 0 after the line above.
-            if(semaphore_counter == 0){
-                socket.emit("frontend_action", {action_type: RES_MULTIPLAYER_PROGRESS, action_data:"move"});
-
-                Object.keys(players).forEach(k => {
-                    let player = players[k];
-
-                    player["assets"]["cover"].select(".cover_info").html("");
-                    player["assets"]["chart"](player["assets"]["vis_id"] + " .chart");
-
-                    player["assets"]["cover"].transition().duration(1000)
-                        .style("height", "2%");
-                });
-            }
-        };
-
-        multi_player_game.run_trial = function(player_id){
-            if(num_trials_finished % 2 == 0){
-                num_trials_finished = 0;
-
-                players[player_id]["assets"]["chart"].clear();
-            }
-        };
-
-        multi_player_game.finish_trial = function(data, player_id){
-
-            // If this is the first time this function is called withing the current setting, set up the semaphore so that the
-            // function only runs if we have confirmation that everyone has called it.
-            semaphore_counter = semaphore_counter == 0 ? semaphore_max : semaphore_counter - 1;
-
-            // If everyone has called this function, the counter will be 0 after the line above.
-            if(semaphore_counter == 0){
-	              // Report that both players have now finished the trial
-	              socket.emit("frontend_action", {action_type: RES_MULTIPLAYER_PROGRESS, action_data:"trial finished"});
-
-		            num_trials_finished++;
-            }
-
-            players[player_id]["assets"]["chart"].update(data);
-
-            // Record the data so that we can use it for the visualisation at the end and for printing
-            study_data[players[player_id]["index"]].push(data);
-
-        };
-
-        // Check if the singleton instance is present already or not
-        if (typeof current_multi_player_game == 'undefined'){
-            current_multi_player_game = multi_player_game;
-
-            return multi_player_game;
-        }
-        else{
-            return current_multi_player_game;
-        }
-    }
-
     function reset_cover(){
 
-        console.log("re1");
         d3.select("#vis_chart")
             .style("background-color", "white")
             .html("");
 
         // Update the visuals
-        d3.select(".cover_info")
+        cover_info
             .html("")
             .append("span")
             .html("Come and try our experiment!");
 
-        console.log("re2");
-        d3.select(".cover_info")
+        cover_info
             .append("p")
             .style("padding-top", "20px")
             //.style("border-top", "2px solid white")
             .html("Did you know?");
 
-        console.log("re3");
-        var fact_box = d3.select(".cover_info")
+        var fact_box = cover_info
             .append("p")
             .style("font-weight", "bold")
             .style("line-height", "50px")

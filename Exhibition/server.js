@@ -148,6 +148,7 @@ io.on('connection', function(socket){
             case GAME_LOCKED:
             case GAME_UNLOCKED:
             case GAME_JOINED:
+                console.log("Sending " , tablets.id, " ", JSON.stringify(d));
                 tablets.forEach((s) => s.emit("server_action", d));
                 break;
             default:
