@@ -48,4 +48,5 @@
     <string name="ethical_consent_text">By proceeding you consent to your data being anonymously collected for research purposes. This project has been approved by the University of St Andrews Ethics Committee. For inquiries, visit: http://www.st-andrews.ac.uk/utrec/guidelinespolicies/complaints/</string>
     <string name="tablet_rotation_toggle_info">Should the tablet rotate?</string>
     <string name="is_the_tablet_in_landscape_mode">Is the tablet in landscape mode?</string>
+    <string name="calculating_btn_text">Calculating...</string>
 </resources>

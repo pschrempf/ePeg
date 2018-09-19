@@ -161,9 +161,7 @@ public class StudyActivity extends AppCompatActivity {
 
         });
 
-        EPegViewPager sfpa = (EPegViewPager) findViewById(R.id.study_fragment_pager);
-
-        sfpa.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        studyFragmentContainer.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
@@ -173,7 +171,7 @@ public class StudyActivity extends AppCompatActivity {
             public void onPageSelected(int position) {
                 Log.d(TAG, "CURRENT PAGE SELECTED:" + position);
 
-                StudyFragmentPagerAdapter adapter = (StudyFragmentPagerAdapter) sfpa.getAdapter();
+                StudyFragmentPagerAdapter adapter = (StudyFragmentPagerAdapter) studyFragmentContainer.getAdapter();
 
                 Fragment fragment = adapter.getItem(position);
 
@@ -181,15 +179,19 @@ public class StudyActivity extends AppCompatActivity {
                 {
                     Button doneButton = ((ResultFragment) fragment).resultsViewedButton;
                     doneButton.setEnabled(false);
+                    doneButton.setText(R.string.calculating_btn_text);
 
                     Timer buttonTimer = new Timer();
                     buttonTimer.schedule(new TimerTask() {
 
                         @Override
                         public void run() {
-                            runOnUiThread(() -> doneButton.setEnabled(true));
+                            runOnUiThread(() -> {
+                                doneButton.setEnabled(true);
+                                doneButton.setText(R.string.end_study_button);
+                            });
                         }
-                    }, 7000);
+                    }, 5000);
                 }
             }
 

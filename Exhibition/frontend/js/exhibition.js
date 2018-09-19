@@ -211,9 +211,15 @@ document.addEventListener("DOMContentLoaded", (e) => {
 
         delete players[player.id];
 
-
         cover_info.html("");
         cover_info.html("Connected tablet " + (Object.keys(players).length) + "/" + MAX_PLAYERS);
+
+        cover.transition().duration(1000)
+            .style("height", "100%")
+            .on("end", () => {
+                current_game = undefined;
+            });
+
     }
 
     function initialise_game(player_id){
@@ -253,7 +259,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
 
         var display_information = function(){
             cover_info
-                .html('<video width=1200 height=675 autoplay><source src="resources/tutorial.mp4" /></video>');
+                .html('<video style="display:block;margin:0px auto;" width=1200 height=675 autoplay><source src="resources/tutorial.mp4" /></video>');
         };
 
         game.reset = function(){
