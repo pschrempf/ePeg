@@ -16,6 +16,9 @@ import com.epeg.SocketIOHandler;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 /**
  * Fragment that is called at the end of a study.
  *
@@ -24,7 +27,7 @@ import org.json.JSONObject;
 public class ResultFragment extends Fragment {
 
     private static final String TAG = ResultFragment.class.getSimpleName();
-
+    public Button resultsViewedButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -41,7 +44,7 @@ public class ResultFragment extends Fragment {
         TextView participantCodeTextView = (TextView) view.findViewById(R.id.result_participant_id);
         participantCodeTextView.setText(getResources().getString(R.string.participant_code, getArguments().getString("label")));
 
-        Button resultsViewedButton = (Button) view.findViewById(R.id.end_study_button);
+        resultsViewedButton = (Button) view.findViewById(R.id.end_study_button);
 
         resultsViewedButton.setOnClickListener(v -> {
 

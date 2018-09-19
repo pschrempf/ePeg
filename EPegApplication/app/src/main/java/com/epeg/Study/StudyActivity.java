@@ -13,7 +13,9 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Surface;
 import android.view.View;
+import android.widget.Button;
 
+import com.epeg.EPegViewPager;
 import com.epeg.MainActivity;
 import com.epeg.R;
 import com.epeg.SocketIOHandler;
@@ -156,6 +158,49 @@ public class StudyActivity extends AppCompatActivity {
                     | View.SYSTEM_UI_FLAG_LOW_PROFILE
                     | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
 
+        });
+
+        EPegViewPager sfpa = (EPegViewPager) findViewById(R.id.study_fragment_pager);
+
+        sfpa.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                Log.d(TAG, "CURRENT PAGE SELECTED:" + position);
+
+                StudyFragmentPagerAdapter adapter = (StudyFragmentPagerAdapter) sfpa.getAdapter();
+
+                Fragment f = adapter.getItem(position);
+
+                if (f instanceof ResultFragment)
+                {
+                    Button btn = ((ResultFragment) f).resultsViewedButton;
+                    btn.setEnabled(false);
+
+                    Timer buttonTimer = new Timer();
+                    buttonTimer.schedule(new TimerTask() {
+
+                        @Override
+                        public void run() {
+                            runOnUiThread(new Runnable() {
+
+                                @Override
+                                public void run() {
+                                    btn.setEnabled(true);
+                                }
+                            });
+                        }
+                    }, 5000);
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
         });
 
         // Start watchdog

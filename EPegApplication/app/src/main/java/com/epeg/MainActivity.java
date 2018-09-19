@@ -58,7 +58,6 @@ public class MainActivity extends Activity {
     private int systemUiVisibilitySetting;
 
     private static boolean defaultOrientationIsLandscape = true;
-    private static boolean hasDeterminedOrientation = false;
 
 
     @Override
@@ -73,7 +72,10 @@ public class MainActivity extends Activity {
 
         // only display the settings window if it is the first time us running the app.
         if(!isTabletConfigured) researcherSettings(getApplicationContext());
-        else setContentView(R.layout.activity_main);
+        else {
+            Log.d(TAG, "Already configured");
+            setContentView(R.layout.activity_main);
+        }
 
         // set view to update UI flags after change
         View decorView = getWindow().getDecorView();
@@ -87,8 +89,6 @@ public class MainActivity extends Activity {
         // Create socket and connect it to the server with the above UUID
         Socket s = SocketIOHandler.getSocket(uuid);
         if (!s.connected()) s.connect();
-
-
 
         SocketIOHandler.setUpMain(new Handler(Looper.getMainLooper()),
                 () -> {
@@ -118,12 +118,6 @@ public class MainActivity extends Activity {
                     startGameBtn.setOnClickListener(this::startStudy);
                 });
 
-        if(!hasDeterminedOrientation) {
-            Configuration config = getResources().getConfiguration();
-            defaultOrientationIsLandscape = config.orientation == Configuration.ORIENTATION_LANDSCAPE;
-
-            hasDeterminedOrientation = true;
-        }
     }
 
     @Override
@@ -161,6 +155,15 @@ public class MainActivity extends Activity {
             Log.i(TAG, "Toggle: " + checked);
 
             shouldTurnScreen = checked;
+        });
+
+        sw = (Switch) findViewById(R.id.tablet_landscape_toggle);
+
+        sw.setOnCheckedChangeListener((v, checked) -> {
+            Log.i(TAG, "Is in landscape: " + checked);
+
+            defaultOrientationIsLandscape = checked;
+
         });
 
         isTabletConfigured = true;
@@ -251,6 +254,7 @@ public class MainActivity extends Activity {
             } else {
                 // commence with main activity
                 setContentView(R.layout.activity_main);
+                restoreSettings();
             }
         }
     }

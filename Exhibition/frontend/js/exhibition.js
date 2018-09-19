@@ -5,13 +5,13 @@ fun_facts = [
     "Many genes control handedness.",
     "Handedness is not just left/right but can be measured along a continuum.",
     "More than 90% parrots prefers their left foot.",
-    "Most animals have a preferred side, left/right preference is usually 50:50.",
+    "For most animals left/right side preference is normally 50:50.",
     "Kangaroos prefer their left side.",
     "Handedness and language hemispheric dominance are correlated.",
     "Handedness is established before we are born.",
     "Genes contribute up to 25% to hand preference.",
     "Left-handers have an advantage in baseball and cricket.",
-    "There are very few left-handed golf players",
+    "There are very few left-handed golf players.",
     "Kurt Cobain was right handed but played a left-handed guitar.",
     "Paul McCartney and Ringo Starr are left handed."
 ];
@@ -161,8 +161,6 @@ document.addEventListener("DOMContentLoaded", (e) => {
     // =========================================================================
 
     var chart = document.getElementById("vis");
-    console.log(chart);
-    console.log(chart.offsetWidth);
 
     var player_assets = [
         {
@@ -213,7 +211,8 @@ document.addEventListener("DOMContentLoaded", (e) => {
 
         delete players[player.id];
 
-        reset_cover();
+        cover_info.html("");
+        cover_info.html("Connected tablet " + (player_index + 1) + "/" + MAX_PLAYERS);
     }
 
     function initialise_game(player_id){

@@ -110,6 +110,14 @@
             android:text="@string/tablet_rotation_toggle_info"
             android:theme="@style/NumberPickerText" />
 
+        <Switch
+            android:id="@+id/tablet_landscape_toggle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/is_the_tablet_in_landscape_mode"
+            android:theme="@style/NumberPickerText" />
+
     </LinearLayout>
 
     <Button
