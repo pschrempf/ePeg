@@ -82,6 +82,8 @@ public class Trial {
     //Flag to denote whether a trial is a demo or not
     private boolean isDemo;
 
+    private JSONObject extras;
+
     /**
      * Initialises a new {@link Trial} to be recorded.
      *
@@ -346,6 +348,15 @@ public class Trial {
         this.isDemo = isDemo;
     }
 
+    public JSONObject getExtras(){
+        return this.extras;
+    }
+
+    public void setExtras(JSONObject extras) throws JSONException {
+        // Deep copy extras
+        this.extras = new JSONObject(extras.toString());
+    }
+
     //====================================================================================================
     // JSON Builder and toString methods
     //====================================================================================================
@@ -383,7 +394,7 @@ public class Trial {
                         JSON_LEFT_HAND_USED : JSON_RIGHT_HAND_USED )
                 .put( JSON_TRIAL_SUCCESS_TAG, isSuccessful() ?
                         JSON_TRIAL_TRUE_TAG : JSON_TRIAL_FALSE_TAG )
-                .put( JSON_EXTRAS_TAG, "" )
+                .put( JSON_EXTRAS_TAG, getExtras() )
                 .put(JSON_MEASUREMENTS_TAG, new JSONObject()
                                 .put(JSON_START_TIME_TAG, getStartTime().getTime())
                                 .put(JSON_END_TIME_TAG, getEndTime().getTime())

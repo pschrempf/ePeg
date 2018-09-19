@@ -211,8 +211,9 @@ document.addEventListener("DOMContentLoaded", (e) => {
 
         delete players[player.id];
 
+
         cover_info.html("");
-        cover_info.html("Connected tablet " + (player_index + 1) + "/" + MAX_PLAYERS);
+        cover_info.html("Connected tablet " + (Object.keys(players).length) + "/" + MAX_PLAYERS);
     }
 
     function initialise_game(player_id){

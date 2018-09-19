@@ -282,20 +282,23 @@ var results_vis = function(width, height){
 
     var calculate_statistics = function(peg_data){
         console.log(peg_data);
-        var left_avg =
-            peg_data.filter(data => data.handUsed == "left")
-            .map(data => data.measurements.sumTime)
-            .reduce((x, y) => x + y) / peg_data.length * 2;
 
-        var right_avg =
-            peg_data.filter(data => data.handUsed == "right")
-            .map(data => data.measurements.sumTime)
-            .reduce((x, y) => x + y) / peg_data.length * 2;
+        let last_four = peg_data.slice(-4);
+
+        let left_avg =
+            last_four.filter(data => data.handUsed == "left")
+            .map(data => data.measurements.pegDeltas.slice(0, -1).reduce((a, b) => a + b))
+            .reduce((x, y) => x + y) / 2;
+
+        let right_avg =
+            last_four.filter(data => data.handUsed == "right")
+            .map(data => data.measurements.pegDeltas.slice(0, -1).reduce((a, b) => a + b))
+            .reduce((x, y) => x + y) / 2;
 
         // The peg quotient formula is 2(R-L)/(R+L)
-        var pegQ = 2 * (right_avg - left_avg) / (right_avg + left_avg);
+        let pegQ = 2 * (right_avg - left_avg) / (right_avg + left_avg);
 
-        var avg_time =
+        let avg_time =
             peg_data.map(data => data.measurements.sumTime)
             .reduce((x, y) => x + y) / peg_data.length / 7; // Divide the total time by the total number of pegs, which is 7.
 

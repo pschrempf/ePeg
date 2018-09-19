@@ -23,6 +23,7 @@ import com.epeg.StudyFragmentPagerAdapter;
 import com.epeg.WaitingForOtherPlayerFragment;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -165,6 +166,7 @@ public class StudyActivity extends AppCompatActivity {
         sfpa.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
             }
 
             @Override
@@ -173,27 +175,21 @@ public class StudyActivity extends AppCompatActivity {
 
                 StudyFragmentPagerAdapter adapter = (StudyFragmentPagerAdapter) sfpa.getAdapter();
 
-                Fragment f = adapter.getItem(position);
+                Fragment fragment = adapter.getItem(position);
 
-                if (f instanceof ResultFragment)
+                if (fragment instanceof ResultFragment)
                 {
-                    Button btn = ((ResultFragment) f).resultsViewedButton;
-                    btn.setEnabled(false);
+                    Button doneButton = ((ResultFragment) fragment).resultsViewedButton;
+                    doneButton.setEnabled(false);
 
                     Timer buttonTimer = new Timer();
                     buttonTimer.schedule(new TimerTask() {
 
                         @Override
                         public void run() {
-                            runOnUiThread(new Runnable() {
-
-                                @Override
-                                public void run() {
-                                    btn.setEnabled(true);
-                                }
-                            });
+                            runOnUiThread(() -> doneButton.setEnabled(true));
                         }
-                    }, 5000);
+                    }, 7000);
                 }
             }
 
@@ -362,7 +358,12 @@ public class StudyActivity extends AppCompatActivity {
     public void endTrial(Trial trial) {
         Log.d(TAG, "End of trial.");
 
+
         try {
+            JSONObject extra = new JSONObject();
+            extra.put("index", Study.getCurrentTrialIndex());
+            trial.setExtras(extra);
+
             SocketIOHandler.sendMessage(STUDY_REQ.TRIAL_FINISHED, trial.jsonify());
         } catch (JSONException | TrialFailureException e) {
             e.printStackTrace();
@@ -380,8 +381,6 @@ public class StudyActivity extends AppCompatActivity {
 
             if (Study.isFinished()) {
                 Log.d(TAG, "Study finished!");
-
-
 
                 // show result fragment
                 if (isSinglePlayer)

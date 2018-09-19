@@ -42,8 +42,8 @@ import java.util.List;
  */
 public class MainActivity extends Activity {
 
-
     private static final String TAG = MainActivity.class.getSimpleName();
+    private static final int NUMBER_OF_TRIALS = 3;
 
     // This variable is used to track whether the settings page should be shown at all or not.
     private static boolean isTabletConfigured = false;
@@ -59,12 +59,11 @@ public class MainActivity extends Activity {
 
     private static boolean defaultOrientationIsLandscape = true;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Study.setNumTrials(getResources().getInteger(R.integer.default_trials));
+        Study.setNumTrials(NUMBER_OF_TRIALS);
 
         initSettings();
 
