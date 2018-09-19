@@ -95,7 +95,7 @@ app.use("/epegExhibition", express.static('frontend'));
 var frontends = [];
 
 // List of tablets connected to the server
-var tablets = [];
+var tablets = {};
 
 
 io.on('connection', function(socket){
@@ -107,26 +107,33 @@ io.on('connection', function(socket){
     console.log('Socket query information:', client_type);
 
     if (client_type == "tablet"){
-        let tablet_id = tablets.push(socket) - 1;
+            
+        let tablet_id = socket.handshake.query.tablet_id;
+tablets[tablet_id] = socket;
 
         // Set up relaying of all player_action messages
         socket.on('player_action', (d) => frontends.forEach((s) => s.emit('player_action', d)));
 
         // If the tablet disconnects, we remove it from our connection table
         socket.on('disconnect', () => {
-            tablets.splice(tablet_id, 1);
+	delete tablets[tablet_id];
+
+console.log(tablet_id, " disconnected, ", Object.keys(tablets).length, " tablets remaining.");
 
             frontends.forEach((s) => s.emit('player_status', {
-                id: s.handshake.query.tablet_id,
+                id: tablet_id,
                 status: STATUS_DISCONNECTED
             }));
         });
 
         // If a tablet connects, we alert every frontend
-        frontends.forEach((s) => s.emit("player_status", {
-            id: socket.handshake.query.tablet_id,
+        frontends.forEach((s) => {
+console.log(tablet_id, " connected, ", Object.keys(tablets).length, " tablets.");
+s.emit("player_status", {
+            id: tablet_id,
             status: STATUS_CONNECTED
-        }));
+        });
+});
 
     }
     else if (client_type == "frontend"){
@@ -149,7 +156,7 @@ io.on('connection', function(socket){
             case GAME_UNLOCKED:
             case GAME_JOINED:
                 console.log("Sending " , tablets.id, " ", JSON.stringify(d));
-                tablets.forEach((s) => s.emit("server_action", d));
+                Object.keys(tablets).forEach((k) => tablets[k].emit("server_action", d));
                 break;
             default:
                 console.log("Unknown frontend action:" + JSON.stringify(d));
@@ -157,8 +164,8 @@ io.on('connection', function(socket){
         });
 
         // If a frontend connects, we update it with the list of tablets
-        tablets.forEach((s) => socket.emit("player_status", {
-            id: s.handshake.query.tablet_id,
+        Object.keys(tablets).forEach((k) => socket.emit("player_status", {
+            id: tablets[k].handshake.query.tablet_id,
             status: STATUS_CONNECTED
         }));
     }

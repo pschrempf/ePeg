@@ -209,11 +209,15 @@ document.addEventListener("DOMContentLoaded", (e) => {
     }
 
     function pause_player(player){
+        console.log(player);
         console.log("Removed player: " + player.id);
 
         delete players[player.id];
 
-        reset_cover();
+        console.log(players);
+
+        cover_info.html("");
+        cover_info.html("Connected tablet " + (Object.keys(players).length) + "/" + MAX_PLAYERS);
     }
 
     function initialise_game(player_id){
