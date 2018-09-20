@@ -296,7 +296,7 @@ var results_vis = function(width, height){
             .reduce((x, y) => x + y) / 2;
 
         // The peg quotient formula is 2(R-L)/(R+L)
-        let pegQ = 2 * (right_avg - left_avg) / (right_avg + left_avg);
+        let pegQ = 2 * (left_avg - right_avg) / (right_avg + left_avg);
 
         let avg_time =
             peg_data.map(data => data.measurements.sumTime)

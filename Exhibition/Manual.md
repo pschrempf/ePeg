@@ -23,5 +23,3 @@ The optionals may be required for the troubleshooting of the project, should any
 
 Setting up the project
 ----------------------------
-
-
