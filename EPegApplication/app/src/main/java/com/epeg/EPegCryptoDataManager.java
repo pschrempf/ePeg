@@ -189,30 +189,94 @@ public class EPegCryptoDataManager {
             writeBackUp(FILE_PUBLIC_DATA, tempArray.toArray( new String[0]), true);
 
 
-            String studyData = study.toString();
+//            String studyData = study.toString();
 
-            ContentValues values = new ContentValues();
+//            ContentValues values = new ContentValues();
+//
+//            EncryptionResult firstStage = encryptString(studyData);
+//
+//            values.put(EPegSQLiteHelper.FIELD_DATA, firstStage.getCypherText());
+//            values.put(EPegSQLiteHelper.FIELD_KEY, firstStage.getSecretKey());
+//            values.put(EPegSQLiteHelper.FIELD_IV, firstStage.getInitVector());
+//
+//            values.put(EPegSQLiteHelper.FIELD_EXP_CONDUCTOR, conductor);
+//            values.put(EPegSQLiteHelper.FIELD_DEVICE_ID, deviceID);
+//
+//            String[] backupData = {firstStage.getCypherText(), firstStage.getSecretKey(), firstStage.getInitVector()};
 
-            EncryptionResult firstStage = encryptString(studyData);
+            tempArray = new ArrayList<>();
 
-            values.put(EPegSQLiteHelper.FIELD_DATA, firstStage.getCypherText());
-            values.put(EPegSQLiteHelper.FIELD_KEY, firstStage.getSecretKey());
-            values.put(EPegSQLiteHelper.FIELD_IV, firstStage.getInitVector());
+            tempArray.add(expConductor);
+            tempArray.add(deviceID);
+            tempArray.add(participant.getString(Participant.JSON_LABEL_TAG));
+            tempArray.add(participant.getString(Participant.JSON_DOM_HAND_TAG));
 
-            values.put(EPegSQLiteHelper.FIELD_EXP_CONDUCTOR, conductor);
-            values.put(EPegSQLiteHelper.FIELD_DEVICE_ID, deviceID);
+            tempArray.add(date);
 
-            String[] backupData = {firstStage.getCypherText(), firstStage.getSecretKey(), firstStage.getInitVector()};
+            for (int i = 0; i < trials.length(); i++) {
+                JSONObject trial = trials.getJSONObject(i).getJSONObject(Trial.JSON_MEASUREMENTS_TAG);
 
-            writeBackUp(FILE_DATA_BACKUP, backupData, false);
+                tempArray.add(trial.getString(Trial.JSON_START_TIME_TAG));
+                tempArray.add(trial.getString(Trial.JSON_END_TIME_TAG));
+                tempArray.add(trial.getString(Trial.JSON_TOTAL_TIME_TAG));
+                tempArray.add(trial.getString(Trial.JSON_SUM_TIME_TAG));
+                tempArray.add(trial.getString(Trial.JSON_ACTUAL_TIME_TAG));
 
-            long id = database.insert(EPegSQLiteHelper.TABLE_NAME, null, values);
+                JSONArray pegsLifted = trial.getJSONArray(Trial.JSON_PEGS_LIFTED_TAG);
+                for (int j = 0; j < pegsLifted.length(); j++) {
+                    tempArray.add(pegsLifted.getString(j));
+                }
 
-            Log.d(TAG, "New study recorded, with ID " + id + " on " + deviceID + " by " + conductor);
+                JSONArray pegsReleased = trial.getJSONArray(Trial.JSON_PEGS_RELEASED_TAG);
+                for (int j = 0; j < pegsReleased.length(); j++) {
+                    tempArray.add(pegsReleased.getString(j));
+                }
+
+                JSONArray pegDeltas = trial.getJSONArray(Trial.JSON_PEG_DELTAS_TAG);
+                for (int j = 0; j < pegDeltas.length(); j++) {
+                    tempArray.add(pegDeltas.getString(j));
+                }
+
+            }
+
+            writeBackUp(FILE_DATA_BACKUP, tempArray.toArray( new String[0]), false);
+
+//            long id = database.insert(EPegSQLiteHelper.TABLE_NAME, null, values);
+
+//            Log.d(TAG, "New study recorded, with ID " + id + " on " + deviceID + " by " + conductor);
 
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private String backupHeaderForHand(boolean isLeft, int handNum){
+
+        String handPrefix = isLeft ? "Left_" : "Right_";
+
+        handPrefix = handPrefix + handNum + "_";
+
+        StringBuilder stringBuilder = new StringBuilder();
+
+        stringBuilder.append(handPrefix + "startTime,");
+        stringBuilder.append(handPrefix + "endTime,");
+        stringBuilder.append(handPrefix + "totalTime,");
+        stringBuilder.append(handPrefix + "sumTime,");
+        stringBuilder.append(handPrefix + "actualTime,");
+
+        for (int i = 1; i <= 7; i++) {
+            stringBuilder.append(handPrefix + "pegsLifted_" + i + ",");
+        }
+
+        for (int i = 1; i <= 7; i++) {
+            stringBuilder.append(handPrefix + "pegsReleased_" + i + ",");
+        }
+
+        for (int i = 1; i <= 7; i++) {
+            stringBuilder.append(handPrefix + "pegDeltas_" + i + (i == 7 ? "" : ","));
+        }
+
+        return stringBuilder.toString();
     }
 
     private boolean writeBackUp(String fileName, String[] data, boolean isPublic){
@@ -230,12 +294,22 @@ public class EPegCryptoDataManager {
             StringBuilder outputBuilder = new StringBuilder();
 
             // Add array headings
-            if(isPublic && firstTime){
-                outputBuilder.append("Tester ID,Clinic ID,Participant ID,Dominant Hand,Date");
-                for (int i = 1; i <= 10; i++) {
-                    outputBuilder.append(",Right Hand " + i + ", Left Hand " + i);
+            if(firstTime) {
+                if (isPublic) {
+                    outputBuilder.append("Tester ID,Clinic ID,Participant ID,Dominant Hand,Date");
+                    for (int i = 1; i <= 10; i++) {
+                        outputBuilder.append(",Right Hand " + i + ", Left Hand " + i);
+                    }
+                    outputBuilder.append("\n");
                 }
-                outputBuilder.append("\n");
+                else{
+                    outputBuilder.append("Tester ID,Clinic ID,Participant ID,Dominant Hand,Date");
+                    for (int i = 1; i <= 10; i++) {
+                        outputBuilder.append("," + backupHeaderForHand(false, i));
+                        outputBuilder.append("," + backupHeaderForHand(true, i));
+                    }
+                    outputBuilder.append("\n");
+                }
             }
 
             for (int i = 0; i < data.length; i++) {

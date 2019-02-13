@@ -323,8 +323,8 @@ public class MainActivity extends Activity {
         sm.close();
         MainActivity.this.startActivity(studyIntent);
 
-        Intent syncServiceIntent = new Intent(MainActivity.this, NetworkSyncService.class);
-        MainActivity.this.startService(syncServiceIntent);
+//        Intent syncServiceIntent = new Intent(MainActivity.this, NetworkSyncService.class);
+//        MainActivity.this.startService(syncServiceIntent);
     }
 
     /**

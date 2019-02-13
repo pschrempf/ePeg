@@ -204,10 +204,10 @@ public class Trial {
             actualTime = getActualTime() + currTime;
 
         //Record time of arrival
-        pegReleased[isLeftToRight ?
-                currentPegIndex :
-                NUM_PEGS - currentPegIndex - 1]
-
+//        pegReleased[isLeftToRight ?
+//                currentPegIndex :
+//                NUM_PEGS - currentPegIndex - 1]
+        pegReleased[currentPegIndex]
                 = new Timestamp(currTime);
 
         //Find the actual delta by adding the current timestamp to the negative of the start (= end - start)

@@ -29,8 +29,8 @@ public class ResultFragment extends Fragment {
             Study.conclude();
             Log.d(TAG, "Study concluded!");
 
-            Intent syncServiceIntent = new Intent(activity, NetworkSyncService.class);
-            activity.startService(syncServiceIntent);
+//            Intent syncServiceIntent = new Intent(activity, NetworkSyncService.class);
+//            activity.startService(syncServiceIntent);
         } catch (StudyException e) {
             Log.e(TAG, "Could not conclude study! Error: " + e.getMessage());
             Study.cancel();
@@ -38,8 +38,8 @@ public class ResultFragment extends Fragment {
         }
 
         // sync with network
-        Intent syncServiceIntent = new Intent(this.getActivity(), NetworkSyncService.class);
-        this.getActivity().startService(syncServiceIntent);
+//        Intent syncServiceIntent = new Intent(this.getActivity(), NetworkSyncService.class);
+//        this.getActivity().startService(syncServiceIntent);
     }
 
     @Override
